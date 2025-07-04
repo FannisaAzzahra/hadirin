@@ -13,7 +13,8 @@ class PresenceController extends Controller
      */
     public function index()
     {
-        return view('pages.presence.index');
+        $presences = Presence::all();
+        return view('pages.presence.index', compact('presences'));
     }
 
     /**

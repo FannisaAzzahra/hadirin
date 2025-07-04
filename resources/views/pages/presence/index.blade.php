@@ -29,6 +29,17 @@
                            <th>Opsi</th>
                         </tr>
                     </thead>
+                    <tbody>
+                        @foreach ($presences as $presence )
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $presence->nama_kegiatan }}</td>
+                                <td>{{ date('d-m-Y', strtotime($presence->tgl_kegiatan)) }}</td>
+                                <td>{{ date('H:i', strtotime($presence->tgl_kegiatan)) }}</td>
+                                <td></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
                 </table>
             </div>
         </div>
