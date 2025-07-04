@@ -24,17 +24,26 @@
                     <div class="mb-3">
                         <label for="nama_kegiatan">Nama Kegiatan</label>
                         <input type="text" class="form-control" name="nama_kegiatan" id="nama_kegiatan" 
-                        value="{{ old('nama_kegiatan') }}">
+                            value="{{ old('nama_kegiatan') }}">
+                        @error('nama_kegiatan')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="tgl_kegiatan">Tanggal Kegiatan</label>
                         <input type="date" class="form-control" name="tgl_kegiatan" id="tgl_kegiatan" 
-                        value="{{ old('tgl_kegiatan') }}">
+                            value="{{ old('tgl_kegiatan') }}">
+                        @error('tgl_kegiatan')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="waktu_mulai">Waktu Mulai</label>
                         <input type="time" class="form-control" name="waktu_mulai" id="waktu_mulai" 
-                        value="{{ old('waktu_mulai') }}">
+                            value="{{ old('waktu_mulai') }}">
+                        @error('waktu_mulai')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
                     <button type="submit" class="btn btn-primary">
                         Simpan

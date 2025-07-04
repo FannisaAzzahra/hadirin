@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Presence;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PresenceController extends Controller
 {
@@ -27,8 +29,22 @@ class PresenceController extends Controller
      */
     public function store(Request $request)
     {
-        // Melihat data yang sudah di input
-        dd($request->all());
+        $request->validate([
+            'nama_kegiatan' => 'required',
+            'tgl_kegiatan' => 'required',
+            'waktu_mulai' => 'required',
+        ]);
+        
+        $data = [
+            'nama_kegiatan' => $request->nama_kegiatan,
+            'slug'=> Str::slug($request->nama_kegiatan),
+            'tgl_kegiatan' => $request->tgl_kegiatan. ' ' .$request->waktu_mulai,
+        ];
+
+        Presence::create($data);
+
+        return redirect()->route('presence.index')->with('success', 'Data berhasil ditambahkan');
+
     }
 
     /**
