@@ -19,7 +19,7 @@ class PresenceController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.presence.create');
     }
 
     /**
@@ -27,7 +27,8 @@ class PresenceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Melihat data yang sudah di input
+        dd($request->all());
     }
 
     /**
