@@ -20,7 +20,7 @@
                     <a class="nav-link" href="{{ route('home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Daftar Absensi</a>
+                    <a class="nav-link" href="{{ route('presence.index') }}">Daftar Absensi</a>
                 </li>
             </ul>
             <form class="d-flex" role="search">
