@@ -30,13 +30,29 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if ($presences->isEmpty())
+                            <tr>
+                                <td colspan="5" class="text-center">Tidak ada data</td>
+                            </tr>
+                        @endif
                         @foreach ($presences as $presence )
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $presence->nama_kegiatan }}</td>
                                 <td>{{ date('d-m-Y', strtotime($presence->tgl_kegiatan)) }}</td>
                                 <td>{{ date('H:i', strtotime($presence->tgl_kegiatan)) }}</td>
-                                <td></td>
+                                <td>
+                                    <a href="{{ route('presence.edit', $presence->id) }}" class="btn btn-warning">
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('presence.destroy', $presence->id) }}" method="post" class="d-inline">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm ('Apakah Anda yakin ingin menghapus data ini?')">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

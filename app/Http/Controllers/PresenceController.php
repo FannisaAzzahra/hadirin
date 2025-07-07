@@ -36,13 +36,11 @@ class PresenceController extends Controller
             'waktu_mulai' => 'required',
         ]);
         
-        $data = [
-            'nama_kegiatan' => $request->nama_kegiatan,
-            'slug'=> Str::slug($request->nama_kegiatan),
-            'tgl_kegiatan' => $request->tgl_kegiatan. ' ' .$request->waktu_mulai,
-        ];
-
-        Presence::create($data);
+        $presence = new Presence(); 
+        $presence->nama_kegiatan = $request->nama_kegiatan;
+        $presence->slug = Str::slug($request->nama_kegiatan);
+        $presence->tgl_kegiatan = $request->tgl_kegiatan. ' ' .$request->waktu_mulai;
+        $presence->save();
 
         return redirect()->route('presence.index')->with('success', 'Data berhasil ditambahkan');
 
@@ -61,7 +59,8 @@ class PresenceController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $presence = Presence::findOrFail($id);
+        return view('pages.presence.edit', compact('presence'));
     }
 
     /**
@@ -69,7 +68,20 @@ class PresenceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'nama_kegiatan' => 'required',
+            'tgl_kegiatan' => 'required',
+            'waktu_mulai' => 'required',
+        ]);
+
+        $presence = Presence::findOrFail($id); 
+        $presence->nama_kegiatan = $request->nama_kegiatan;
+        $presence->slug = Str::slug($request->nama_kegiatan);
+        $presence->tgl_kegiatan = $request->tgl_kegiatan. ' ' .$request->waktu_mulai;
+        $presence->save();
+
+        return redirect()->route('presence.index');
+
     }
 
     /**
@@ -77,6 +89,8 @@ class PresenceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Presence::destroy($id);
+
+        return redirect()->route('presence.index');
     }
 }
