@@ -42,6 +42,9 @@
                                 <td>{{ date('d-m-Y', strtotime($presence->tgl_kegiatan)) }}</td>
                                 <td>{{ date('H:i', strtotime($presence->tgl_kegiatan)) }}</td>
                                 <td>
+                                    <a href="{{ route('presence.show', $presence->id) }}" class="btn btn-secondary">
+                                        Detail
+                                    </a>
                                     <a href="{{ route('presence.edit', $presence->id) }}" class="btn btn-warning">
                                         Edit
                                     </a>

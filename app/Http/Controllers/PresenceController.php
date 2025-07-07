@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Presence;
+use App\Models\PresenceDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -51,7 +52,9 @@ class PresenceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $presence = Presence::findOrFail($id);
+        $presenceDetails = PresenceDetail::where('presence_id', $id)->get();
+        return view ('pages.presence.detail.index', compact('presence', 'presenceDetails'));
     }
 
     /**
