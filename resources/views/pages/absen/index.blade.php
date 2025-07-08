@@ -38,7 +38,7 @@
                         <h5 class="card-title">Form Absensi</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('absen.save') }}" method="post">
+                        <form id="form-absen" action="{{ route('absen.save') }}" method="post">
                             @csrf
                             <div class="mb-3">
                                 <label for="nama">Nama</label>
@@ -63,6 +63,19 @@
                             </div>
                             <div class="mb-3">
                                 <label for="tanda_tangan">Tanda Tangan</label>
+                                <div class="d-block form-control mb-2">
+                                    <canvas id="signature-pad" class="signature-pad"></canvas>
+                                </div>
+                                <textarea name="signature" id="signature64" class="d-none"></textarea>
+                                @error('signature')
+                                    <div class="text-danger">{{ $message }}</div>                                    
+                                @enderror
+                                <button type="button" id="clear" class="btn btn-sm btn-secondary">
+                                    Clear
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                    </svg>
+                                </button>
                             </div>
                             <button type="submit" class="btn btn-primary">
                                 Submit
@@ -85,5 +98,42 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="{{ asset('js/signature.min.js') }}"></script>
+
+    <script>
+        $(function() {
+            // set signature pad width
+            let sig = $("#signature-pad").parent().width();
+            $('#signature-pad').attr('width', sig);
+
+            // set canvas color
+            let signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+                backgroundColor: 'rgb(255, 255, 255, 0)',
+                penColor: 'rgb(0, 0, 0)',
+            });
+
+            // fill signature to textarea
+            $('canvas').on('mouseup touchend', function() {
+                $('#signature64').val(signaturePad.toDataURL());
+            });
+
+            // clear signature
+            $('#clear').on('click', function(e) {
+                e.preventDefault();
+                signaturePad.clear();
+                $('#signature64').val('');
+            });
+
+            // submit form
+            $('#form-absen').on('submit', function() {
+                $(this).find('button[type="submit"]').attr('disabled', 'disabled');
+            });
+        });
+
+    </script>
+
   </body>
 </html>

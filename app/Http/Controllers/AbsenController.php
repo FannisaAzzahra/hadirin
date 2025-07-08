@@ -19,6 +19,7 @@ class AbsenController extends Controller
             'nama' => 'required',
             'jabatan' => 'required',
             'unit' => 'required',
+            'signature' => 'required',
 
         ]);
 
