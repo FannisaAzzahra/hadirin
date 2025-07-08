@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 //Admin
 Route::resource('presence', PresenceController::class);
-Route::delete('presence-detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence-detail.destroy');
+Route::delete('presence.detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence.detail.destroy');
 
 //Publik
 Route::get('absen/{slug}', [AbsenController::class, 'index'])->name('absen.index');

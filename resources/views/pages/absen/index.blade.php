@@ -62,7 +62,7 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="tanda_tangan">Tanda Tangan</label>
+                                <label for="signature64">Tanda Tangan</label>
                                 <div class="d-block form-control mb-2">
                                     <canvas id="signature-pad" class="signature-pad"></canvas>
                                 </div>
@@ -90,7 +90,37 @@
                         <h5 class="card-title">Daftar Kehadiran</h5>
                     </div>
                     <div class="card-body">
-
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                <th>No.</th>
+                                <th>Nama</th>
+                                <th>Jabatan</th>
+                                <th>Unit</th>
+                                <th>Tanda Tangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($presenceDetails->isEmpty())
+                                    <tr>
+                                        <td colspan="5" class="text-center">Tidak ada data</td>
+                                    </tr>
+                                @endif
+                                @foreach ($presenceDetails as $detail )
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $detail->nama }}</td>
+                                        <td>{{ $detail->jabatan }}</td>
+                                        <td>{{ $detail->unit }}</td>
+                                        <td>
+                                            @if ($detail->signature)
+                                                <img src="{{ asset('uploads/' . $detail->signature) }}" alt="Tanda Tangan" width="100">
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div> 
             </div>

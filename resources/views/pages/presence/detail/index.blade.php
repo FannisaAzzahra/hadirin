@@ -74,9 +74,13 @@
                                 <td>{{ $detail->nama }}</td>
                                 <td>{{ $detail->jabatan }}</td>
                                 <td>{{ $detail->unit }}</td>
-                                <td>{{ $detail->tanda_tangan }}</td>
                                 <td>
-                                    <form action="{{ route('presence.detail.destroy', $presence->id) }}" method="post" class="d-inline">
+                                    @if ($detail->signature)
+                                        <img src="{{ asset('uploads/' . $detail->signature) }}" alt="Tanda Tangan" width="100">
+                                    @endif
+                                </td>
+                                <td>
+                                    <form action="{{ route('presence.detail.destroy', $detail->id) }}" method="post" class="d-inline">
                                         @csrf
                                         @method('delete')
                                         <button type="submit" class="btn btn-danger" onclick="return confirm ('Apakah Anda yakin ingin menghapus data ini?')">

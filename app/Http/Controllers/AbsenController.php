@@ -12,7 +12,8 @@ class AbsenController extends Controller
     public function index($slug)
     {
         $presence = Presence::where('slug', $slug)->first();
-        return view ('pages.absen.index', compact('presence'));
+        $presenceDetails = PresenceDetail::where('presence_id', $presence->id)->get();
+        return view ('pages.absen.index', compact('presence', 'presenceDetails'));
     }
 
     public function save(Request $request, string $id)
