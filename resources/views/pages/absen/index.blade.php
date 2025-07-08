@@ -38,7 +38,7 @@
                         <h5 class="card-title">Form Absensi</h5>
                     </div>
                     <div class="card-body">
-                        <form id="form-absen" action="{{ route('absen.save') }}" method="post">
+                        <form id="form-absen" action="{{ route('absen.save', $presence->id) }}" method="post">
                             @csrf
                             <div class="mb-3">
                                 <label for="nama">Nama</label>
