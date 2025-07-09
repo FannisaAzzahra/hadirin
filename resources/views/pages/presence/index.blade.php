@@ -19,7 +19,7 @@
                     
             </div>
             <div class="card-body">
-                <table class="table table-striped">
+                <table id="datatable" class="table table-striped">
                     <thead>
                         <tr>
                            <th>No.</th>
@@ -64,3 +64,9 @@
         </div>
     </div>
 @endsection
+
+@push('js')
+    <script>
+        new DataTable('#datatable');
+    </script>
+@endpush
