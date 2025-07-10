@@ -51,7 +51,7 @@
                         <td>{{ date('H:i', strtotime($presence->tgl_kegiatan)) }}</td>
                     </tr>
                 </table>
-                <table class="table table-striped">
+                {{-- <table class="table table-striped">
                     <thead>
                         <tr>
                            <th width="50">No.</th>
@@ -95,19 +95,48 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
+                </table> --}}
+                {{ $dataTable->table() }}
             </div>
         </div>
     </div>
 @endsection
 
 @push('js')
-<script>
-    function copyLink() {
-        navigator.clipboard.writeText("{{ route('absen.index', $presence->slug) }}")
-        alert('Link berhasil dicopy ke clipboard!');
-    }
-</script>
-    
+    <script>
+        function copyLink() {
+            navigator.clipboard.writeText("{{ route('absen.index', $presence->slug) }}")
+            alert('Link berhasil dicopy ke clipboard!');
+        }
+    </script>
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+
+    <script>
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-delete', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('href');
+
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+            $.ajax({
+                type: 'DELETE',
+                url: url,
+                success: function(data) {
+                    window.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            });
+            }       
+        })
+    </script>
 @endpush
 
