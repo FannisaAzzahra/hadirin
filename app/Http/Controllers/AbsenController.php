@@ -14,6 +14,17 @@ class AbsenController extends Controller
     public function index($slug, AbsenDataTable $dataTable)
     {
         $presence = Presence::where('slug', $slug)->firstOrFail();
+
+        // CEK NONAKTIF
+        if (!$presence->is_active) {
+            abort(403, 'Absensi ini sudah dinonaktifkan oleh admin.');
+        }
+
+        // CEK BATAS WAKTU
+        if ($presence->batas_waktu && now()->greaterThan($presence->batas_waktu)) {
+            abort(403, 'Absensi ini sudah ditutup (lewat batas waktu).');
+        }
+
         $plnMembers = PlnMember::all();
         return $dataTable->render('pages.absen.index', compact('presence', 'plnMembers'));
     }

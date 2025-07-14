@@ -62,6 +62,15 @@
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div class="mb-3">
+                        <label for="batas_waktu">Batas Waktu Absen (opsional)</label>
+                        <input type="datetime-local" class="form-control" name="batas_waktu" id="batas_waktu" value="{{ old('batas_waktu') }}">
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="is_active" {{ old('is_active', true) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="is_active">Aktifkan Absen</label>
+                    </div>
                     <button type="submit" class="btn btn-primary">
                         Simpan
                     </button>

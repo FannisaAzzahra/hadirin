@@ -36,6 +36,15 @@ class PresenceDataTable extends DataTable
                     ? '<a href="'.e($query->link_lokasi).'" target="_blank" style="color:blue; text-decoration:underline;">Klik di sini</a>'
                     : '-';
             })
+            ->addColumn('status', function($query) {
+                if (!$query->is_active) {
+                    return '<span class="badge bg-danger">Nonaktif</span>';
+                }
+                if ($query->batas_waktu && now()->gt($query->batas_waktu)) {
+                    return '<span class="badge bg-warning">Kadaluarsa</span>';
+                }
+                return '<span class="badge bg-success">Aktif</span>';
+            })
             ->addColumn('action', function($query) {
                 $btnDetail = "<a href='". route('presence.show', $query->id) ."' class='btn btn-secondary'>Detail</a>";
                 $btnEdit = "<a href='". route('presence.edit', $query->id) ."' class='btn btn-warning'>Edit</a>";
@@ -43,7 +52,7 @@ class PresenceDataTable extends DataTable
 
                 return "{$btnDetail} {$btnEdit} {$btnDelete}";
             })
-            ->rawColumns(['link_lokasi', 'action'])
+            ->rawColumns(['link_lokasi', 'action', 'status'])
             ->setRowId('id');
     }
 
@@ -83,8 +92,8 @@ class PresenceDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')
-                ->title('#')
+            Column::make('status')
+                ->title('status')
                 ->render('meta.row + meta.settings._iDisplayStart + 1;')
                 ->width(100),
 
