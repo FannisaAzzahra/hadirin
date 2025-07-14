@@ -20,9 +20,12 @@ class AbsenController extends Controller
     {
         $presence = Presence::findOrFail($id);
         $request->validate([
-            'nama' => 'required',
-            'jabatan' => 'required',
-            'unit' => 'required',
+            'nama'     => 'required|string',
+            'nip'      => 'nullable|string',
+            'email'    => 'nullable|email',
+            'jabatan'  => 'nullable|string',
+            'unit'     => 'required|in:PLN,PLN Group,Non PLN',
+            'no_hp'    => 'required|string',
             'signature' => 'required',
 
         ]);
@@ -31,8 +34,19 @@ class AbsenController extends Controller
         $presenceDetail = new PresenceDetail();
         $presenceDetail->presence_id = $presence->id;
         $presenceDetail->nama = $request->nama;
-        $presenceDetail->jabatan = $request->jabatan;
         $presenceDetail->unit = $request->unit;
+        $presenceDetail->no_hp = $request->no_hp;
+
+        if ($request->unit === 'Non PLN') {
+            $presenceDetail->nip = null;
+            $presenceDetail->email = null;
+            $presenceDetail->jabatan = 'Umum';
+        } else {
+            $presenceDetail->nip = $request->nip;
+            $presenceDetail->email = $request->email;
+            $presenceDetail->jabatan = $request->jabatan;
+        }
+
 
         // decode base64 image
         $base64_image = $request->signature;

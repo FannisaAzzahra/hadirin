@@ -41,24 +41,68 @@
                     <div class="card-body">
                         <form id="form-absen" action="{{ route('absen.save', $presence->id) }}" method="post">
                             @csrf
-                            <div class="mb-3">
+                                                         <div class="mb-3">
+                                <label for="unit" class="form-label">Unit/Nama Perusahaan</label>
+                                <select name="unit" id="unit" class="form-select" required>
+                                    <option value="">-- Pilih Kategori Peserta --</option>
+                                    <option value="PLN">PLN</option>
+                                    <option value="PLN Group">PLN Group</option>
+                                    <option value="Non PLN">Non PLN</option>
+                                </select>
+                                @error('unit')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3" id="nama-field">
                                 <label for="nama">Nama</label>
                                 <input type="text" class="form-control" id="nama" name="nama">
+                                <select class="form-select d-none" id="nama-pln" name="nama">
+                                    <option value="">-- Pilih Anggota PLN --</option>
+                                    <option value="Budi Santoso">Budi Santoso</option>
+                                    <option value="Siti Rahma">Siti Rahma</option>
+                                    <option value="Joko Purwanto">Joko Purwanto</option>
+                                    <option value="Dewi Lestari">Dewi Lestari</option>
+                                </select>
+                                <small id="nama-helper" class="text-muted d-none">Pilih nama anggota PLN</small>
                                 @error('nama')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3">
+                                <label for="nip" class="form-label">NIP</label>
+                                <input type="text" class="form-control" id="nip" name="nip">
+                                <small id="nip-helper" class="text-muted d-none">Tidak perlu diisi untuk Non PLN</small>
+                                @error('nip')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                                <small id="email-helper" class="text-muted d-none">Tidak perlu diisi untuk Non PLN</small>
+                                @error('email')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            {{-- <div class="mb-3">
                                 <label for="jabatan">Jabatan</label>
                                 <input type="text" class="form-control" id="jabatan" name="jabatan">
                                 @error('jabatan')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
+                            </div> --}}
+                            <div class="mb-3">
+                                <label for="jabatan">Jabatan</label>
+                                <input type="text" class="form-control" id="jabatan" name="jabatan">
+                                <small id="jabatan-helper" class="text-muted d-none">Tidak perlu diisi untuk Non PLN</small>
+                                @error('jabatan')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="unit">Unit</label>
-                                <input type="text" class="form-control" id="unit" name="unit">
-                                @error('unit')
+                                <label for="no_hp" class="form-label">No HP</label>
+                                <input type="text" class="form-control" id="no_hp" name="no_hp">
+                                @error('no_hp')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -169,6 +213,49 @@
             // submit form
             $('#form-absen').on('submit', function() {
                 $(this).find('button[type="submit"]').attr('disabled', 'disabled');
+            });
+            
+            // --- Unit Change Logic (PLN vs Non PLN) ---
+            function toggleNonPlnFields() {
+                let unit = $('#unit').val();
+                if (unit === 'Non PLN') {
+                    $('#nip').val('').prop('disabled', true);
+                    $('#email').val('').prop('disabled', true);
+                    $('#jabatan').val('').prop('disabled', true);
+
+                    $('#nip-helper').removeClass('d-none');
+                    $('#email-helper').removeClass('d-none');
+                    $('#jabatan-helper').removeClass('d-none');
+                } else {
+                    $('#nip').prop('disabled', false);
+                    $('#email').prop('disabled', false);
+                    $('#jabatan').prop('disabled', false);
+
+                    $('#nip-helper').addClass('d-none');
+                    $('#email-helper').addClass('d-none');
+                    $('#jabatan-helper').addClass('d-none');
+                }
+            }
+
+            function toggleNamaField() {
+                let unit = $('#unit').val();
+                if (unit === 'PLN') {
+                    $('#nama').addClass('d-none').prop('disabled', true);
+                    $('#nama-pln').removeClass('d-none').prop('disabled', false);
+                    $('#nama-helper').removeClass('d-none');
+                } else {
+                    $('#nama').removeClass('d-none').prop('disabled', false);
+                    $('#nama-pln').addClass('d-none').prop('disabled', true);
+                    $('#nama-helper').addClass('d-none');
+                }
+            }
+
+            toggleNonPlnFields();
+            toggleNamaField();
+
+            $('#unit').on('change', function() {
+                toggleNonPlnFields();
+                toggleNamaField();
             });
         });
 
