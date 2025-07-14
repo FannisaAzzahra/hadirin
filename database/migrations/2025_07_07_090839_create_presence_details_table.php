@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('presence_id');
             $table->string('nama');
-            $table->string('jabatan');
-            $table->string('unit');
-            $table->string('tanda_tangan');
+            $table->string('nip')->nullable(); // nullable jika Non PLN
+            $table->string('email')->nullable(); // nullable jika tidak wajib
+            $table->string('jabatan')->nullable();
+            $table->string('unit'); // PLN / PLN Group / Non PLN
+            $table->string('no_hp');
+            $table->string('signature');
             $table->timestamps();
         });
     }

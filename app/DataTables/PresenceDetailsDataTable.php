@@ -28,6 +28,18 @@ class PresenceDetailsDataTable extends DataTable
             ->addColumn('signature', function ($query) {
                 return "<img width='100' src='" . asset('uploads/' . $query->signature) . "'>";
             })
+            ->addColumn('unit', function ($query) {
+                // Tampilkan label yang sesuai di tabel
+                if ($query->unit === 'PLN') {
+                    return 'PLN';
+                } elseif ($query->unit === 'PLN Group') {
+                    return 'PLN Group';
+                } elseif ($query->unit === 'Non PLN') {
+                    return 'Non PLN';
+                } else {
+                    return '-';
+                }
+            })
             ->addColumn('action', function($query){
                 $btnDelete = "<a href='" . route('presence-detail.destroy', $query->id) . "' class='btn btn-delete btn-danger'>Hapus</a>";
                 return $btnDelete;
@@ -53,6 +65,7 @@ class PresenceDetailsDataTable extends DataTable
                     ->setTableId('presencedetails-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
+                    ->responsive(true) // ✅ tambahkan ini!
                     //->dom('Bfrtip')
                     ->orderBy(1)
                     ->selectStyleSingle()
@@ -78,9 +91,9 @@ class PresenceDetailsDataTable extends DataTable
                 ->width(100),
             Column::make('waktu_absen'),
             Column::make('nama'),
-            Column::make('jabatan'),
-            Column::make('unit'),
-            Column::make('signature'),
+            Column::make('no_hp'),
+            Column::make('unit')->title('Unit/Nama Perusahaan'),
+            Column::make('signature')->title('Tanda Tangan'),
             Column::computed('action')
                   ->exportable(false)
                   ->printable(false)
