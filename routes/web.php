@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\PlnMemberController;
 use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\PresenceDetailController;
 use Illuminate\Support\Facades\Route;
@@ -17,3 +18,6 @@ Route::get('presence-detail/export-pdf/{id}', [PresenceDetailController::class, 
 //Publik
 Route::get('absen/{slug}', [AbsenController::class, 'index'])->name('absen.index');
 Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.save');
+
+// Data Pegawai PLN
+Route::resource('pln-members', PlnMemberController::class);

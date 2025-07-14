@@ -56,12 +56,16 @@
                             <div class="mb-3" id="nama-field">
                                 <label for="nama">Nama</label>
                                 <input type="text" class="form-control" id="nama" name="nama">
-                                <select class="form-select d-none" id="nama-pln" name="nama">
+                                <select class="form-select d-none" id="nama-pln" name="nama" disabled>
                                     <option value="">-- Pilih Anggota PLN --</option>
-                                    <option value="Budi Santoso">Budi Santoso</option>
-                                    <option value="Siti Rahma">Siti Rahma</option>
-                                    <option value="Joko Purwanto">Joko Purwanto</option>
-                                    <option value="Dewi Lestari">Dewi Lestari</option>
+                                    @foreach($plnMembers as $member)
+                                        <option 
+                                            value="{{ $member->nama }}"
+                                            data-nip="{{ $member->nip }}"
+                                            data-email="{{ $member->email }}">
+                                            {{ $member->nama }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 <small id="nama-helper" class="text-muted d-none">Pilih nama anggota PLN</small>
                                 @error('nama')
@@ -256,6 +260,15 @@
             $('#unit').on('change', function() {
                 toggleNonPlnFields();
                 toggleNamaField();
+            });
+
+            // Autofill NIP dan Email saat pilih nama anggota PLN
+            $('#nama-pln').on('change', function() {
+                let nip = $(this).find(':selected').data('nip') || '';
+                let email = $(this).find(':selected').data('email') || '';
+
+                $('#nip').val(nip);
+                $('#email').val(email);
             });
         });
 

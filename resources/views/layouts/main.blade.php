@@ -26,11 +26,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('home') }}">Home</a>
+                  <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('presence.index') }}">Daftar Absensi</a>
+                  <a class="nav-link {{ request()->routeIs('presence.*') ? 'active' : '' }}" href="{{ route('presence.index') }}">Daftar Absensi</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link {{ request()->routeIs('pln-members.*') ? 'active' : '' }}" href="{{ route('pln-members.index') }}">Data Anggota PLN</a>
+              </li>
             </ul>
             <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
