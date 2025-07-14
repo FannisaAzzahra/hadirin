@@ -38,12 +38,14 @@ class PresenceController extends Controller
             'nama_kegiatan' => 'required',
             'tgl_kegiatan' => 'required',
             'waktu_mulai' => 'required',
+            'lokasi' => 'required',
         ]);
         
         $presence = new Presence(); 
         $presence->nama_kegiatan = $request->nama_kegiatan;
         $presence->slug = Str::slug($request->nama_kegiatan);
         $presence->tgl_kegiatan = $request->tgl_kegiatan. ' ' .$request->waktu_mulai;
+        $presence->lokasi = $request->lokasi;
         $presence->save();
 
         return redirect()->route('presence.index')->with('success', 'Data berhasil ditambahkan');
@@ -77,12 +79,14 @@ class PresenceController extends Controller
             'nama_kegiatan' => 'required',
             'tgl_kegiatan' => 'required',
             'waktu_mulai' => 'required',
+            'lokasi' => 'required',
         ]);
 
         $presence = Presence::findOrFail($id); 
         $presence->nama_kegiatan = $request->nama_kegiatan;
         $presence->slug = Str::slug($request->nama_kegiatan);
         $presence->tgl_kegiatan = $request->tgl_kegiatan. ' ' .$request->waktu_mulai;
+        $presence->lokasi = $request->lokasi;
         $presence->save();
 
         return redirect()->route('presence.index');

@@ -45,6 +45,14 @@
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div class="mb-3">
+                        <label for="lokasi">Lokasi</label>
+                        <input type="text" class="form-control" name="lokasi" id="lokasi" 
+                            value="{{ old('lokasi') }}">
+                        @error('lokasi')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <button type="submit" class="btn btn-primary">
                         Simpan
                     </button>

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_kegiatan');
             $table->string('slug');
             $table->datetime('tgl_kegiatan');
+            $table->string('lokasi');
             $table->timestamps();
         });
     }
