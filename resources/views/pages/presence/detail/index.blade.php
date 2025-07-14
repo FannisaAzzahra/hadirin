@@ -50,6 +50,11 @@
                         <td>:</td>
                         <td>{{ date('H:i', strtotime($presence->tgl_kegiatan)) }}</td>
                     </tr>
+                    <tr>
+                        <td>Lokasi</td>
+                        <td>:</td>
+                        <td>{{ $presence->lokasi }}</td>
+                    </tr>
                 </table>
                 {{-- <table class="table table-striped">
                     <thead>
