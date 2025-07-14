@@ -47,10 +47,21 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="lokasi">Lokasi</label>
-                        <input type="text" class="form-control" name="lokasi" id="lokasi" 
+                        <label for="lokasi">Nama Lokasi</label>
+                        <input type="text" class="form-control" name="lokasi" id="lokasi"
+                            placeholder="Contoh: Zoom, Ruang Rapat"
                             value="{{ old('lokasi', $presence->lokasi) }}">
                         @error('lokasi')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="link_lokasi">Link Lokasi (jika ada)</label>
+                        <input type="url" class="form-control" name="link_lokasi" id="link_lokasi"
+                            placeholder="https://..."
+                            value="{{ old('link_lokasi', $presence->link_lokasi) }}">
+                        @error('link_lokasi')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>

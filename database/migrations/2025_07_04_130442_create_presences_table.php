@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug');
             $table->datetime('tgl_kegiatan');
             $table->string('lokasi');
+            $table->string('link_lokasi')->nullable();
             $table->timestamps();
         });
     }

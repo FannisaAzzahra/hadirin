@@ -31,6 +31,11 @@ class PresenceDataTable extends DataTable
             ->addColumn('lokasi', function($query) {
                 return $query->lokasi;
             })
+            ->addColumn('link_lokasi', function($query) {
+                return $query->link_lokasi
+                    ? '<a href="'.e($query->link_lokasi).'" target="_blank" style="color:blue; text-decoration:underline;">Klik di sini</a>'
+                    : '-';
+            })
             ->addColumn('action', function($query) {
                 $btnDetail = "<a href='". route('presence.show', $query->id) ."' class='btn btn-secondary'>Detail</a>";
                 $btnEdit = "<a href='". route('presence.edit', $query->id) ."' class='btn btn-warning'>Edit</a>";
@@ -38,6 +43,7 @@ class PresenceDataTable extends DataTable
 
                 return "{$btnDetail} {$btnEdit} {$btnDelete}";
             })
+            ->rawColumns(['link_lokasi', 'action'])
             ->setRowId('id');
     }
 
@@ -86,6 +92,7 @@ class PresenceDataTable extends DataTable
             Column::make('tgl'),
             Column::make('waktu_mulai'),
             Column::make('lokasi'),
+            Column::make('link_lokasi'),
             Column::computed('action')
                   ->exportable(false)
                   ->printable(false)
