@@ -19,5 +19,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Jalankan seeder PlnMemberSeeder
+        $this->call([
+            PlnMemberSeeder::class,
+            // Seeder lain bisa ditulis di sini
+        ]);
+
     }
 }
