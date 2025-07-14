@@ -34,6 +34,19 @@
                         <td>:</td>
                         <td>{{ $presence->lokasi }}</td>
                     </tr>
+                    <tr>
+                        <td>Link Lokasi</td>
+                        <td>:</td>
+                        <td>
+                            @if ($presence->link_lokasi)
+                                <a href="{{ $presence->link_lokasi }}" target="_blank" class="text-primary text-decoration-underline">
+                                    Klik di sini
+                                </a>
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
