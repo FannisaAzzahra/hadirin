@@ -42,6 +42,9 @@ class PresenceController extends Controller
             'link_lokasi' => 'nullable|url',
             'batas_waktu' => 'nullable|date',
             'is_active' => 'nullable',
+            'judul_header' => 'nullable|string|max:255',
+            'logo_kiri' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_kanan' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
         
         $presence = new Presence(); 
@@ -52,6 +55,13 @@ class PresenceController extends Controller
         $presence->link_lokasi = $request->link_lokasi;
         $presence->batas_waktu = $request->batas_waktu;
         $presence->is_active = $request->has('is_active');
+        $presence->judul_header = $request->input('judul_header');
+            if ($request->hasFile('logo_kiri')) {
+                $presence->logo_kiri = $request->file('logo_kiri')->store('', 'public_uploads');
+            }
+            if ($request->hasFile('logo_kanan')) {
+                $presence->logo_kanan = $request->file('logo_kanan')->store('', 'public_uploads');
+            }
         $presence->save();
 
         return redirect()->route('presence.index')->with('success', 'Data berhasil ditambahkan');
@@ -89,6 +99,9 @@ class PresenceController extends Controller
             'link_lokasi' => 'nullable|url',
             'batas_waktu' => 'nullable|date',
             'is_active' => 'nullable',
+            'judul_header' => 'nullable|string|max:255',
+            'logo_kiri' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_kanan' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $presence = Presence::findOrFail($id); 
@@ -99,9 +112,25 @@ class PresenceController extends Controller
         $presence->link_lokasi = $request->link_lokasi;
         $presence->batas_waktu = $request->batas_waktu;
         $presence->is_active = $request->has('is_active');
+        $presence->judul_header = $request->input('judul_header');
+        
+        if ($request->hasFile('logo_kiri')) {
+            if ($presence->logo_kiri && file_exists(public_path('uploads/' . $presence->logo_kiri))) {
+                unlink(public_path('uploads/' . $presence->logo_kiri));
+            }
+            $presence->logo_kiri = $request->file('logo_kiri')->store('', 'public_uploads');
+        }
+
+        if ($request->hasFile('logo_kanan')) {
+            if ($presence->logo_kanan && file_exists(public_path('uploads/' . $presence->logo_kanan))) {
+                unlink(public_path('uploads/' . $presence->logo_kanan));
+            }
+            $presence->logo_kanan = $request->file('logo_kanan')->store('', 'public_uploads');
+        }
+
         $presence->save();
 
-        return redirect()->route('presence.index');
+        return redirect()->route('presence.index')->with('success', 'Data berhasil diupdate');
 
     }
 

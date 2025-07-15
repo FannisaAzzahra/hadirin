@@ -18,7 +18,7 @@
                 </div>         
             </div>
             <div class="card-body">
-                <form action="{{ route('presence.update', $presence->id) }}" method="post">
+                <form action="{{ route('presence.update', $presence->id) }}" method="post" enctype="multipart/form-data">
                     {{-- agar bisa mengirim request nya --}}
                     @csrf
                     @method('put')
@@ -73,6 +73,26 @@
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" name="is_active" id="is_active" {{ old('is_active', $presence->is_active) ? 'checked' : '' }}>
                         <label class="form-check-label" for="is_active">Aktifkan Absen</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="judul_header">Judul Header</label>
+                        <input type="text" class="form-control" name="judul_header" id="judul_header" value="{{ old('judul_header', $presence->judul_header) }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="logo_kiri">Logo Kiri</label>
+                        <input type="file" class="form-control" name="logo_kiri" id="logo_kiri">
+                        @if ($presence->logo_kiri)
+                            <img src="{{ asset('uploads/' . $presence->logo_kiri) }}" height="50" class="mt-2">
+                        @endif
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="logo_kanan">Logo Kanan</label>
+                        <input type="file" class="form-control" name="logo_kanan" id="logo_kanan">
+                        @if ($presence->logo_kanan)
+                            <img src="{{ asset('uploads/' . $presence->logo_kanan) }}" height="50" class="mt-2">
+                        @endif
                     </div>
                     <button type="submit" class="btn btn-primary">
                         Update

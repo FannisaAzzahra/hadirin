@@ -18,7 +18,7 @@
                 </div>         
             </div>
             <div class="card-body">
-                <form action="{{ route('presence.store') }}" method="post">
+                <form action="{{ route('presence.store') }}" method="post" enctype="multipart/form-data">
                     {{-- agar bisa mengirim request nya --}}
                     @csrf
                     <div class="mb-3">
@@ -70,6 +70,20 @@
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" name="is_active" id="is_active" {{ old('is_active', true) ? 'checked' : '' }}>
                         <label class="form-check-label" for="is_active">Aktifkan Absen</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="judul_header">Judul Header</label>
+                        <input type="text" class="form-control" name="judul_header" id="judul_header" value="{{ old('judul_header') }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="logo_kiri">Logo Kiri</label>
+                        <input type="file" class="form-control" name="logo_kiri" id="logo_kiri">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="logo_kanan">Logo Kanan</label>
+                        <input type="file" class="form-control" name="logo_kanan" id="logo_kanan">
                     </div>
                     <button type="submit" class="btn btn-primary">
                         Simpan

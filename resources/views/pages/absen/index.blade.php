@@ -12,7 +12,12 @@
     <div class="container my-5">
         <div class="card mb-4">
             <div class="card-body">
-                <h4 class="text-center">{{ env('APP_NAME') }}</h4>
+                {{-- <h4 class="text-center">{{ env('APP_NAME') }}</h4> --}}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120">
+                    <h4 class="text-center mb-0">{{ $presence->judul_header ?? env('APP_NAME') }}</h4>
+                    <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120">
+                </div>
                 <table class="table table-borderless">
                     <tr>
                         <td width="150">Nama Kegiatan</td>
