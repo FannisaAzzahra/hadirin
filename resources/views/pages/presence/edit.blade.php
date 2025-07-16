@@ -100,12 +100,12 @@
 
                     <div class="mb-3">
                         <label for="slides[]">Foto Slide (maksimal 5 gambar)</label>
-                        <input type="file" class="form-control" name="slides[]" id="slides" multiple accept="image/*">
+                        <input type="file" class="form-control" name="slide_images[]" id="slide_images" multiple accept="image/*">
                         <small class="text-muted">Unggah hingga 5 gambar untuk slide.</small>
                         @if ($presence->slides)
                             <div class="mt-2">
                                 @foreach ($presence->slides as $slide)
-                                    <img src="{{ asset('uploads/' . $slide) }}" height="50" class="me-2 mb-2">
+                                    <img src="{{ asset('uploads/' . $slide->image_path) }}" height="50" class="me-2 mb-2">
                                 @endforeach
                             </div>
                         @endif

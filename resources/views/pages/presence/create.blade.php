@@ -97,9 +97,8 @@
 
                     <div class="mb-3">
                         <label>Foto Slide (max 5)</label>
-                        @for ($i = 1; $i <= 5; $i++)
-                            <input type="file" class="form-control mb-2" name="slide_image_{{ $i }}">
-                        @endfor
+                        <input type="file" class="form-control" name="slide_images[]" multiple accept="image/*">
+                        <small class="text-muted">Pilih hingga 5 gambar.</small>
                     </div>
                     <button type="submit" class="btn btn-primary">
                         Simpan

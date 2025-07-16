@@ -44,7 +44,8 @@ class PresenceController extends Controller
             'judul_header'   => 'nullable|string|max:255',
             'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'slide_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_images' => 'nullable|array|max:5',
+            'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'link_ig'        => 'nullable|url',
         ]);
@@ -59,10 +60,14 @@ class PresenceController extends Controller
         $presence->is_active = $request->has('is_active');
         $presence->judul_header = $validated['judul_header'] ?? null;
 
-        foreach (['logo_kiri', 'logo_kanan', 'logo_ig'] as $field) {
+        foreach (['logo_kiri', 'logo_kanan'] as $field) {
             if ($request->hasFile($field)) {
-                $presence->$field = $request->file($field)->store('', 'public_uploads');
+                $presence->$field = $request->file($field)->store("presence_logos", 'public_uploads');
             }
+        }
+
+        if ($request->hasFile('logo_ig')) {
+            $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public_uploads');
         }
 
         $presence->link_ig = $validated['link_ig'] ?? null;
@@ -71,7 +76,7 @@ class PresenceController extends Controller
         // Save up to 5 slide images
         if ($request->hasFile('slide_images')) {
             foreach (array_slice($request->file('slide_images'), 0, 5) as $file) {
-                $path = $file->store('', 'public_uploads');
+                $path = $file->store("slides", 'public_uploads');
                 $presence->slides()->create(['image_path' => $path]);
             }
         }
@@ -113,7 +118,8 @@ class PresenceController extends Controller
             'judul_header'   => 'nullable|string|max:255',
             'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'slide_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_images' => 'nullable|array|max:5',
+            'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'link_ig'        => 'nullable|url',
         ]);
@@ -128,13 +134,20 @@ class PresenceController extends Controller
         $presence->is_active = $request->has('is_active');
         $presence->judul_header = $validated['judul_header'] ?? null;
 
-        foreach (['logo_kiri', 'logo_kanan', 'logo_ig'] as $field) {
+        foreach (['logo_kiri', 'logo_kanan'] as $field) {
             if ($request->hasFile($field)) {
                 if ($presence->$field && file_exists(public_path('uploads/' . $presence->$field))) {
                     unlink(public_path('uploads/' . $presence->$field));
                 }
-                $presence->$field = $request->file($field)->store('', 'public_uploads');
+                $presence->$field = $request->file($field)->store("presence_logos", 'public_uploads');
             }
+        }
+
+        if ($request->hasFile('logo_ig')) {
+            if ($presence->logo_ig && file_exists(public_path('uploads/' . $presence->logo_ig))) {
+                unlink(public_path('uploads/' . $presence->logo_ig));
+            }
+            $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public_uploads');
         }
 
         $presence->link_ig = $validated['link_ig'] ?? null;
@@ -150,11 +163,10 @@ class PresenceController extends Controller
             }
 
             foreach (array_slice($request->file('slide_images'), 0, 5) as $file) {
-                $path = $file->store('', 'public_uploads');
+                $path = $file->store("slides", 'public_uploads');
                 $presence->slides()->create(['image_path' => $path]);
             }
         }
-
         return redirect()->route('presence.index')->with('success', 'Data berhasil diupdate');
     }
 
