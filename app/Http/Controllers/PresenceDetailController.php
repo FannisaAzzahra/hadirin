@@ -18,7 +18,7 @@ class PresenceDetailController extends Controller
         // load view to pdf
         $pdf = Pdf::setOptions(['isRemoteEnabled' => true])
             ->loadView('pages.presence.detail.export-pdf', compact('presence', 'presenceDetails'))
-            ->setPaper('a4', 'landscape');
+            ->setPaper('a4', 'potrait');
 
         return $pdf->stream("{$presence->nama_kegiatan}.pdf", ['Attachment' => 0]);
 
