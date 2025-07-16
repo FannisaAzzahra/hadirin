@@ -25,6 +25,25 @@
             font-weight: bold;
             text-transform: uppercase;
         }
+          /* Table responsive wrapper */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        /* DataTable cells wrap text */
+        table.dataTable th,
+        table.dataTable td {
+            white-space: normal !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 200px;
+        }
+
+        /* Optional: Style header supaya rapi */
+        table.dataTable thead th {
+            text-align: center;
+            vertical-align: middle;
+        }
     </style>
   </head>
   <body>
@@ -232,7 +251,9 @@
               <h5 class="card-title">Daftar Kehadiran</h5>
             </div>
             <div class="card-body">
-              {{ $dataTable->table() }}
+              <div class="table-responsive">
+                {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover nowrap'], true) }}
+            </div>
             </div>
           </div>
         </div>
@@ -328,5 +349,5 @@
       });
     </script>
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
-  </body>
+  </body>  
 </html>
