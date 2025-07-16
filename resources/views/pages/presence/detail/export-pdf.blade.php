@@ -190,12 +190,18 @@
             width: 100%;
             border-collapse: collapse;
             margin: 0;
+            table-layout: fixed; /* DITAMBAHKAN: Fixed table layout */
         }
         
         .attendance-table th,
         .attendance-table td {
             border: 1px solid #000;
-        
+            padding: 8px 4px; /* DITAMBAHKAN: Padding yang lebih konsisten */
+            vertical-align: top; /* DITAMBAHKAN: Align ke atas */
+            word-wrap: break-word; /* DITAMBAHKAN: Word wrap */
+            word-break: break-word; /* DITAMBAHKAN: Break word */
+            overflow-wrap: break-word; /* DITAMBAHKAN: Overflow wrap */
+            white-space: normal; /* DITAMBAHKAN: Normal white space */
         }
         
         .attendance-table th {
@@ -214,6 +220,37 @@
             font-style: italic;
             color: #666;
             padding: 20px;
+        }
+        
+        /* DITAMBAHKAN: Spesifik width untuk setiap kolom */
+        .attendance-table th:nth-child(1),
+        .attendance-table td:nth-child(1) {
+            width: 5%; /* NO */
+        }
+        
+        .attendance-table th:nth-child(2),
+        .attendance-table td:nth-child(2) {
+            width: 17%; /* Tanggal */
+        }
+        
+        .attendance-table th:nth-child(3),
+        .attendance-table td:nth-child(3) {
+            width: 23%; /* NAMA */
+        }
+        
+        .attendance-table th:nth-child(4),
+        .attendance-table td:nth-child(4) {
+            width: 12%; /* UNIT */
+        }
+        
+        .attendance-table th:nth-child(5),
+        .attendance-table td:nth-child(5) {
+            width: 23%; /* EMAIL / NO. HP */
+        }
+        
+        .attendance-table th:nth-child(6),
+        .attendance-table td:nth-child(6) {
+            width: 20%; /* TANDA TANGAN */
         }
         
         .header-box {
@@ -251,7 +288,7 @@
                 <div class="header-row">
                     <div class="logo-left">
                         {{-- <img src="{{ public_path('images/logo_pln.png') }}" alt="PLN Logo" style="height: 60px;"> --}}
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_pln.png'))) }}" style="height:75px;">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_pln.png'))) }}" style="height:60px;">
                     </div>
                     <div class="company-info">
                         <div class="company-name">PT PLN (PERSERO)</div>
@@ -261,8 +298,8 @@
                         {{-- <img src="{{ public_path('images/logo_smk3.jpeg') }}" alt="SMK3 Logo" style="height: 45px; margin-right: 5px;">
                         <img src="{{ public_path('images/logo_iso.jpeg') }}" alt="ISO Logo" style="height: 60px;"> --}}
 
-                        <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('images/logo_smk3.jpg'))) }}" alt="SMK3 Logo" style="height: 60px; margin-right: 5px;">
-                        <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('images/logo_iso.jpeg'))) }}" alt="ISO Logo" style="height: 60px;">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_smk3.png'))) }}" alt="SMK3 Logo" style="height: 60px; margin-right: 5px;">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_iso.png'))) }}" alt="ISO Logo" style="height: 60px;">
                     </div>
                 </div>
                 
@@ -326,12 +363,12 @@
         <table class="attendance-table">
             <thead>
                 <tr>
-                    <th width="20">NO</th>
-                    <th width="75">Tanggal</th>
-                    <th width="130">NAMA</th>
-                    <th width="70">UNIT</th>
-                    <th width="125">EMAIL / NO. HP</th>
-                    <th width="75">TANDA TANGAN</th>
+                    <th>NO</th>
+                    <th>Tanggal</th>
+                    <th>NAMA</th>
+                    <th>UNIT</th>
+                    <th>EMAIL / NO. HP</th>
+                    <th>TANDA TANGAN</th>
                 </tr>
             </thead>
             <tbody>
