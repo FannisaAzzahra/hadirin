@@ -288,7 +288,7 @@
                 <div class="header-row">
                     <div class="logo-left">
                         {{-- <img src="{{ public_path('images/logo_pln.png') }}" alt="PLN Logo" style="height: 60px;"> --}}
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_pln.png'))) }}" style="height:60px;">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_pln.png'))) }}" style="height:70px;">
                     </div>
                     <div class="company-info">
                         <div class="company-name">PT PLN (PERSERO)</div>
@@ -298,8 +298,8 @@
                         {{-- <img src="{{ public_path('images/logo_smk3.jpeg') }}" alt="SMK3 Logo" style="height: 45px; margin-right: 5px;">
                         <img src="{{ public_path('images/logo_iso.jpeg') }}" alt="ISO Logo" style="height: 60px;"> --}}
 
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_smk3.png'))) }}" alt="SMK3 Logo" style="height: 60px; margin-right: 5px;">
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_iso.png'))) }}" alt="ISO Logo" style="height: 60px;">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_smk3.png'))) }}" alt="SMK3 Logo" style="height: 55px; margin-right: 5px;">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_iso.png'))) }}" alt="ISO Logo" style="height: 55px;">
                     </div>
                 </div>
                 
