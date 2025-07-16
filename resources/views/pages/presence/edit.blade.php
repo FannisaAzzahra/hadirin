@@ -94,6 +94,41 @@
                             <img src="{{ asset('uploads/' . $presence->logo_kanan) }}" height="50" class="mt-2">
                         @endif
                     </div>
+
+                    <hr>
+                    <h5 class="mt-4">Pengaturan Tambahan</h5>
+
+                    <div class="mb-3">
+                        <label for="slides[]">Foto Slide (maksimal 5 gambar)</label>
+                        <input type="file" class="form-control" name="slides[]" id="slides" multiple accept="image/*">
+                        <small class="text-muted">Unggah hingga 5 gambar untuk slide.</small>
+                        @if ($presence->slides)
+                            <div class="mt-2">
+                                @foreach ($presence->slides as $slide)
+                                    <img src="{{ asset('uploads/' . $slide) }}" height="50" class="me-2 mb-2">
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="logo_ig">Logo Instagram</label>
+                        <input type="file" class="form-control" name="logo_ig" id="logo_ig">
+                        @if ($presence->logo_ig)
+                            <img src="{{ asset('uploads/' . $presence->logo_ig) }}" height="50" class="mt-2">
+                        @endif
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="link_ig">Link Instagram</label>
+                        <input type="url" class="form-control" name="link_ig" id="link_ig"
+                            placeholder="https://www.instagram.com/..."
+                            value="{{ old('link_ig', $presence->link_ig) }}">
+                        @error('link_ig')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <button type="submit" class="btn btn-primary">
                         Update
                     </button>

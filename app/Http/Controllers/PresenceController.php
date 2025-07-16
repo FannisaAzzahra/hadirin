@@ -6,8 +6,8 @@ use App\DataTables\PresenceDataTable;
 use App\DataTables\PresenceDetailsDataTable;
 use App\Models\Presence;
 use App\Models\PresenceDetail;
+use App\Models\PresenceSlide;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PresenceController extends Controller
@@ -17,7 +17,6 @@ class PresenceController extends Controller
      */
     public function index(PresenceDataTable $dataTable)
     {
-        // $presences = Presence::all();
         return $dataTable->render('pages.presence.index');
     }
 
@@ -34,38 +33,50 @@ class PresenceController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_kegiatan' => 'required',
-            'tgl_kegiatan' => 'required',
-            'waktu_mulai' => 'required',
-            'lokasi' => 'required',
-            'link_lokasi' => 'nullable|url',
-            'batas_waktu' => 'nullable|date',
-            'is_active' => 'nullable',
-            'judul_header' => 'nullable|string|max:255',
-            'logo_kiri' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'logo_kanan' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        $validated = $request->validate([
+            'nama_kegiatan'  => 'required',
+            'tgl_kegiatan'   => 'required',
+            'waktu_mulai'    => 'required',
+            'lokasi'         => 'required',
+            'link_lokasi'    => 'nullable|url',
+            'batas_waktu'    => 'nullable|date',
+            'is_active'      => 'nullable',
+            'judul_header'   => 'nullable|string|max:255',
+            'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'link_ig'        => 'nullable|url',
         ]);
-        
-        $presence = new Presence(); 
-        $presence->nama_kegiatan = $request->nama_kegiatan;
-        $presence->slug = Str::slug($request->nama_kegiatan);
-        $presence->tgl_kegiatan = $request->tgl_kegiatan. ' ' .$request->waktu_mulai;
-        $presence->lokasi = $request->lokasi;
-        $presence->link_lokasi = $request->link_lokasi;
-        $presence->batas_waktu = $request->batas_waktu;
+
+        $presence = new Presence();
+        $presence->nama_kegiatan = $validated['nama_kegiatan'];
+        $presence->slug = Str::slug($validated['nama_kegiatan']);
+        $presence->tgl_kegiatan = $validated['tgl_kegiatan'] . ' ' . $validated['waktu_mulai'];
+        $presence->lokasi = $validated['lokasi'];
+        $presence->link_lokasi = $validated['link_lokasi'] ?? null;
+        $presence->batas_waktu = $validated['batas_waktu'] ?? null;
         $presence->is_active = $request->has('is_active');
-        $presence->judul_header = $request->input('judul_header');
-            if ($request->hasFile('logo_kiri')) {
-                $presence->logo_kiri = $request->file('logo_kiri')->store('', 'public_uploads');
+        $presence->judul_header = $validated['judul_header'] ?? null;
+
+        foreach (['logo_kiri', 'logo_kanan', 'logo_ig'] as $field) {
+            if ($request->hasFile($field)) {
+                $presence->$field = $request->file($field)->store('', 'public_uploads');
             }
-            if ($request->hasFile('logo_kanan')) {
-                $presence->logo_kanan = $request->file('logo_kanan')->store('', 'public_uploads');
-            }
+        }
+
+        $presence->link_ig = $validated['link_ig'] ?? null;
         $presence->save();
 
-        return redirect()->route('presence.index')->with('success', 'Data berhasil ditambahkan');
+        // Save up to 5 slide images
+        if ($request->hasFile('slide_images')) {
+            foreach (array_slice($request->file('slide_images'), 0, 5) as $file) {
+                $path = $file->store('', 'public_uploads');
+                $presence->slides()->create(['image_path' => $path]);
+            }
+        }
 
+        return redirect()->route('presence.index')->with('success', 'Data berhasil ditambahkan');
     }
 
     /**
@@ -73,7 +84,7 @@ class PresenceController extends Controller
      */
     public function show(string $id, PresenceDetailsDataTable $dataTable)
     {
-        $presence = Presence::findOrFail($id);
+        $presence = Presence::with('slides')->findOrFail($id);
         return $dataTable->render('pages.presence.detail.index', compact('presence'));
     }
 
@@ -82,7 +93,7 @@ class PresenceController extends Controller
      */
     public function edit(string $id)
     {
-        $presence = Presence::findOrFail($id);
+        $presence = Presence::with('slides')->findOrFail($id);
         return view('pages.presence.edit', compact('presence'));
     }
 
@@ -91,47 +102,60 @@ class PresenceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'nama_kegiatan' => 'required',
-            'tgl_kegiatan' => 'required',
-            'waktu_mulai' => 'required',
-            'lokasi' => 'required',
-            'link_lokasi' => 'nullable|url',
-            'batas_waktu' => 'nullable|date',
-            'is_active' => 'nullable',
-            'judul_header' => 'nullable|string|max:255',
-            'logo_kiri' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'logo_kanan' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        $validated = $request->validate([
+            'nama_kegiatan'  => 'required',
+            'tgl_kegiatan'   => 'required',
+            'waktu_mulai'    => 'required',
+            'lokasi'         => 'required',
+            'link_lokasi'    => 'nullable|url',
+            'batas_waktu'    => 'nullable|date',
+            'is_active'      => 'nullable',
+            'judul_header'   => 'nullable|string|max:255',
+            'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'link_ig'        => 'nullable|url',
         ]);
 
-        $presence = Presence::findOrFail($id); 
-        $presence->nama_kegiatan = $request->nama_kegiatan;
-        $presence->slug = Str::slug($request->nama_kegiatan);
-        $presence->tgl_kegiatan = $request->tgl_kegiatan. ' ' .$request->waktu_mulai;
-        $presence->lokasi = $request->lokasi;
-        $presence->link_lokasi = $request->link_lokasi;
-        $presence->batas_waktu = $request->batas_waktu;
+        $presence = Presence::findOrFail($id);
+        $presence->nama_kegiatan = $validated['nama_kegiatan'];
+        $presence->slug = Str::slug($validated['nama_kegiatan']);
+        $presence->tgl_kegiatan = $validated['tgl_kegiatan'] . ' ' . $validated['waktu_mulai'];
+        $presence->lokasi = $validated['lokasi'];
+        $presence->link_lokasi = $validated['link_lokasi'] ?? null;
+        $presence->batas_waktu = $validated['batas_waktu'] ?? null;
         $presence->is_active = $request->has('is_active');
-        $presence->judul_header = $request->input('judul_header');
-        
-        if ($request->hasFile('logo_kiri')) {
-            if ($presence->logo_kiri && file_exists(public_path('uploads/' . $presence->logo_kiri))) {
-                unlink(public_path('uploads/' . $presence->logo_kiri));
+        $presence->judul_header = $validated['judul_header'] ?? null;
+
+        foreach (['logo_kiri', 'logo_kanan', 'logo_ig'] as $field) {
+            if ($request->hasFile($field)) {
+                if ($presence->$field && file_exists(public_path('uploads/' . $presence->$field))) {
+                    unlink(public_path('uploads/' . $presence->$field));
+                }
+                $presence->$field = $request->file($field)->store('', 'public_uploads');
             }
-            $presence->logo_kiri = $request->file('logo_kiri')->store('', 'public_uploads');
         }
 
-        if ($request->hasFile('logo_kanan')) {
-            if ($presence->logo_kanan && file_exists(public_path('uploads/' . $presence->logo_kanan))) {
-                unlink(public_path('uploads/' . $presence->logo_kanan));
-            }
-            $presence->logo_kanan = $request->file('logo_kanan')->store('', 'public_uploads');
-        }
-
+        $presence->link_ig = $validated['link_ig'] ?? null;
         $presence->save();
 
-        return redirect()->route('presence.index')->with('success', 'Data berhasil diupdate');
+        // Replace slide images
+        if ($request->hasFile('slide_images')) {
+            foreach ($presence->slides as $slide) {
+                if ($slide->image_path && file_exists(public_path('uploads/' . $slide->image_path))) {
+                    unlink(public_path('uploads/' . $slide->image_path));
+                }
+                $slide->delete();
+            }
 
+            foreach (array_slice($request->file('slide_images'), 0, 5) as $file) {
+                $path = $file->store('', 'public_uploads');
+                $presence->slides()->create(['image_path' => $path]);
+            }
+        }
+
+        return redirect()->route('presence.index')->with('success', 'Data berhasil diupdate');
     }
 
     /**
@@ -139,22 +163,33 @@ class PresenceController extends Controller
      */
     public function destroy(string $id)
     {
-        // Delete data detail absen
-        $presenceDetail = PresenceDetail::where('presence_id', $id)->get();
-        foreach ($presenceDetail as $pd) {
-            if ($pd->signature) {
-                $filePath = public_path('uploads/' . $pd->signature);
+        // Delete presence details
+        $presenceDetails = PresenceDetail::where('presence_id', $id)->get();
+        foreach ($presenceDetails as $detail) {
+            if ($detail->signature) {
+                $filePath = public_path('uploads/' . $detail->signature);
                 if (file_exists($filePath)) {
                     unlink($filePath);
                 }
             }
-            $pd->delete();
+            $detail->delete();
         }
 
-        //Delete kegiatan
+        // Delete slides
+        $slides = PresenceSlide::where('presence_id', $id)->get();
+        foreach ($slides as $slide) {
+            if ($slide->image_path) {
+                $filePath = public_path('uploads/' . $slide->image_path);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+            $slide->delete();
+        }
+
+        // Delete main presence
         Presence::destroy($id);
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus']);
-
     }
 }

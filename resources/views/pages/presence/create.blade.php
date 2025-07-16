@@ -85,6 +85,22 @@
                         <label for="logo_kanan">Logo Kanan</label>
                         <input type="file" class="form-control" name="logo_kanan" id="logo_kanan">
                     </div>
+                    <div class="mb-3">
+                        <label for="logo_ig">Logo Instagram</label>
+                        <input type="file" class="form-control" name="logo_ig" id="logo_ig">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="link_ig">Link Instagram</label>
+                        <input type="url" class="form-control" name="link_ig" id="link_ig">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Foto Slide (max 5)</label>
+                        @for ($i = 1; $i <= 5; $i++)
+                            <input type="file" class="form-control mb-2" name="slide_image_{{ $i }}">
+                        @endfor
+                    </div>
                     <button type="submit" class="btn btn-primary">
                         Simpan
                     </button>

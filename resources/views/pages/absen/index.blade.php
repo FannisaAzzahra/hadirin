@@ -64,7 +64,7 @@
                     <div class="card-body">
                         <form id="form-absen" action="{{ route('absen.save', $presence->id) }}" method="post">
                             @csrf
-                                                         <div class="mb-3">
+                            <div class="mb-3">
                                 <label for="unit" class="form-label">Unit/Nama Perusahaan</label>
                                 <select name="unit" id="unit" class="form-select" required>
                                     <option value="">-- Pilih Kategori Peserta --</option>
@@ -162,45 +162,57 @@
                         <h5 class="card-title">Daftar Kehadiran</h5>
                     </div>
                     <div class="card-body">
-                        {{-- <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                <th>No.</th>
-                                <th>Tanggal</th>
-                                <th>Nama</th>
-                                <th>Jabatan</th>
-                                <th>Unit</th>
-                                <th>Tanda Tangan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if ($presenceDetails->isEmpty())
-                                    <tr>
-                                        <td colspan="6" class="text-center">Tidak ada data</td>
-                                    </tr>
-                                @endif
-                                @foreach ($presenceDetails as $detail )
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>
-                                            {{ date('d/m/Y H:i', strtotime($presence->created_at)) }}
-                                        </td>
-                                        <td>{{ $detail->nama }}</td>
-                                        <td>{{ $detail->jabatan }}</td>
-                                        <td>{{ $detail->unit }}</td>
-                                        <td>
-                                            @if ($detail->signature)
-                                                <img src="{{ asset('uploads/' . $detail->signature) }}" alt="Tanda Tangan" width="100">
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table> --}}
                         {{ $dataTable->table() }}
                     </div>
                 </div> 
             </div>
+
+            @if ($presence->slides->count() || $presence->logo_ig)
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title">Informasi Tambahan</h5>
+        </div>
+        <div class="card-body">
+
+            {{-- SLIDER FOTO --}}
+            @if ($presence->slides->count())
+                <div id="slideCarousel-{{ $presence->id }}" class="carousel slide mb-3" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        @foreach ($presence->slides as $key => $slide)
+                            <button type="button" data-bs-target="#slideCarousel-{{ $presence->id }}" data-bs-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}" aria-current="{{ $key == 0 ? 'true' : 'false' }}" aria-label="Slide {{ $key+1 }}"></button>
+                        @endforeach
+                    </div>
+                    <div class="carousel-inner">
+                        @foreach ($presence->slides as $key => $slide)
+                            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                <img src="{{ asset('uploads/' . $slide->image_path) }}" class="d-block w-100" alt="Slide {{ $key+1 }}">
+                            </div>
+                        @endforeach
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#slideCarousel-{{ $presence->id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#slideCarousel-{{ $presence->id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            @endif
+
+            {{-- IG --}}
+            @if ($presence->logo_ig && $presence->link_ig)
+                <div class="text-center">
+                    <a href="{{ $presence->link_ig }}" target="_blank">
+                        <img src="{{ asset('uploads/' . $presence->logo_ig) }}" height="50" alt="Instagram">
+                        <p class="mt-2">{{ $presence->link_ig }}</p>
+                    </a>
+                </div>
+            @endif
+
+        </div>
+    </div>
+@endif
+
+
         </div>
     </div>
 

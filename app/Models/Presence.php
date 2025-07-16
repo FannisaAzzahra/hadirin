@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Presence extends Model
 {
-    // Data disimpan
     protected $fillable = [
         'nama_kegiatan', 
         'slug', 
@@ -14,6 +13,16 @@ class Presence extends Model
         'lokasi', 
         'link_lokasi', 
         'batas_waktu',
-        'is_active'
+        'is_active',
+        'judul_header',
+        'logo_kiri',
+        'logo_kanan',
+        'logo_ig',     
+        'link_ig',     
     ];
+
+    public function slides()
+    {
+        return $this->hasMany(PresenceSlide::class);
+    }
 }
