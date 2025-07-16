@@ -21,7 +21,7 @@
             height: 100%;
             object-fit: cover;
         }
-        h4.text-center {
+        h2.text-center {
             font-weight: bold;
             text-transform: uppercase;
         }
@@ -55,7 +55,7 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120">
-            <h4 class="text-center mb-0">{{ $presence->judul_header ?? env('APP_NAME') }}</h4>
+            <h2 class="text-center mb-0">{{ $presence->judul_header ?? env('APP_NAME') }}</h2>
             <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120">
           </div>
           <table class="table table-borderless">
