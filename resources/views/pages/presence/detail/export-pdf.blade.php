@@ -230,7 +230,7 @@
         
         .attendance-table th:nth-child(2),
         .attendance-table td:nth-child(2) {
-            width: 17%; /* Tanggal */
+            width: 10%; /* Tanggal */
         }
         
         .attendance-table th:nth-child(3),
@@ -240,7 +240,7 @@
         
         .attendance-table th:nth-child(4),
         .attendance-table td:nth-child(4) {
-            width: 12%; /* UNIT */
+            width: 19%; /* UNIT */
         }
         
         .attendance-table th:nth-child(5),
@@ -364,9 +364,9 @@
             <thead>
                 <tr>
                     <th>NO</th>
-                    <th>Tanggal</th>
-                    <th>NAMA</th>
-                    <th>UNIT</th>
+                    <th>Waktu Absensi</th>
+                    <th>NAMA / NIP</th>
+                    <th>UNIT / Jabatan</th>
                     <th>EMAIL / NO. HP</th>
                     <th>TANDA TANGAN</th>
                 </tr>
@@ -376,9 +376,15 @@
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
                         <td class="text-center">{{ date('d/m/Y H:i', strtotime($detail->created_at)) }}</td>
-                        <td class="text-center">{{ $detail->nama }}</td>
-                        <td class="text-center">{{ $detail->unit }}</td>
-                        <td class="text-center">{{ $detail->email ?? '-' }}/{{ $detail->no_hp }}</td>
+                        <td class="text-center">
+                            {{ $detail->nama }} / <br>
+                            <span style="font-size:11px;"> {{ $detail->nip ?? '-' }}</span>
+                        </td>
+                        <td class="text-center">
+                            {{ $detail->unit }} / <br>
+                            <span style="font-size:11px;">  {{ $detail->jabatan ?? '-' }}</span>
+                        </td>
+                        <td class="text-center">{{ $detail->email ?? '-' }} / {{ $detail->no_hp }}</td>
                         <td class="text-center">
                             @if ($detail->signature)
                                 @php
