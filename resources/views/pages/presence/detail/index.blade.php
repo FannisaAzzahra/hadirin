@@ -26,6 +26,12 @@
                             </svg>
                             Export to PDf
                         </a>
+                        <a href="{{ route('presence-detail.export-excel', $presence->id) }}" class="btn btn-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-excel-fill" viewBox="0 0 16 16">
+                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64"/>
+                            </svg>
+                            Export to Excel
+                        </a>
                         <a href="{{ route('presence.index') }}" class="btn btn-secondary">
                             Kembali
                         </a>
@@ -76,51 +82,6 @@
                         </td>
                     </tr>
                 </table>
-                {{-- <table class="table table-striped">
-                    <thead>
-                        <tr>
-                           <th width="50">No.</th>
-                           <th width="150">Tanggal</th>
-                           <th>Nama</th>
-                           <th>Jabatan</th>
-                           <th>Unit</th>
-                           <th width="150">Tanda Tangan</th>
-                           <th width="100">Opsi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if ($presenceDetails->isEmpty())
-                            <tr>
-                                <td colspan="7" class="text-center">Tidak ada data</td>
-                            </tr>
-                        @endif
-                        @foreach ($presenceDetails as $detail )
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    {{ date('d/m/Y H:i', strtotime($presence->created_at)) }}
-                                </td>
-                                <td>{{ $detail->nama }}</td>
-                                <td>{{ $detail->jabatan }}</td>
-                                <td>{{ $detail->unit }}</td>
-                                <td>
-                                    @if ($detail->signature)
-                                        <img src="{{ asset('uploads/' . $detail->signature) }}" alt="Tanda Tangan" width="100">
-                                    @endif
-                                </td>
-                                <td>
-                                    <form action="{{ route('presence-detail.destroy', $detail->id) }}" method="post" class="d-inline">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm ('Apakah Anda yakin ingin menghapus data ini?')">
-                                            Hapus
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table> --}}
                 <div class="table-responsive">
                     {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover nowrap'], true) }}
                 </div>
