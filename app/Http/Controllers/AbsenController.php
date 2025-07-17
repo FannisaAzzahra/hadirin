@@ -51,8 +51,8 @@ class AbsenController extends Controller
         $presenceDetail->no_hp = $request->no_hp;
 
         if ($request->unit === 'Non PLN') {
-            $presenceDetail->nip = null;
-            $presenceDetail->email = null;
+            $presenceDetail->nip = 'Umum';
+            $presenceDetail->email = 'Umum';
             $presenceDetail->jabatan = 'Umum';
         } else {
             $presenceDetail->nip = $request->nip;

@@ -26,6 +26,15 @@ class AbsenDataTable extends DataTable
             ->addColumn('waktu_absen', function($query) {
                 return date('d-m-Y H:i:s', strtotime($query->created_at));
             })
+                ->addColumn('nip', function($query) {
+                return $query->nip;
+            })
+            ->addColumn('email', function($query) {
+                return $query->email;
+            })
+            ->addColumn('no_hp', function($query) {
+                return $query->no_hp;
+            })
             ->addColumn('signature', function ($query) {
                 return "<img width='100' src='" . asset('uploads/' . $query->signature) . "'>";
             })
@@ -81,7 +90,10 @@ class AbsenDataTable extends DataTable
                 ->width(100),
             Column::make('waktu_absen'),
             Column::make('nama'),
+            Column::make('nip'),
+            Column::make('email'),
             Column::make('jabatan'),
+            Column::make('no_hp'),
             Column::make('unit'),
             Column::make('signature'),
         ];
