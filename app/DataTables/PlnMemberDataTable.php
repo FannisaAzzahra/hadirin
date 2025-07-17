@@ -16,9 +16,15 @@ class PlnMemberDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function($query) {
-                $btnEdit = "<a href='". route('pln-members.edit', $query->id) ."' class='btn btn-warning'>Edit</a>";
-                $btnDelete = "<a href='". route('pln-members.destroy', $query->id) ."' class='btn btn-delete btn-danger'>Hapus</a>";
-                return "{$btnEdit} {$btnDelete}";
+                $btnEdit = '<a href="' . route('pln-members.edit', $query->id) . '" class="btn btn-sm btn-warning me-1">Edit</a>';
+
+                $btnDelete = '
+                    <form action="' . route('pln-members.destroy', $query->id) . '" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
+                        ' . csrf_field() . method_field('DELETE') . '
+                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                    </form>';
+
+                return $btnEdit . $btnDelete;
             })
             ->setRowId('id');
     }

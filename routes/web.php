@@ -21,4 +21,6 @@ Route::get('absen/{slug}', [AbsenController::class, 'index'])->name('absen.index
 Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.save');
 
 // Data Pegawai PLN
-Route::resource('pln-members', PlnMemberController::class);
+Route::resource('pln-members', PlnMemberController::class)->except(['show']);
+Route::get('pln-members/template', [PlnMemberController::class, 'downloadTemplate'])->name('pln-members.template');
+Route::post('pln-members/import', [PlnMemberController::class, 'import'])->name('pln-members.import');
