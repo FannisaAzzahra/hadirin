@@ -55,10 +55,14 @@ class PlnMemberDataTable extends DataTable
                 ->width(100),
 
             Column::make('nama'),
-            Column::make('nip'),
+            Column::make('nip')
+                ->title('NIP')
+                ->addClass('text-center'),
             Column::make('email'),
             Column::make('jabatan'),
-            Column::make('no_hp'),
+            Column::make('no_hp')
+                ->title('No. HP')
+                ->addClass('text-center'),
 
             Column::computed('action')
                 ->exportable(false)

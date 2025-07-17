@@ -96,22 +96,38 @@ class PresenceDataTable extends DataTable
     {
         return [
             Column::make('status')
-                ->title('status')
+                ->title('Status')
                 ->render('meta.row + meta.settings._iDisplayStart + 1;')
-                ->width(100),
+                ->width(80),
 
-            Column::make('nama_kegiatan'),
-            Column::make('tgl'),
-            Column::make('waktu_mulai'),
-            Column::make('lokasi'),
-            Column::make('link_lokasi'),
+            Column::make('nama_kegiatan')
+                ->title('Nama Kegiatan')
+                ->width(200),
+
+            Column::make('tgl')
+                ->title('Tanggal')
+                ->width(120),
+
+            Column::make('waktu_mulai')
+                ->title('Waktu Mulai')
+                ->width(120),
+
+            Column::make('lokasi')
+                ->title('Lokasi')
+                ->width(180),
+
+            Column::make('link_lokasi')
+                ->title('Link Lokasi')
+                ->width(180),
+
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(250)
-                  ->addClass('text-center'),
+                ->exportable(false)
+                ->printable(false)
+                ->width('270px') // Ideal untuk 3 tombol sejajar
+                ->addClass('text-center'),
         ];
     }
+
 
     /**
      * Get the filename for export.
