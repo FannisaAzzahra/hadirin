@@ -9,7 +9,6 @@ use App\Models\PresenceDetail;
 use App\Models\PresenceSlide;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class PresenceController extends Controller
 {

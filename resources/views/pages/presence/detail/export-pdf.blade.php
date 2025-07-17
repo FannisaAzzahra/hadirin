@@ -340,10 +340,14 @@
                     <td>:</td>
                     <td>{{ $presence->nama_kegiatan }}</td>
                 </tr>
+                @php
+                    \Carbon\Carbon::setLocale('id');
+                    $tanggalIndo = \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('l, d F Y');
+                @endphp
                 <tr>
                     <td class="label">Hari / Tanggal</td>
                     <td>:</td>
-                    <td>{{ date('l, d F Y', strtotime($presence->tgl_kegiatan)) }}</td>
+                    <td>{{ $tanggalIndo }}</td>
                 </tr>
                 <tr>
                     <td class="label">Waktu Mulai</td>
@@ -375,7 +379,13 @@
                 @forelse ($presenceDetails as $index => $detail)
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
-                        <td class="text-center">{{ date('d/m/Y H:i', strtotime($detail->created_at)) }}</td>
+                        <td class="text-center">
+                            @php
+                                \Carbon\Carbon::setLocale('id');
+                                $waktuAbsen = \Carbon\Carbon::parse($detail->created_at)->translatedFormat('d/m/Y H:i');
+                            @endphp
+                            {{ $waktuAbsen }}
+                        </td>
                         <td class="text-center">
                             {{ $detail->nama }} / <br>
                             <span style="font-size:11px;"> {{ $detail->nip ?? '-' }}</span>

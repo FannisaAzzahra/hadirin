@@ -21,12 +21,15 @@ class PresenceDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
+        
+        \Carbon\Carbon::setLocale('id');
+        
         return (new EloquentDataTable($query))
             ->addColumn('tgl', function($query) {
-                return date('d F Y', strtotime($query->tgl_kegiatan));
+                return \Carbon\Carbon::parse($query->tgl_kegiatan)->translatedFormat('d F Y');
             })
             ->addColumn('waktu_mulai', function($query) {
-                return date('H:i', strtotime($query->tgl_kegiatan));
+                return \Carbon\Carbon::parse($query->tgl_kegiatan)->translatedFormat('H:i') . ' WIB';
             })
             ->addColumn('lokasi', function($query) {
                 return $query->lokasi;

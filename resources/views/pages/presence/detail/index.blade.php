@@ -43,12 +43,19 @@
                     <tr>
                         <td>Tanggal Kegiatan</td>
                         <td>:</td>
-                        <td>{{ date('d F Y', strtotime($presence->tgl_kegiatan)) }}</td>
+                        @php
+                            \Carbon\Carbon::setLocale('id');
+                            $tanggalKegiatan = \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('d F Y');
+                        @endphp
+                    <td>{{ $tanggalKegiatan }}</td>
                     </tr>
                     <tr>
                         <td>Waktu Mulai</td>
                         <td>:</td>
-                        <td>{{ date('H:i', strtotime($presence->tgl_kegiatan)) }}</td>
+                        @php
+                            $waktuMulai = \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('H:i');
+                        @endphp
+                        <td>{{ $waktuMulai }} WIB</td>
                     </tr>
                     <tr>
                         <td>Lokasi</td>
