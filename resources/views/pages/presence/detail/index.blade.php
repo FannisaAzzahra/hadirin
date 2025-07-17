@@ -114,7 +114,9 @@
                         @endforeach
                     </tbody>
                 </table> --}}
-                {{ $dataTable->table() }}
+                <div class="table-responsive">
+                    {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover nowrap'], true) }}
+                </div>
             </div>
         </div>
     </div>
@@ -127,6 +129,26 @@
             alert('Link berhasil dicopy ke clipboard!');
         }
     </script>
+
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table.dataTable th,
+        table.dataTable td {
+            white-space: normal !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 200px;
+        }
+
+        table.dataTable thead th {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 
     <script>
