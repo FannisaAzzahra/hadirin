@@ -75,7 +75,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" id="btnImport" class="btn btn-primary">Import Data</button>
+                <button type="button" id="btnImport" class="btn btn-success">Import Data</button>
             </div>
         </div>
     </div>
@@ -85,8 +85,160 @@
 @push('js')
 
     <style>
-        .table-responsive {
-            overflow-x: auto;
+        /* Card Styling */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
+            color: white;
+            border-bottom: 3px solid #ffd60a;
+            padding: 1rem 1.5rem;
+        }
+
+        .card-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .card-body {
+            padding: 0;
+        }
+
+        /* Button Styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd60a 0%, #ffed4a 100%);
+            border: none;
+            color: #333;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #e6c200 0%, #f5d316 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 214, 10, 0.3);
+            color: #333;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #1e7e34 0%, #28a745 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #155724 0%, #1e7e34 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 126, 52, 0.3);
+            color: white;
+        }
+
+        /* Table Styling */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #0077b6 0%, #188ecd 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-align: center;
+            vertical-align: middle;
+            padding: 1rem;
+        }
+
+        /* Table Responsive */
+
+        /* DataTable Controls */
+    
+        /* Action Buttons */
+        .btn-sm {
+            border-radius: 6px;
+            margin: 0 2px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffd60a, #ffed4a);
+            border: none;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e6c200, #f5d316);
+            transform: translateY(-1px);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            transform: translateY(-1px);
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 119, 182, 0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(0, 119, 182, 0.1);
+            padding: 1rem 1.5rem;
+        }
+
+        /* Alert Styling */
+        .alert-info {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.1) 0%, rgba(255, 214, 10, 0.1) 100%);
+            border: 1px solid rgba(0, 119, 182, 0.2);
+            border-radius: 10px;
+            color: #0077b6;
+        }
+
+        /* Drop Area Styling */
+        #drop-area {
+            border: 2px dashed #0077b6 !important;
+            border-radius: 10px;
+            background: rgba(0, 119, 182, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        #drop-area:hover {
+            border-color: #00b4d8 !important;
+            background: rgba(0, 180, 216, 0.05);
         }
 
         table.dataTable th,
