@@ -23,4 +23,5 @@ Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.sa
 // Data Pegawai PLN
 Route::resource('pln-members', PlnMemberController::class)->except(['show']);
 Route::get('pln-members/template', [PlnMemberController::class, 'downloadTemplate'])->name('pln-members.template');
-Route::post('pln-members/import', [PlnMemberController::class, 'import'])->name('pln-members.import');
+Route::post('pln-members/import-ajax', [PlnMemberController::class, 'importAjax'])->name('pln-members.import-ajax');
+

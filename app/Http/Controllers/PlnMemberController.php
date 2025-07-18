@@ -65,7 +65,12 @@ class PlnMemberController extends Controller
     {
         PlnMember::destroy($id);
 
-        return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus']);
+        return redirect()->route('pln-members.index')->with('success', 'Data berhasil dihapus');
+    }
+
+    public function show($id)
+    {
+        return redirect()->route('pln-members.index');
     }
 
     public function downloadTemplate()
@@ -91,7 +96,7 @@ class PlnMemberController extends Controller
         exit;
     }
 
-    public function import(Request $request)
+    public function importAjax(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
@@ -102,11 +107,35 @@ class PlnMemberController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
 
-        // Mulai dari baris ke-2 agar skip header
+        $berhasil = 0;
+        $gagal = 0;
+        $errors = [];
+
+        // Tambahkan untuk tracking duplikat dalam file
+        $nipList = [];
+        $emailList = [];
+
         for ($i = 1; $i < count($rows); $i++) {
             $row = $rows[$i];
 
-            // Validasi data sebelum simpan
+            // Skip baris kosong
+            if (empty(array_filter($row))) continue;
+
+            // Cek duplikat NIP
+            if (in_array($row[1], $nipList) || PlnMember::where('nip', $row[1])->exists()) {
+                $errors[] = "Baris " . ($i + 1) . " gagal: NIP duplikat";
+                $gagal++;
+                continue;
+            }
+
+            // Cek duplikat Email
+            if (in_array($row[2], $emailList) || PlnMember::where('email', $row[2])->exists()) {
+                $errors[] = "Baris " . ($i + 1) . " gagal: Email duplikat";
+                $gagal++;
+                continue;
+            }
+
+            // Validasi struktur
             $validator = Validator::make([
                 'nama' => $row[0],
                 'nip' => $row[1],
@@ -115,17 +144,19 @@ class PlnMemberController extends Controller
                 'no_hp' => $row[4],
             ], [
                 'nama' => 'required',
-                'nip' => 'required|unique:pln_members,nip',
-                'email' => 'required|email|unique:pln_members,email',
+                'nip' => 'required',
+                'email' => 'required|email',
                 'jabatan' => 'required',
                 'no_hp' => 'required',
             ]);
 
             if ($validator->fails()) {
-                // Bisa kamu sesuaikan: skip/stop kalau error
+                $gagal++;
+                $errors[] = "Baris " . ($i + 1) . " gagal: " . implode(", ", $validator->errors()->all());
                 continue;
             }
 
+            // Insert ke database
             PlnMember::create([
                 'nama' => $row[0],
                 'nip' => $row[1],
@@ -133,14 +164,17 @@ class PlnMemberController extends Controller
                 'jabatan' => $row[3],
                 'no_hp' => $row[4],
             ]);
+
+            // Tambahkan ke list yang sudah dicek
+            $nipList[] = $row[1];
+            $emailList[] = $row[2];
+            $berhasil++;
         }
 
-        return redirect()->route('pln-members.index')->with('success', 'Import data berhasil!');
-    }
-
-    public function show($id)
-    {
-        return redirect()->route('pln-members.index');
+        return response()->json([
+            'message' => "Import selesai. Berhasil: $berhasil, Gagal: $gagal",
+            'errors' => $errors
+        ]);
     }
 
 }
