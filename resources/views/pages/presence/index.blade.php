@@ -12,7 +12,7 @@
                     </div>
                     <div class="col text-end">
                         <a href="{{ route('presence.create') }}" class="btn btn-primary">
-                            Tambah Data
+                            Tambah Kegiatan
                         </a>
                     </div>
                 </div>

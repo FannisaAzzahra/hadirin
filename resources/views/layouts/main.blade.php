@@ -29,7 +29,7 @@
                   <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link {{ request()->routeIs('presence.*') ? 'active' : '' }}" href="{{ route('presence.index') }}">Daftar Absensi</a>
+                  <a class="nav-link {{ request()->routeIs('presence.*') ? 'active' : '' }}" href="{{ route('presence.index') }}">Daftar Kegiatan</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link {{ request()->routeIs('pln-members.*') ? 'active' : '' }}" href="{{ route('pln-members.index') }}">Data Anggota PLN</a>
