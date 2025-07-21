@@ -22,6 +22,14 @@
         border-bottom: 3px solid #ffd60a;
         backdrop-filter: blur(10px);
         transition: all 0.3s ease;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+      }
+      body {
+        padding-top: 70px; /* beri padding agar konten tidak ketimpa navbar */
       }
 
       .navbar-pln:hover {

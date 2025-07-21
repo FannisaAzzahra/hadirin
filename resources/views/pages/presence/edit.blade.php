@@ -184,6 +184,8 @@
                         @endif
                     </div>
 
+                    @include('pages.presence.partials.slide-settings')
+
                     <!-- Tombol Aksi -->
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                         <a href="{{ route('presence.index') }}" class="btn btn-outline-secondary me-md-2">

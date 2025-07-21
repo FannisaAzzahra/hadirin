@@ -143,11 +143,7 @@
                             placeholder="https://instagram.com/username" value="{{ old('link_ig') }}">
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Foto Slide <small class="text-muted">(maksimal 5 foto)</small></label>
-                        <input type="file" class="form-control" name="slide_images[]" multiple accept="image/*">
-                        <small class="text-muted">Pilih maksimal 5 gambar (format JPG, PNG, atau GIF). Disarankan rasio landscape 16:9 untuk hasil terbaik.</small>
-                    </div>
+                    @include('pages.presence.partials.slide-settings')
 
                     <!-- Tombol Aksi -->
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">

@@ -25,7 +25,14 @@ class PresenceController extends Controller
      */
     public function create()
     {
-        return view('pages.presence.create');
+        // Get previous presences that have slides for the dropdown
+        $previousSlides = Presence::whereHas('slides')
+            ->select('id', 'nama_kegiatan', 'tgl_kegiatan')
+            ->with(['slides:id,presence_id,image_path'])
+            ->orderBy('tgl_kegiatan', 'desc')
+            ->get();
+
+        return view('pages.presence.create', compact('previousSlides'));
     }
 
     /**
@@ -44,6 +51,8 @@ class PresenceController extends Controller
             'judul_header'   => 'nullable|string|max:255',
             'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_option'   => 'required|in:previous,new,none',
+            'previous_presence_id' => 'nullable|exists:presences,id',
             'slide_images' => 'nullable|array|max:5',
             'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -73,13 +82,8 @@ class PresenceController extends Controller
         $presence->link_ig = $validated['link_ig'] ?? null;
         $presence->save();
 
-        // Save up to 5 slide images
-        if ($request->hasFile('slide_images')) {
-            foreach (array_slice($request->file('slide_images'), 0, 5) as $file) {
-                $path = $file->store("slides", 'public_uploads');
-                $presence->slides()->create(['image_path' => $path]);
-            }
-        }
+        // Handle slide options
+        $this->handleSlideOptions($request, $presence, $validated);
 
         return redirect()->route('presence.index')->with('success', 'Data berhasil ditambahkan');
     }
@@ -99,7 +103,18 @@ class PresenceController extends Controller
     public function edit(string $id)
     {
         $presence = Presence::with('slides')->findOrFail($id);
-        return view('pages.presence.edit', compact('presence'));
+        
+        // Get previous presences that have slides for the dropdown (excluding current presence)
+        $previousSlides = Presence::whereHas('slides')
+            ->where('id', '!=', $id)
+            ->select('id', 'nama_kegiatan', 'tgl_kegiatan')
+            ->with(['slides:id,presence_id,image_path'])
+            ->orderBy('tgl_kegiatan', 'desc')
+            ->get();
+
+        $isEdit = true;
+
+        return view('pages.presence.edit', compact('presence', 'previousSlides', 'isEdit'));
     }
 
     /**
@@ -118,6 +133,8 @@ class PresenceController extends Controller
             'judul_header'   => 'nullable|string|max:255',
             'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_option'   => 'required|in:keep,previous,new,none',
+            'previous_presence_id' => 'nullable|exists:presences,id',
             'slide_images' => 'nullable|array|max:5',
             'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -153,20 +170,9 @@ class PresenceController extends Controller
         $presence->link_ig = $validated['link_ig'] ?? null;
         $presence->save();
 
-        // Replace slide images
-        if ($request->hasFile('slide_images')) {
-            foreach ($presence->slides as $slide) {
-                if ($slide->image_path && file_exists(public_path('uploads/' . $slide->image_path))) {
-                    unlink(public_path('uploads/' . $slide->image_path));
-                }
-                $slide->delete();
-            }
+        // Handle slide options for update
+        $this->handleSlideOptionsForUpdate($request, $presence, $validated);
 
-            foreach (array_slice($request->file('slide_images'), 0, 5) as $file) {
-                $path = $file->store("slides", 'public_uploads');
-                $presence->slides()->create(['image_path' => $path]);
-            }
-        }
         return redirect()->route('presence.index')->with('success', 'Data berhasil diupdate');
     }
 
@@ -175,6 +181,8 @@ class PresenceController extends Controller
      */
     public function destroy(string $id)
     {
+        $presence = Presence::findOrFail($id);
+
         // Delete presence details
         $presenceDetails = PresenceDetail::where('presence_id', $id)->get();
         foreach ($presenceDetails as $detail) {
@@ -199,9 +207,138 @@ class PresenceController extends Controller
             $slide->delete();
         }
 
+        // Delete logos
+        foreach (['logo_kiri', 'logo_kanan', 'logo_ig'] as $field) {
+            if ($presence->$field && file_exists(public_path('uploads/' . $presence->$field))) {
+                unlink(public_path('uploads/' . $presence->$field));
+            }
+        }
+
         // Delete main presence
-        Presence::destroy($id);
+        $presence->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus']);
+    }
+
+    /**
+     * Handle slide options for create
+     */
+    private function handleSlideOptions(Request $request, Presence $presence, array $validated)
+    {
+        $slideOption = $validated['slide_option'];
+
+        switch ($slideOption) {
+            case 'previous':
+                if (!empty($validated['previous_presence_id'])) {
+                    $this->copySlides($validated['previous_presence_id'], $presence->id);
+                }
+                break;
+
+            case 'new':
+                if ($request->hasFile('slide_images')) {
+                    $this->uploadNewSlides($request->file('slide_images'), $presence);
+                }
+                break;
+
+            case 'none':
+                // No slides to handle
+                break;
+        }
+    }
+
+    /**
+     * Handle slide options for update
+     */
+    private function handleSlideOptionsForUpdate(Request $request, Presence $presence, array $validated)
+    {
+        $slideOption = $validated['slide_option'];
+
+        switch ($slideOption) {
+            case 'keep':
+                // Keep existing slides, do nothing
+                break;
+
+            case 'previous':
+                if (!empty($validated['previous_presence_id'])) {
+                    // Delete current slides first
+                    $this->deleteExistingSlides($presence);
+                    // Copy from previous
+                    $this->copySlides($validated['previous_presence_id'], $presence->id);
+                }
+                break;
+
+            case 'new':
+                if ($request->hasFile('slide_images')) {
+                    // Delete current slides first
+                    $this->deleteExistingSlides($presence);
+                    // Upload new slides
+                    $this->uploadNewSlides($request->file('slide_images'), $presence);
+                }
+                break;
+
+            case 'none':
+                // Delete all existing slides
+                $this->deleteExistingSlides($presence);
+                break;
+        }
+    }
+
+    /**
+     * Copy slides from previous presence
+     */
+    private function copySlides($fromPresenceId, $toPresenceId)
+    {
+        $sourceSlides = PresenceSlide::where('presence_id', $fromPresenceId)->get();
+        
+        foreach ($sourceSlides as $sourceSlide) {
+            // Copy the actual file
+            $sourcePath = public_path('uploads/' . $sourceSlide->image_path);
+            if (file_exists($sourcePath)) {
+                $extension = pathinfo($sourceSlide->image_path, PATHINFO_EXTENSION);
+                $newFileName = 'slides/' . Str::random(40) . '.' . $extension;
+                $destinationPath = public_path('uploads/' . $newFileName);
+                
+                // Ensure slides directory exists
+                $slideDir = public_path('uploads/slides');
+                if (!file_exists($slideDir)) {
+                    mkdir($slideDir, 0755, true);
+                }
+                
+                if (copy($sourcePath, $destinationPath)) {
+                    // Create new slide record
+                    PresenceSlide::create([
+                        'presence_id' => $toPresenceId,
+                        'image_path' => $newFileName,
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Upload new slides
+     */
+    private function uploadNewSlides(array $files, Presence $presence)
+    {
+        foreach (array_slice($files, 0, 5) as $file) {
+            $path = $file->store("slides", 'public_uploads');
+            $presence->slides()->create(['image_path' => $path]);
+        }
+    }
+
+    /**
+     * Delete existing slides
+     */
+    private function deleteExistingSlides(Presence $presence)
+    {
+        foreach ($presence->slides as $slide) {
+            if ($slide->image_path && file_exists(public_path('uploads/' . $slide->image_path))) {
+                unlink(public_path('uploads/' . $slide->image_path));
+            }
+            $slide->delete();
+        }
+        
+        // Refresh the relationship
+        $presence->load('slides');
     }
 }
