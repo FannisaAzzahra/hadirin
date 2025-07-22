@@ -138,9 +138,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="link_ig" class="form-label fw-bold">Link Instagram</label>
-                        <input type="url" class="form-control" name="link_ig" id="link_ig" 
-                            placeholder="https://instagram.com/username" value="{{ old('link_ig') }}">
+                        <label for="link_ig" class="form-label fw-bold">Username Instagram</label>
+                        <input type="text" class="form-control" name="link_ig" id="link_ig" 
+                            placeholder="misal: fannisa.azzahra" value="{{ old('link_ig') }}">
                     </div>
 
                     @include('pages.presence.partials.slide-settings')

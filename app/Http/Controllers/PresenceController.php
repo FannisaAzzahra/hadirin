@@ -56,7 +56,7 @@ class PresenceController extends Controller
             'slide_images' => 'nullable|array|max:5',
             'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'link_ig'        => 'nullable|url',
+            'link_ig' => 'nullable|string|max:255',
         ]);
 
         $presence = new Presence();
@@ -79,7 +79,11 @@ class PresenceController extends Controller
             $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public_uploads');
         }
 
-        $presence->link_ig = $validated['link_ig'] ?? null;
+        // Tambahkan prefix instagram
+        $presence->link_ig = $validated['link_ig']
+            ? 'https://instagram.com/' . ltrim($validated['link_ig'], '@/')
+            : null;
+
         $presence->save();
 
         // Handle slide options
@@ -138,7 +142,7 @@ class PresenceController extends Controller
             'slide_images' => 'nullable|array|max:5',
             'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'link_ig'        => 'nullable|url',
+            'link_ig' => 'nullable|string|max:255',
         ]);
 
         $presence = Presence::findOrFail($id);
@@ -167,7 +171,11 @@ class PresenceController extends Controller
             $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public_uploads');
         }
 
-        $presence->link_ig = $validated['link_ig'] ?? null;
+        // Tambahkan prefix instagram
+        $presence->link_ig = $validated['link_ig']
+            ? 'https://instagram.com/' . ltrim($validated['link_ig'], '@/')
+            : null;
+
         $presence->save();
 
         // Handle slide options for update

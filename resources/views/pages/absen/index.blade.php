@@ -617,7 +617,10 @@
                   <div class="text-center mt-3">
                     <a href="{{ $presence->link_ig }}" target="_blank" class="instagram-link">
                       <img src="{{ asset('uploads/' . $presence->logo_ig) }}" height="50" alt="Instagram">
-                      <p class="mt-2 mb-0">{{ $presence->link_ig }}</p>
+                      @php
+                          $igUsername = str_replace('https://instagram.com/', '', $presence->link_ig);
+                      @endphp
+                      <p class="mt-2 mb-0">{{ '@' . $igUsername }}</p>
                     </a>
                   </div>
                 @endif
