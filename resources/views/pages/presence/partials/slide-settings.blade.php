@@ -1,5 +1,3 @@
-{{-- resources/views/pages/presence/partials/slide-settings.blade.php --}}
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
     * {
@@ -8,37 +6,41 @@
         box-sizing: border-box;
     }
 
+    /* Menyesuaikan lebar kontainer utama */
     .slide-settings-container {
         background: #ffffff;
-        border-radius: 16px;
-        padding: 32px;
-        max-width: 900px;
-        margin: 20px auto;
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        border-radius: 12px; /* Sedikit lebih besar */
+        padding: 30px; /* Lebih besar */
+        max-width: 800px; /* Diperlebar dari 700px */
+        margin: 20px auto; /* Margin disesuaikan */
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); /* Sedikit lebih jelas */
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     .slide-settings-header {
         display: flex;
         align-items: center;
-        margin-bottom: 32px;
-        gap: 16px;
+        margin-bottom: 25px; /* Lebih besar */
+        gap: 15px; /* Jarak antar elemen */
+        background-color: #e0f2f7;
+        border-radius: 12px;
+        padding: 15px 20px; /* Padding lebih besar */
     }
 
     .slide-settings-icon {
-        width: 56px;
-        height: 56px;
+        width: 48px; /* Lebih besar */
+        height: 48px; /* Lebih besar */
         background: linear-gradient(135deg, #4285f4, #34a853);
-        border-radius: 16px;
+        border-radius: 12px; /* Lebih besar */
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 24px;
+        font-size: 22px; /* Lebih besar */
     }
 
     .slide-settings-title {
-        font-size: 24px;
+        font-size: 20px; /* Lebih besar */
         font-weight: 600;
         color: #1a1a1a;
         margin: 0;
@@ -47,19 +49,110 @@
     .slide-options-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 32px;
+        gap: 15px; /* Lebih besar */
+        margin-bottom: 25px; /* Lebih besar */
+    }
+
+    .slide-options-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px; /* Lebih besar */
+        grid-column: 1 / -1;
+    }
+
+    /* Layout for create mode - make "Tanpa slide foto" fill the right column */
+    .slide-options-grid.create-mode {
+        grid-template-areas:
+            "keep previous"
+            "upload none";
+    }
+
+    .slide-options-grid.create-mode .slide-option-card[data-option="keep"] {
+        grid-area: keep;
+    }
+
+    .slide-options-grid.create-mode .slide-option-card[data-option="previous"] {
+        grid-area: previous;
+    }
+
+    .slide-options-grid.create-mode .slide-option-card[data-option="new"] {
+        grid-area: upload;
+    }
+
+    .slide-options-grid.create-mode .slide-option-card[data-option="none"] {
+        grid-area: none;
+    }
+
+    /* For edit mode with existing slides */
+    .slide-options-grid.edit-mode {
+        grid-template-areas:
+            "keep previous"
+            "upload none";
+    }
+
+    .slide-options-grid.edit-mode .slide-option-card[data-option="keep"] {
+        grid-area: keep;
+    }
+
+    .slide-options-grid.edit-mode .slide-option-card[data-option="previous"] {
+        grid-area: previous;
+    }
+
+    .slide-options-grid.edit-mode .slide-option-card[data-option="new"] {
+        grid-area: upload;
+    }
+
+    .slide-options-grid.edit-mode .slide-option-card[data-option="none"] {
+        grid-area: none;
+    }
+
+    /* For create mode without existing slides - make "none" take the right side */
+    .slide-options-grid.create-mode-no-keep {
+        grid-template-areas:
+            "previous none"
+            "upload upload";
+    }
+
+    .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="previous"] {
+        grid-area: previous;
+    }
+
+    .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="new"] {
+        grid-area: upload;
+    }
+
+    .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="none"] {
+        grid-area: none;
+    }
+
+    /* NEW: For edit mode without existing slides - same layout as create-mode-no-keep */
+    .slide-options-grid.edit-mode-no-keep {
+        grid-template-areas:
+            "previous none"
+            "upload upload";
+    }
+
+    .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="previous"] {
+        grid-area: previous;
+    }
+
+    .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="new"] {
+        grid-area: upload;
+    }
+
+    .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="none"] {
+        grid-area: none;
     }
 
     .slide-option-card {
         background: white;
-        border: 2px solid #e8eaed;
-        border-radius: 16px;
-        padding: 24px;
+        border: 1px solid #e8eaed;
+        border-radius: 12px; /* Lebih besar */
+        padding: 18px; /* Lebih besar */
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         position: relative;
-        min-height: 140px;
+        min-height: 120px; /* Lebih besar */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -67,51 +160,51 @@
 
     .slide-option-card:hover {
         border-color: #4285f4;
-        box-shadow: 0 4px 20px rgba(66, 133, 244, 0.15);
-        transform: translateY(-2px);
+        box-shadow: 0 2px 10px rgba(66, 133, 244, 0.1); /* Lebih jelas */
+        transform: translateY(-2px); /* Efek hover lebih terasa */
     }
 
     .slide-option-card.selected {
         border-color: #4285f4;
-        background: rgba(66, 133, 244, 0.06);
-        box-shadow: 0 4px 20px rgba(66, 133, 244, 0.2);
-        transform: translateY(-1px);
+        background: rgba(66, 133, 244, 0.05); /* Opasitas lebih besar */
+        box-shadow: 0 2px 10px rgba(66, 133, 244, 0.15); /* Lebih jelas */
+        transform: translateY(0);
     }
 
     .slide-option-content {
         display: flex;
         align-items: flex-start;
-        gap: 16px;
+        gap: 15px; /* Lebih besar */
     }
 
     .slide-option-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+        width: 44px; /* Lebih besar */
+        height: 44px; /* Lebih besar */
+        border-radius: 10px; /* Lebih besar */
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 20px; /* Lebih besar */
         flex-shrink: 0;
     }
 
     .slide-option-icon.previous {
-        background: rgba(66, 133, 244, 0.1);
+        background: rgba(66, 133, 244, 0.1); /* Opasitas lebih besar */
         color: #4285f4;
     }
 
     .slide-option-icon.upload {
-        background: rgba(156, 39, 176, 0.1);
+        background: rgba(156, 39, 176, 0.1); /* Opasitas lebih besar */
         color: #9c27b0;
     }
 
     .slide-option-icon.keep {
-        background: rgba(34, 168, 53, 0.1);
+        background: rgba(34, 168, 53, 0.1); /* Opasitas lebih besar */
         color: #22a835;
     }
 
     .slide-option-icon.none {
-        background: rgba(117, 117, 117, 0.1);
+        background: rgba(117, 117, 117, 0.1); /* Opasitas lebih besar */
         color: #757575;
     }
 
@@ -120,32 +213,32 @@
     }
 
     .slide-option-title {
-        font-size: 18px;
+        font-size: 18px; /* Lebih besar */
         font-weight: 600;
         color: #1a1a1a;
-        margin: 0 0 6px 0;
+        margin: 0 0 5px 0; /* Lebih besar */
     }
 
     .slide-option-description {
-        font-size: 15px;
+        font-size: 15px; /* Lebih besar */
         color: #70757a;
         margin: 0;
-        line-height: 1.4;
+        line-height: 1.5; /* Ketinggian baris lebih nyaman */
     }
 
     .slide-option-radio {
         position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 24px;
-        height: 24px;
-        border: 2px solid #dadce0;
+        top: 18px; /* Lebih besar */
+        right: 18px; /* Lebih besar */
+        width: 20px; /* Lebih besar */
+        height: 20px; /* Lebih besar */
+        border: 2px solid #dadce0; /* Ketebalan border */
         border-radius: 50%;
         background: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
     }
 
     .slide-option-card.selected .slide-option-radio {
@@ -155,8 +248,8 @@
 
     .slide-option-card.selected .slide-option-radio::after {
         content: '';
-        width: 10px;
-        height: 10px;
+        width: 8px; /* Lebih besar */
+        height: 8px; /* Lebih besar */
         background: white;
         border-radius: 50%;
     }
@@ -165,123 +258,136 @@
         display: none;
     }
 
-    .slide-option-bottom {
-        grid-column: 1 / -1;
+    /* Compact style for bottom row cards (disesuaikan dengan ukuran font keseluruhan) */
+    .slide-option-card.compact {
+        min-height: 90px; /* Lebih besar */
+        padding: 15px; /* Lebih besar */
     }
 
-    .slide-option-card.bottom {
-        min-height: auto;
-        padding: 20px 24px;
-    }
-
-    .slide-option-card.bottom .slide-option-content {
+    .slide-option-card.compact .slide-option-content {
         align-items: center;
+        gap: 12px; /* Lebih besar */
+    }
+
+    .slide-option-card.compact .slide-option-icon {
+        width: 38px; /* Lebih besar */
+        height: 38px; /* Lebih besar */
+        font-size: 18px; /* Lebih besar */
+    }
+
+    .slide-option-card.compact .slide-option-title {
+        font-size: 16px; /* Lebih besar */
+        margin-bottom: 3px; /* Lebih besar */
+    }
+
+    .slide-option-card.compact .slide-option-description {
+        font-size: 14px; /* Lebih besar */
     }
 
     .slide-content-section {
         background: #f8f9fa;
-        border-radius: 16px;
+        border-radius: 12px; /* Lebih besar */
         border: 1px solid #e8eaed;
-        padding: 24px;
+        padding: 20px; /* Lebih besar */
         display: none;
-        margin-top: 16px;
+        margin-top: 15px; /* Lebih besar */
     }
 
     .slide-content-section.active {
         display: block;
-        animation: fadeIn 0.3s ease;
+        animation: fadeIn 0.3s ease; /* Transisi sedikit lebih lambat */
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(10px); } /* Efek animasi lebih terasa */
         to { opacity: 1; transform: translateY(0); }
     }
 
     .section-title {
-        font-size: 18px;
+        font-size: 18px; /* Lebih besar */
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 20px;
+        margin-bottom: 15px; /* Lebih besar */
     }
 
     .previous-select {
         width: 100%;
-        padding: 16px;
-        border: 2px solid #dadce0;
-        border-radius: 12px;
+        padding: 12px; /* Lebih besar */
+        border: 1px solid #dadce0;
+        border-radius: 10px; /* Lebih besar */
         background: white;
-        font-size: 15px;
+        font-size: 14px; /* Lebih besar */
         color: #3c4043;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
     }
 
     .previous-select:focus {
         outline: none;
         border-color: #4285f4;
-        box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.1);
+        box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1); /* Lebih jelas */
     }
 
     .upload-area {
-        border: 2px dashed #dadce0;
-        border-radius: 16px;
-        padding: 40px 32px;
+        border: 2px dashed #dadce0; /* Ketebalan border */
+        border-radius: 12px; /* Lebih besar */
+        padding: 30px 25px; /* Lebih besar */
         text-align: center;
         background: white;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         cursor: pointer;
     }
 
     .upload-area:hover,
     .upload-area.dragover {
         border-color: #4285f4;
-        background: rgba(66, 133, 244, 0.04);
+        background: rgba(66, 133, 244, 0.02); /* Opasitas lebih besar */
     }
 
     .upload-icon {
-        width: 56px;
-        height: 56px;
-        margin: 0 auto 20px;
-        background: rgba(66, 133, 244, 0.1);
-        border-radius: 16px;
+        width: 48px; /* Lebih besar */
+        height: 48px; /* Lebih besar */
+        margin: 0 auto 15px; /* Lebih besar */
+        background: rgba(66, 133, 244, 0.1); /* Opasitas lebih besar */
+        border-radius: 12px; /* Lebih besar */
         display: flex;
         align-items: center;
         justify-content: center;
         color: #4285f4;
-        font-size: 24px;
+        font-size: 22px; /* Lebih besar */
     }
 
     .upload-title {
-        font-size: 18px;
+        font-size: 16px; /* Lebih besar */
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 8px;
+        margin-bottom: 8px; /* Lebih besar */
     }
 
     .upload-description {
-        font-size: 15px;
+        font-size: 13px; /* Lebih besar */
         color: #70757a;
-        margin-bottom: 20px;
-        line-height: 1.5;
+        margin-bottom: 15px; /* Lebih besar */
+        line-height: 1.4;
     }
 
     .upload-button {
         background: #4285f4;
         color: white;
         border: none;
-        padding: 12px 32px;
-        border-radius: 8px;
-        font-size: 15px;
+        padding: 10px 25px; /* Lebih besar */
+        border-radius: 6px; /* Lebih besar */
+        font-size: 14px; /* Lebih besar */
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 8px; /* Lebih besar */
     }
 
     .upload-button:hover {
         background: #3367d6;
-        transform: translateY(-1px);
+        transform: translateY(-1px); /* Efek hover lebih terasa */
     }
 
     .file-input {
@@ -289,28 +395,28 @@
     }
 
     .preview-section {
-        margin-top: 20px;
-        padding-top: 20px;
+        margin-top: 15px; /* Lebih besar */
+        padding-top: 15px; /* Lebih besar */
         border-top: 1px solid #e8eaed;
     }
 
     .preview-label {
-        font-size: 14px;
+        font-size: 15px; /* Lebih besar */
         color: #70757a;
-        margin-bottom: 16px;
+        margin-bottom: 12px; /* Lebih besar */
         font-weight: 500;
     }
 
     .preview-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Ukuran preview lebih besar */
+        gap: 12px; /* Lebih besar */
     }
 
     .preview-item {
         position: relative;
         aspect-ratio: 16/9;
-        border-radius: 12px;
+        border-radius: 10px; /* Lebih besar */
         overflow: hidden;
         border: 1px solid #e8eaed;
         background: #f8f9fa;
@@ -323,18 +429,37 @@
     }
 
     @media (max-width: 768px) {
-        .slide-options-grid {
+        .slide-options-grid,
+        .slide-options-grid.create-mode,
+        .slide-options-grid.edit-mode,
+        .slide-options-grid.create-mode-no-keep,
+        .slide-options-grid.edit-mode-no-keep {
             grid-template-columns: 1fr;
+            grid-template-areas: none;
         }
-        
+
         .slide-settings-container {
-            padding: 20px;
-            margin: 10px;
+            padding: 15px; /* Disesuaikan untuk mobile */
+            margin: 10px; /* Disesuaikan untuk mobile */
         }
-        
+
         .slide-option-card {
-            padding: 20px;
-            min-height: 120px;
+            padding: 15px;
+            min-height: 100px;
+        }
+
+        .slide-option-card.compact {
+            min-height: 80px;
+        }
+
+        .slide-settings-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        .slide-settings-title {
+            font-size: 18px;
         }
     }
 </style>
@@ -346,18 +471,31 @@
     <h3 class="slide-settings-title">Pengaturan Slide Foto</h3>
 </div>
 
-<div class="slide-options-grid">
-    @if(isset($isEdit) && $isEdit && isset($presence) && $presence->slides->count() > 0)
-    <!-- Option: Keep Current Slides (Only for Edit) -->
-    <div class="slide-option-card selected" data-option="keep" id="option-keep">
+@php
+    $hasExistingSlides = isset($isEdit) && $isEdit && isset($presence) && $presence->slides->count() > 0;
+    $isEditMode = isset($isEdit) && $isEdit;
+
+    if ($hasExistingSlides) {
+        $gridClass = 'edit-mode';
+    } elseif ($isEditMode) {
+        $gridClass = 'edit-mode-no-keep';
+    } else {
+        $gridClass = 'create-mode-no-keep';
+    }
+@endphp
+
+<div class="slide-options-grid {{ $gridClass }}">
+    @if($hasExistingSlides)
+    <!-- Option: Keep Current Slides (Only for Edit with existing slides) -->
+    <div class="slide-option-card compact selected" data-option="keep" id="option-keep">
         <input type="radio" name="slide_option" value="keep" id="slide_keep" checked>
         <div class="slide-option-content">
             <div class="slide-option-icon keep">
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="slide-option-text">
-                <h4 class="slide-option-title">Pertahankan slide saat ini</h4>
-                <p class="slide-option-description">{{ $presence->slides->count() }} foto tersimpan</p>
+                <h4 class="slide-option-title">Tetap gunakan slide saat ini</h4>
+                <p class="slide-option-description">{{ $presence->slides->count() }} foto akan tetap digunakan</p>
             </div>
         </div>
         <div class="slide-option-radio"></div>
@@ -365,8 +503,8 @@
     @endif
 
     <!-- Option 1: Use Previous Slides -->
-    <div class="slide-option-card {{ !isset($isEdit) || !$isEdit ? 'selected' : '' }}" data-option="previous" id="option-previous">
-        <input type="radio" name="slide_option" value="previous" id="slide_previous" {{ !isset($isEdit) || !$isEdit ? 'checked' : '' }}>
+    <div class="slide-option-card compact {{ !$hasExistingSlides ? 'selected' : '' }}" data-option="previous" id="option-previous">
+        <input type="radio" name="slide_option" value="previous" id="slide_previous" {{ !$hasExistingSlides ? 'checked' : '' }}>
         <div class="slide-option-content">
             <div class="slide-option-icon previous">
                 <i class="fas fa-history"></i>
@@ -380,7 +518,7 @@
     </div>
 
     <!-- Option 2: Upload New Slides -->
-    <div class="slide-option-card" data-option="new" id="option-new">
+    <div class="slide-option-card compact" data-option="new" id="option-new">
         <input type="radio" name="slide_option" value="new" id="slide_new">
         <div class="slide-option-content">
             <div class="slide-option-icon upload">
@@ -395,38 +533,36 @@
     </div>
 
     <!-- Option 3: No Slides -->
-    <div class="slide-option-bottom">
-        <div class="slide-option-card bottom" data-option="none" id="option-none">
-            <input type="radio" name="slide_option" value="none" id="slide_none">
-            <div class="slide-option-content">
-                <div class="slide-option-icon none">
-                    <i class="fas fa-ban"></i>
-                </div>
-                <div class="slide-option-text">
-                    <h4 class="slide-option-title">Tanpa slide foto</h4>
-                    <p class="slide-option-description">Tidak menggunakan slide</p>
-                </div>
+    <div class="slide-option-card compact" data-option="none" id="option-none">
+        <input type="radio" name="slide_option" value="none" id="slide_none">
+        <div class="slide-option-content">
+            <div class="slide-option-icon none">
+                <i class="fas fa-ban"></i>
             </div>
-            <div class="slide-option-radio"></div>
+            <div class="slide-option-text">
+                <h4 class="slide-option-title">Tanpa slide foto</h4>
+                <p class="slide-option-description">Tidak menggunakan slide</p>
+            </div>
         </div>
+        <div class="slide-option-radio"></div>
     </div>
 </div>
 
 <!-- Previous Slides Selection -->
-<div class="slide-content-section {{ !isset($isEdit) || !$isEdit ? 'active' : '' }}" id="previous-section">
+<div class="slide-content-section {{ !$hasExistingSlides ? 'active' : '' }}" id="previous-section">
     <h4 class="section-title">Pilih Kegiatan Sebelumnya</h4>
     <select class="previous-select" name="previous_presence_id" id="previous_presence_id">
         <option value="">-- Pilih Kegiatan --</option>
         @if(isset($previousSlides))
             @foreach($previousSlides as $prevSlide)
-                <option value="{{ $prevSlide->id }}" 
-                        data-slides='@json($prevSlide->slides->map(fn($slide) => ["image_path" => $slide->image_path]))'>
+                <option value="{{ $prevSlide->id }}"
+                                data-slides='@json($prevSlide->slides->map(fn($slide) => ["image_path" => $slide->image_path]))'>
                     {{ $prevSlide->nama_kegiatan }} ({{ date('d/m/Y', strtotime($prevSlide->tgl_kegiatan)) }}) - {{ $prevSlide->slides->count() }} foto
                 </option>
             @endforeach
         @endif
     </select>
-    
+
     <div class="preview-section" id="previous-preview" style="display: none;">
         <div class="preview-label">Preview slide yang akan digunakan:</div>
         <div class="preview-grid" id="previous-preview-grid"></div>
@@ -448,7 +584,7 @@
         </button>
     </div>
     <input type="file" class="file-input" name="slide_images[]" id="slide_images" multiple accept="image/*" max="5">
-    
+
     <div class="preview-section" id="upload-preview" style="display: none;">
         <div class="preview-label">Preview gambar yang akan diupload:</div>
         <div class="preview-grid" id="upload-preview-grid"></div>
@@ -460,17 +596,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const slideOptions = document.querySelectorAll('.slide-option-card');
     const radioInputs = document.querySelectorAll('input[name="slide_option"]');
     const contentSections = document.querySelectorAll('.slide-content-section');
-    
+
     // Initialize
     updateSelectedOption();
     showContentSection(getSelectedOption());
-    
+
     // Handle option card clicks
     slideOptions.forEach(card => {
         card.addEventListener('click', function() {
             const option = this.dataset.option;
             const radio = document.getElementById(`slide_${option}`);
-            
+
             if (radio) {
                 radio.checked = true;
                 updateSelectedOption();
@@ -478,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Handle radio button changes
     radioInputs.forEach(radio => {
         radio.addEventListener('change', function() {
@@ -488,127 +624,132 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     function getSelectedOption() {
         return document.querySelector('input[name="slide_option"]:checked')?.value || 'none';
     }
-    
+
     function updateSelectedOption() {
         const selectedValue = getSelectedOption();
-        
+
         slideOptions.forEach(card => {
             card.classList.toggle('selected', card.dataset.option === selectedValue);
         });
     }
-    
+
     function showContentSection(option) {
         contentSections.forEach(section => {
             section.classList.remove('active');
         });
-        
+
         if (option === 'previous') {
             document.getElementById('previous-section')?.classList.add('active');
         } else if (option === 'new') {
             document.getElementById('upload-section')?.classList.add('active');
         }
     }
-    
+
     // File upload handling
     const fileInput = document.getElementById('slide_images');
     const uploadArea = document.querySelector('.upload-area');
     const uploadPreview = document.getElementById('upload-preview');
     const uploadPreviewGrid = document.getElementById('upload-preview-grid');
-    
+
     if (fileInput && uploadArea) {
         // Drag and drop events
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
         });
-        
+
         ['dragenter', 'dragover'].forEach(eventName => {
             uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
         });
-        
+
         ['dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
         });
-        
+
         uploadArea.addEventListener('drop', e => {
             const files = e.dataTransfer.files;
             handleFiles(files);
         }, false);
-        
+
+        uploadArea.addEventListener('click', () => { // Ensure click also triggers file input
+            fileInput.click();
+        });
+
         fileInput.addEventListener('change', e => {
             handleFiles(e.target.files);
         });
     }
-    
+
     function handleFiles(files) {
         if (!files || files.length === 0) {
             uploadPreview.style.display = 'none';
+            document.querySelector('.upload-button').innerHTML = `<i class="fas fa-plus"></i> Choose Files`;
             return;
         }
-        
+
         const fileList = Array.from(files).slice(0, 5);
         uploadPreviewGrid.innerHTML = '';
-        
+
         const uploadButton = document.querySelector('.upload-button');
         if (uploadButton) {
             uploadButton.innerHTML = `<i class="fas fa-check"></i>${fileList.length} file${fileList.length > 1 ? 's' : ''} dipilih`;
         }
-        
+
         fileList.forEach(file => {
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const previewItem = document.createElement('div');
                     previewItem.className = 'preview-item';
-                    
+
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     img.className = 'preview-image';
                     img.alt = file.name;
-                    
+
                     previewItem.appendChild(img);
                     uploadPreviewGrid.appendChild(previewItem);
                 };
                 reader.readAsDataURL(file);
             }
         });
-        
+
         uploadPreview.style.display = 'block';
     }
-    
+
     // Previous slides selection handling
     const previousSelect = document.getElementById('previous_presence_id');
     const previousPreview = document.getElementById('previous-preview');
     const previousPreviewGrid = document.getElementById('previous-preview-grid');
-    
+
     if (previousSelect) {
         previousSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const slidesData = selectedOption.getAttribute('data-slides');
-            
+
             previousPreviewGrid.innerHTML = '';
-            
+
             if (slidesData && slidesData !== '[]' && this.value) {
                 try {
                     const slides = JSON.parse(slidesData);
-                    
+
                     slides.forEach((slide, index) => {
                         const previewItem = document.createElement('div');
                         previewItem.className = 'preview-item';
-                        
+
                         const img = document.createElement('img');
                         // Use actual image path from uploads directory
                         img.src = `/uploads/${slide.image_path}`;
                         img.className = 'preview-image';
                         img.alt = 'Slide preview';
-                        
+
                         previewItem.appendChild(img);
                         previousPreviewGrid.appendChild(previewItem);
                     });
-                    
+
                     previousPreview.style.display = 'block';
                 } catch (error) {
                     console.error('Error parsing slides data:', error);
@@ -619,12 +760,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Initial check for previous slides section visibility on page load if 'previous' is selected
+    const initialSelectedOption = getSelectedOption();
+    if (initialSelectedOption === 'previous' && previousSelect && previousSelect.value) {
+        const event = new Event('change');
+        previousSelect.dispatchEvent(event);
+    }
 });
 
 // Validation function
 function validateSlideSettings() {
     const selectedOption = document.querySelector('input[name="slide_option"]:checked')?.value;
-    
+
     if (selectedOption === 'previous') {
         const previousSelect = document.getElementById('previous_presence_id');
         if (!previousSelect || !previousSelect.value) {
@@ -638,7 +786,7 @@ function validateSlideSettings() {
             return false;
         }
     }
-    
+
     return true;
 }
 </script>
