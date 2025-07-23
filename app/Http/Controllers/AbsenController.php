@@ -32,45 +32,39 @@ class AbsenController extends Controller
     public function save(Request $request, string $id)
     {
         $presence = Presence::findOrFail($id);
+        
         $request->validate([
-            'nama'     => 'required|string',
-            'nip'      => 'nullable|string',
-            'email'    => 'nullable|email',
-            'jabatan'  => 'nullable|string',
-            'unit'     => 'required|in:PLN,PLN Group,Non PLN',
-            'no_hp'    => 'required|string',
+            'nama'      => 'required|string',
+            'nip'       => 'required|string',
+            'email'     => 'required|email',
+            'jabatan'   => 'required|string',
+            'unit'      => 'required|in:PLN,PLN Group,Non PLN',
+            'no_hp'     => 'required|string',
             'signature' => 'required',
-
         ]);
 
-        // mengambil data presence nya berdasarkan id
+        // Mengambil data presence nya berdasarkan id
         $presenceDetail = new PresenceDetail();
         $presenceDetail->presence_id = $presence->id;
         $presenceDetail->nama = $request->nama;
         $presenceDetail->unit = $request->unit;
         $presenceDetail->no_hp = $request->no_hp;
 
-        if ($request->unit === 'Non PLN') {
-            $presenceDetail->nip = '-';
-            $presenceDetail->email = '-';
-            $presenceDetail->jabatan = '-';
-        } else {
-            $presenceDetail->nip = $request->nip;
-            $presenceDetail->email = $request->email;
-            $presenceDetail->jabatan = $request->jabatan;
-        }
+        // Semua field diisi dari input, tidak ada yang dikosongkan
+        $presenceDetail->nip = $request->nip;
+        $presenceDetail->email = $request->email;
+        $presenceDetail->jabatan = $request->jabatan;
 
-
-        // decode base64 image
+        // Decode base64 image
         $base64_image = $request->signature;
         @list($type, $file_data) = explode(';', $base64_image);
         @list(, $file_data) = explode(',', $file_data);
 
-        // generate nama file
+        // Generate nama file
         $uniqChar = date('YmdHis').uniqid();
         $signature = "tanda-tangan/{$uniqChar}.png";
 
-        // simpan gambar ke public storage
+        // Simpan gambar ke public storage
         Storage::disk('public_uploads')->put($signature, base64_decode($file_data));
 
         $presenceDetail->signature = $signature;
@@ -78,5 +72,4 @@ class AbsenController extends Controller
 
         return redirect()->back();
     }
-
 }

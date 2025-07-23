@@ -339,15 +339,6 @@
             cursor: not-allowed;
         }
 
-        input:disabled,
-        select:disabled,
-        textarea:disabled {
-            background-color: #bcbcbc !important;
-            color: #5a5a5a !important;
-            cursor: not-allowed;
-            opacity: 1 !important;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .header-logos {
@@ -479,10 +470,10 @@
                 <div class="mb-3">
                   <label for="unit" class="form-label">Unit/Nama Perusahaan</label>
                   <select name="unit" id="unit" class="form-select" required>
-                    <option value="">-- Pilih Kategori Peserta --</option>
-                    <option value="PLN">PLN</option>
-                    <option value="PLN Group">PLN Group</option>
-                    <option value="Non PLN">Non PLN</option>
+                      <option value="">-- Pilih Kategori Peserta --</option>
+                      <option value="PLN">PLN</option>
+                      <option value="PLN Group">PLN Group</option>
+                      <option value="Non PLN">Non PLN</option>
                   </select>
                     @error('unit')
                         <div class="text-danger">{{ $message }}</div>
@@ -511,7 +502,6 @@
                 <div class="mb-3">
                   <label for="nip" class="form-label">NIP</label>
                   <input type="text" class="form-control" id="nip" name="nip" placeholder="Masukkan NIP">
-                  <small id="nip-helper" class="text-muted d-none">Tidak perlu diisi untuk Non PLN</small>
                     @error('nip')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -521,7 +511,6 @@
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
                   <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email">
-                  <small id="email-helper" class="text-muted d-none">Tidak perlu diisi untuk Non PLN</small>
                     @error('email')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -531,7 +520,6 @@
                 <div class="mb-3">
                   <label for="jabatan" class="form-label">Jabatan</label>
                   <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Masukkan jabatan">
-                  <small id="jabatan-helper" class="text-muted d-none">Tidak perlu diisi untuk Non PLN</small>
                     @error('jabatan')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -671,68 +659,44 @@
 
         // fill signature to textarea
         $('canvas').on('mouseup touchend', function() {
-          $('#signature64').val(signaturePad.toDataURL());
+            $('#signature64').val(signaturePad.toDataURL());
         });
 
         // clear signature
         $('#clear').on('click', function(e) {
-          e.preventDefault();
-          signaturePad.clear();
-          $('#signature64').val('');
+            e.preventDefault();
+            signaturePad.clear();
+            $('#signature64').val('');
         });
 
         // submit form
         $('#form-absen').on('submit', function() {
-          $(this).find('button[type="submit"]').attr('disabled', 'disabled');
+            $(this).find('button[type="submit"]').attr('disabled', 'disabled');
         });
 
-            // --- Unit Change Logic (PLN vs Non PLN) ---
-        function toggleNonPlnFields() {
-          let unit = $('#unit').val();
-          if (unit === 'Non PLN') {
-            $('#nip').val('').prop('disabled', true);
-            $('#email').val('').prop('disabled', true);
-            $('#jabatan').val('').prop('disabled', true);
-            $('#nip-helper').removeClass('d-none');
-            $('#email-helper').removeClass('d-none');
-            $('#jabatan-helper').removeClass('d-none');
-          } else {
-            $('#nip').prop('disabled', false);
-            $('#email').prop('disabled', false);
-            $('#jabatan').prop('disabled', false);
-            $('#nip-helper').addClass('d-none');
-            $('#email-helper').addClass('d-none');
-            $('#jabatan-helper').addClass('d-none');
-          }
-        }
-
+        // Logika untuk PLN - autofill data anggota
         function toggleNamaField() {
-          let unit = $('#unit').val();
-          if (unit === 'PLN') {
-            $('#nama').addClass('d-none').prop('disabled', true);
-            $('#nama-pln').removeClass('d-none').prop('disabled', false);
-            $('#nama-helper').removeClass('d-none');
-          } else {
-            $('#nama').removeClass('d-none').prop('disabled', false);
-            $('#nama-pln').addClass('d-none').prop('disabled', true);
-            $('#nama-helper').addClass('d-none');
-          }
+            let unit = $('#unit').val();
+            if (unit === 'PLN') {
+                $('#nama').addClass('d-none').prop('disabled', true);
+                $('#nama-pln').removeClass('d-none').prop('disabled', false);
+                $('#nama-helper').removeClass('d-none');
+            } else {
+                $('#nama').removeClass('d-none').prop('disabled', false);
+                $('#nama-pln').addClass('d-none').prop('disabled', true);
+                $('#nama-helper').addClass('d-none');
+            }
         }
 
-        toggleNonPlnFields();
         toggleNamaField();
+        $('#unit').on('change', toggleNamaField);
 
-        $('#unit').on('change', function() {
-          toggleNonPlnFields();
-          toggleNamaField();
-        });
-
-            // Autofill NIP dan Email saat pilih nama anggota PLN
+        // Autofill NIP dan Email saat pilih nama anggota PLN
         $('#nama-pln').on('change', function() {
-          let nip = $(this).find(':selected').data('nip') || '';
-          let email = $(this).find(':selected').data('email') || '';
-          $('#nip').val(nip);
-          $('#email').val(email);
+            let nip = $(this).find(':selected').data('nip') || '';
+            let email = $(this).find(':selected').data('email') || '';
+            $('#nip').val(nip);
+            $('#email').val(email);
         });
       });
     </script>

@@ -394,7 +394,7 @@
                             {{ $detail->unit }} / <br>
                             <span style="font-size:11px;">  {{ $detail->jabatan ?? '-' }}</span>
                         </td>
-                        <td class="text-center">{{ $detail->email ?? '-' }} / {{ $detail->no_hp }}</td>
+                        <td class="text-center">{{ $detail->email ?? '-' }} / <br> {{ $detail->no_hp }}</td>
                         <td class="text-center">
                             @if ($detail->signature)
                                 @php
