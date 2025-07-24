@@ -1,26 +1,27 @@
 <x-mail::message>
-{{-- Greeting --}}
+{{-- Salam Pembuka --}}
 @if (! empty($greeting))
 # {{ $greeting }}
 @else
 @if ($level === 'error')
-# @lang('Whoops!')
+# Mohon Maaf!
 @else
-# @lang('Hello!')
+# Halo!
 @endif
 @endif
 
-{{-- Intro Lines --}}
+{{-- Kalimat Pembuka --}}
 @foreach ($introLines as $line)
 {{ $line }}
 
 @endforeach
 
-{{-- Action Button --}}
+{{-- Tombol Aksi --}}
 @isset($actionText)
 <?php
     $color = match ($level) {
-        'success', 'error' => $level,
+        'success' => 'success',
+        'error' => 'error', 
         default => 'primary',
     };
 ?>
@@ -29,30 +30,26 @@
 </x-mail::button>
 @endisset
 
-{{-- Outro Lines --}}
+{{-- Kalimat Penutup --}}
 @foreach ($outroLines as $line)
 {{ $line }}
 
 @endforeach
 
-{{-- Salutation --}}
+{{-- Salam Penutup --}}
 @if (! empty($salutation))
 {{ $salutation }}
 @else
-@lang('Regards,')<br>
-{{ config('app.name') }}
+Hormat kami,<br>
+Tim {{ config('app.name') }}
 @endif
 
-{{-- Subcopy --}}
+{{-- Teks Tambahan --}}
 @isset($actionText)
 <x-slot:subcopy>
-@lang(
-    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
-    'into your web browser:',
-    [
-        'actionText' => $actionText,
-    ]
-) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
+Jika Anda mengalami kesulitan dalam mengklik tombol "{{ $actionText }}", silakan salin dan tempelkan 
+tautan berikut ini ke dalam browser web Anda:
+<span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
 </x-slot:subcopy>
 @endisset
 </x-mail::message>
