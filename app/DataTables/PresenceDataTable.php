@@ -9,16 +9,26 @@ use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
+use Carbon\Carbon; // Pastikan ini ada
 
 class PresenceDataTable extends DataTable
 {
+    // HAPUS CONSTRUCTOR INI:
+    // protected $startDate;
+    // protected $endDate;
+    // public function __construct($startDate = null, $endDate = null)
+    // {
+    //     $this->startDate = $startDate;
+    //     $this->endDate = $endDate;
+    // }
+
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        \Carbon\Carbon::setLocale('id');
+        Carbon::setLocale('id');
 
         return (new EloquentDataTable($query))
-            ->addColumn('tgl', fn($query) => \Carbon\Carbon::parse($query->tgl_kegiatan)->translatedFormat('d F Y'))
-            ->addColumn('waktu_mulai', fn($query) => \Carbon\Carbon::parse($query->tgl_kegiatan)->translatedFormat('H:i') . ' WIB')
+            ->addColumn('tgl', fn($query) => Carbon::parse($query->tgl_kegiatan)->translatedFormat('d F Y'))
+            ->addColumn('waktu_mulai', fn($query) => Carbon::parse($query->tgl_kegiatan)->translatedFormat('H:i') . ' WIB')
             ->addColumn('lokasi', fn($query) => $query->lokasi)
             ->addColumn('link_lokasi', function($query) {
                 return $query->link_lokasi
@@ -50,7 +60,20 @@ class PresenceDataTable extends DataTable
      */
     public function query(Presence $model): QueryBuilder
     {
-        return $model->newQuery();
+        $query = $model->newQuery();
+
+        // Properti $this->startDate dan $this->endDate akan otomatis terisi
+        // karena Anda meneruskannya via $dataTable->with() di controller.
+        if ($this->startDate && $this->endDate) {
+            $start = Carbon::parse($this->startDate)->startOfDay();
+            $end = Carbon::parse($this->endDate)->endOfDay();
+            $query->whereBetween('tgl_kegiatan', [$start, $end]);
+        }
+
+        // Hapus dd() ini setelah mencoba dan memastikan berfungsi
+        // dd($query->toSql(), $query->getBindings());
+
+        return $query;
     }
 
     /**
@@ -112,7 +135,6 @@ class PresenceDataTable extends DataTable
                 ->addClass('text-center'),
         ];
     }
-
 
     /**
      * Get the filename for export.

@@ -7,7 +7,7 @@ use App\DataTables\PresenceDetailsDataTable;
 use App\Models\Presence;
 use App\Models\PresenceDetail;
 use App\Models\PresenceSlide;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Pastikan ini sudah ada
 use Illuminate\Support\Str;
 
 class PresenceController extends Controller
@@ -15,9 +15,18 @@ class PresenceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(PresenceDataTable $dataTable)
+    public function index(PresenceDataTable $dataTable, Request $request) // Tambahkan Request $request
     {
-        return $dataTable->render('pages.presence.index');
+
+        // Ambil tanggal dari request, jika ada
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Lewatkan tanggal ke DataTables
+        return $dataTable->with([
+            'startDate' => $startDate,
+            'endDate' => $endDate
+        ])->render('pages.presence.index'); // Sesuaikan dengan nama view Anda
     }
 
     /**
