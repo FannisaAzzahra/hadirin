@@ -1,0 +1,92 @@
+// ============================================
+// CUSTOM EMAIL RESET PASSWORD LARAVEL (BAHASA INDONESIA)
+// ============================================
+
+// LANGKAH 1: Publish view notifikasi bawaan Laravel
+// Tujuan: Untuk mengubah desain dan teks email (misalnya ubah bahasa, warna tombol, dsb)
+
+php artisan vendor:publish --tag=laravel-notifications
+
+// → File yang perlu diubah:
+// resources/views/vendor/notifications/email.blade.php
+// Contoh: ubah "Hello!" menjadi "Halo!" dan "Regards, The Hadirin Team" menjadi "Hormat kami, Tim Hadirin"
+
+// Namun, ada masalah:
+// Sebagian teks masih berbahasa Inggris seperti:
+// - "You are receiving this email because we received a password reset request for your account."
+// - "This password reset link will expire in 60 minutes."
+
+// Penyebab:
+// Teks tersebut tidak ditulis langsung di email.blade.php, tetapi diambil dari file terjemahan Laravel
+// atau berasal dari class notifikasi Laravel yang dikirim sebagai variabel.
+
+// ============================================
+// LANGKAH 2: Ubah File Bahasa (Localization)
+// ============================================
+
+// Jalankan:
+php artisan lang:publish
+
+// Tujuan: Menyalin seluruh file bahasa Laravel ke folder resources/lang
+
+// Langkah:
+// 1. Buka file: resources/lang/en/passwords.php
+// 2. Buat folder baru: resources/lang/id/ (jika belum ada)
+// 3. Salin file passwords.php ke: resources/lang/id/passwords.php
+// 4. Edit file config/app.php, ubah:
+//    'locale' => 'en',
+//    menjadi:
+//    'locale' => 'id',
+
+// Masalah:
+// Meskipun sudah diubah, bagian email seperti "You are receiving this email..." tetap berbahasa Inggris.
+
+// Penyebab:
+// String tersebut tidak diambil dari passwords.php, tetapi berasal dari class notifikasi bawaan Laravel.
+
+// ============================================
+// SOLUSI: Buat Notifikasi Kustom
+// ============================================
+
+// Tujuan: Agar seluruh isi email bisa dikendalikan sendiri
+
+// Jalankan perintah:
+php artisan make:notification ResetPasswordNotification
+
+// Di dalam file app/Notifications/ResetPasswordNotification.php
+// ubah method toMail sesuai kebutuhan (dalam Bahasa Indonesia)
+
+// Contoh:
+public function toMail($notifiable)
+{
+    $url = url(route('password.reset', ['token' => $this->token, 'email' => $notifiable->getEmailForPasswordReset()], false));
+
+    return (new MailMessage)
+        ->subject('Permintaan Reset Kata Sandi')
+        ->greeting('Halo!')
+        ->line('Kami menerima permintaan untuk mereset kata sandi akun Anda.')
+        ->action('Reset Kata Sandi', $url)
+        ->line('Link ini akan kedaluwarsa dalam 60 menit.')
+        ->line('Jika Anda tidak meminta reset kata sandi, abaikan email ini.')
+        ->salutation('Hormat kami, Tim Hadirin');
+}
+
+// Setelah itu, buka model User (app/Models/User.php atau App\User.php tergantung versi)
+// Tambahkan method berikut:
+
+public function sendPasswordResetNotification($token)
+{
+    $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+}
+
+// ============================================
+// LANGKAH AKHIR: Bersihkan Cache
+// ============================================
+
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+
+// ============================================
+// Selesai! Sekarang email reset password akan tampil penuh dalam Bahasa Indonesia
+// ============================================
