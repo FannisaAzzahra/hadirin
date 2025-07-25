@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hadirin - Authentication</title>
+    <title>Hadirin - Autentikasi</title> {{-- Judul diubah ke Bahasa Indonesia --}}
 
     {{-- CSRF TOKEN --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -402,6 +402,7 @@
       .invalid-feedback {
         font-size: 0.85rem;
         margin-top: 0.25rem;
+        color: #dc3545; /* Pastikan warna merah untuk error */
       }
 
       .is-invalid {
@@ -478,15 +479,16 @@
                     <div class="logo-container">
                         <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" class="logo-image">
                     </div>
+                    {{-- Ganti teks ini jika Anda ingin dinamis, atau biarkan statis "Hadirin" --}}
                     <h2 class="mb-0" id="form-title">Hadirin</h2>
                 </div>
                 
                 <div class="hadirin-toggle-container">
                     <button type="button" class="hadirin-toggle-btn active" id="login-tab" onclick="switchToLogin()">
-                        <i class="fas fa-sign-in-alt"></i>Login
+                        <i class="fas fa-sign-in-alt"></i>Masuk {{-- Teks tombol Login --}}
                     </button>
                     <button type="button" class="hadirin-toggle-btn" id="register-tab" onclick="switchToRegister()">
-                        <i class="fas fa-user-plus"></i>Register
+                        <i class="fas fa-user-plus"></i>Daftar {{-- Teks tombol Register --}}
                     </button>
                     <div class="hadirin-toggle-slider" id="toggle-slider"></div>
                 </div>
@@ -498,8 +500,8 @@
                         @csrf
 
                         <div class="form-group">
-                            <label for="login-email" class="hadirin-label">Email Address</label>
-                            <input id="login-email" type="email" class="hadirin-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Enter your email">
+                            <label for="login-email" class="hadirin-label">Alamat Email</label> {{-- Label Email --}}
+                            <input id="login-email" type="email" class="hadirin-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Masukkan alamat email Anda"> {{-- Placeholder Login Email --}}
                             @error('email')
                                 <div class="invalid-feedback">
                                     <strong>{{ $message }}</strong>
@@ -508,8 +510,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="login-password" class="hadirin-label">Password</label>
-                            <input id="login-password" type="password" class="hadirin-input @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                            <label for="login-password" class="hadirin-label">Kata Sandi</label> {{-- Label Password --}}
+                            <input id="login-password" type="password" class="hadirin-input @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Masukkan kata sandi Anda"> {{-- Placeholder Login Password --}}
                             @error('password')
                                 <div class="invalid-feedback">
                                     <strong>{{ $message }}</strong>
@@ -520,19 +522,19 @@
                         <div class="hadirin-checkbox">
                             <input class="hadirin-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                             <label class="hadirin-check-label" for="remember">
-                                Remember Me
+                                Ingat Saya {{-- Label Remember Me --}}
                             </label>
                         </div>
 
                         <div class="form-group mt-4">
                             <button type="submit" class="hadirin-btn-primary">
                                 <i class="fas fa-sign-in-alt"></i>
-                                Login
+                                Masuk {{-- Teks tombol Login --}}
                             </button>
                             
                             @if (Route::has('password.request'))
                                 <a class="hadirin-forgot-link" href="{{ route('password.request') }}">
-                                    Forgot Your Password?
+                                    Lupa Kata Sandi? {{-- Teks link Lupa Kata Sandi --}}
                                 </a>
                             @endif
                         </div>
@@ -546,8 +548,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="register-name" class="hadirin-label">Full Name</label>
-                                    <input id="register-name" type="text" class="hadirin-input @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" placeholder="Enter your full name">
+                                    <label for="register-name" class="hadirin-label">Nama Lengkap</label> {{-- Label Nama Lengkap --}}
+                                    <input id="register-name" type="text" class="hadirin-input @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" placeholder="Masukkan nama lengkap Anda"> {{-- Placeholder Nama Lengkap --}}
                                     @error('name')
                                         <div class="invalid-feedback">
                                             <strong>{{ $message }}</strong>
@@ -557,8 +559,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="register-email" class="hadirin-label">Email Address</label>
-                                    <input id="register-email" type="email" class="hadirin-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Enter your email">
+                                    <label for="register-email" class="hadirin-label">Alamat Email</label> {{-- Label Email Register --}}
+                                    <input id="register-email" type="email" class="hadirin-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Masukkan alamat email Anda"> {{-- Placeholder Register Email --}}
                                     @error('email')
                                         <div class="invalid-feedback">
                                             <strong>{{ $message }}</strong>
@@ -571,8 +573,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="register-password" class="hadirin-label">Password</label>
-                                    <input id="register-password" type="password" class="hadirin-input @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="Create a password">
+                                    <label for="register-password" class="hadirin-label">Kata Sandi</label> {{-- Label Kata Sandi Register --}}
+                                    <input id="register-password" type="password" class="hadirin-input @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="Buat kata sandi"> {{-- Placeholder Buat Kata Sandi --}}
                                     @error('password')
                                         <div class="invalid-feedback">
                                             <strong>{{ $message }}</strong>
@@ -582,8 +584,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="register-password-confirm" class="hadirin-label">Confirm Password</label>
-                                    <input id="register-password-confirm" type="password" class="hadirin-input" name="password_confirmation" required autocomplete="new-password" placeholder="Confirm your password">
+                                    <label for="register-password-confirm" class="hadirin-label">Konfirmasi Kata Sandi</label> {{-- Label Konfirmasi Kata Sandi --}}
+                                    <input id="register-password-confirm" type="password" class="hadirin-input" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi kata sandi Anda"> {{-- Placeholder Konfirmasi Kata Sandi --}}
                                 </div>
                             </div>
                         </div>
@@ -591,7 +593,7 @@
                         <div class="form-group mt-4">
                             <button type="submit" class="hadirin-btn-primary">
                                 <i class="fas fa-user-plus"></i>
-                                Register
+                                Daftar {{-- Teks tombol Register --}}
                             </button>
                         </div>
                     </form>
