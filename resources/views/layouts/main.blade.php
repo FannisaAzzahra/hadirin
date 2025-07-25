@@ -14,6 +14,8 @@
     {{-- DATATABLES BOOTSTRAP5 --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
       /* Custom PLN-inspired navbar styling */
       .navbar-pln {
