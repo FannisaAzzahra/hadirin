@@ -234,7 +234,7 @@
 
         // Real-time Notifications
         function fetchNotifications() {
-            fetch('/notifications')
+            fetch('/api/notifications')
                 .then(response => response.json())
                 .then(data => {
                     let notificationsDiv = document.getElementById('notifications');
@@ -663,6 +663,12 @@
     }
 
     /* Custom styles for Notification and Calendar cards */
+
+    .pln-notification-card .card-body {
+        display: flex;
+        flex-direction: column;
+    }
+
     .pln-notification-card,
     .pln-calendar-card {
         border: none;
@@ -692,7 +698,7 @@
     }
 
     .notification-list {
-        max-height: 300px; /* Batasi tinggi untuk scroll */
+        flex-grow: 1; /* Biarkan elemen ini mengisi sisa ruang yang tersedia */
         overflow-y: auto; /* Aktifkan scrollbar jika konten melebihi tinggi */
         padding-right: 10px; /* Beri ruang untuk scrollbar */
     }

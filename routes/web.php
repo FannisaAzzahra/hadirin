@@ -15,8 +15,11 @@ Route::get('/', function () {
 //Admin
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/notifications', [App\Http\Controllers\HomeController::class, 'notifications']);
-Route::get('/calendar-data', [HomeController::class, 'calendarData'])->name('calendar.data');
+
+    // PERBAIKAN: Ubah rute notifikasi menjadi API endpoint
+    Route::get('/api/notifications', [App\Http\Controllers\HomeController::class, 'notifications'])->name('api.notifications'); // Tambahkan nama rute jika diperlukan
+    
+    Route::get('/calendar-data', [HomeController::class, 'calendarData'])->name('calendar.data');
     Route::resource('presence', PresenceController::class);
     Route::delete('presence-detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence-detail.destroy');
     Route::get('presence-detail/export-pdf/{id}', [PresenceDetailController::class, 'exportPdf'])->name('presence-detail.export-pdf');
@@ -32,8 +35,6 @@ Route::get('/calendar-data', [HomeController::class, 'calendarData'])->name('cal
 //Publik
 Route::get('absen/{slug}', [AbsenController::class, 'index'])->name('absen.index');
 Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.save');
-
-
 
 
 Auth::routes();
