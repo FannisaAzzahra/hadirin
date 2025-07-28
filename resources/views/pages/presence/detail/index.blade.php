@@ -11,7 +11,8 @@
                         </h4>
                     </div>
                     <div class="col text-end">
-                        <button type="button" onclick="copyLink()" class="btn btn-warning">
+                        {{-- Memanggil fungsi copyLink dengan slug kegiatan --}}
+                        <button type="button" onclick="copyLink('{{ $presence->slug }}')" class="btn btn-warning">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-fill" viewBox="0 0 16 16">
                                 <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
                                 <path d="M3.5 1h.585A1.5 1.5 0 0 0 4 1.5V2a1.5 1.5 0 0 0 1.5 1.5h5A1.5 1.5 0 0 0 12 2v-.5q-.001-.264-.085-.5h.585A1.5 1.5 0 0 1 14 2.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-12A1.5 1.5 0 0 1 3.5 1"/>
@@ -27,7 +28,7 @@
                         </a>
                         <a href="{{ route('presence-detail.export-excel', $presence->id) }}" class="btn btn-success">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-excel-fill" viewBox="0 0 16 16">
-                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64"/>
+                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.64"/>
                             </svg>
                             Export to Excel
                         </a>
@@ -84,6 +85,26 @@
                 </div>
                 <div class="table-responsive">
                     {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover nowrap'], true) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Custom Modal for Copy Link Confirmation --}}
+    <div class="modal fade" id="copySuccessModal" tabindex="-1" aria-labelledby="copySuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content pln-modal-content">
+                <div class="modal-header pln-modal-header-success">
+                    <h5 class="modal-title" id="copySuccessModalLabel">Link Berhasil Disalin!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pln-modal-body text-center">
+                    <i class="fas fa-check-circle text-success mb-3" style="font-size: 3rem; color: #28a745;"></i>
+                    <p>Link presensi kegiatan telah berhasil disalin ke clipboard Anda.</p>
+                    <p class="text-muted small">Anda bisa membagikannya sekarang.</p>
+                </div>
+                <div class="modal-footer pln-modal-footer">
+                    <button type="button" class="btn pln-btn-secondary-modal" data-bs-dismiss="modal">Oke</button>
                 </div>
             </div>
         </div>
@@ -196,15 +217,40 @@
     </style>
 
     <script>
-        function copyLink() {
-            navigator.clipboard.writeText("{{ route('absen.index', $presence->slug) }}")
-            alert('Link berhasil dicopy ke clipboard!');
+        // Function to copy link (replaces alert with custom modal)
+        function copyLink(presenceSlug) {
+            const linkToCopy = `{{ url('/absen') }}/${presenceSlug}`; // Use url() helper for full URL
+            
+            // Try modern Clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(linkToCopy).then(() => {
+                    var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+                    copySuccessModal.show();
+                }).catch(err => {
+                    console.error('Failed to copy text using Clipboard API: ', err);
+                    // Fallback to execCommand if Clipboard API fails
+                    const tempInput = document.createElement('input');
+                    document.body.appendChild(tempInput);
+                    tempInput.value = linkToCopy;
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+                    copySuccessModal.show();
+                });
+            } else {
+                // Fallback for browsers that don't support Clipboard API
+                const tempInput = document.createElement('input');
+                document.body.appendChild(tempInput);
+                tempInput.value = linkToCopy;
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+                copySuccessModal.show();
+            }
         }
-    </script>
 
-    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
-
-    <script>
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
@@ -231,4 +277,6 @@
             }       
         })
     </script>
+
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 @endpush
