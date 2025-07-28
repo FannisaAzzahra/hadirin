@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\PlnMemberController;
 use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\PresenceDetailController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,8 @@ Route::get('/', function () {
 //Admin
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/notifications', [App\Http\Controllers\HomeController::class, 'notifications']);
+Route::get('/calendar-data', [HomeController::class, 'calendarData'])->name('calendar.data');
     Route::resource('presence', PresenceController::class);
     Route::delete('presence-detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence-detail.destroy');
     Route::get('presence-detail/export-pdf/{id}', [PresenceDetailController::class, 'exportPdf'])->name('presence-detail.export-pdf');
@@ -34,5 +37,3 @@ Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.sa
 
 
 Auth::routes();
-
-
