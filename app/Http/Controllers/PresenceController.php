@@ -50,22 +50,24 @@ class PresenceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_kegiatan'  => 'required',
-            'tgl_kegiatan'   => 'required',
-            'waktu_mulai'    => 'required',
-            'lokasi'         => 'required',
-            'link_lokasi'    => 'nullable|url',
-            'batas_waktu'    => 'nullable|date',
-            'is_active'      => 'nullable',
-            'judul_header'   => 'nullable|string|max:255',
-            'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'slide_option'   => 'required|in:previous,new,none',
-            'previous_presence_id' => 'nullable|exists:presences,id',
-            'slide_images' => 'nullable|array|max:5',
-            'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'link_ig' => 'nullable|string|max:255',
+            'nama_kegiatan'          => 'required',
+            'tgl_kegiatan'           => 'required',
+            'waktu_mulai'            => 'required',
+            'lokasi'                 => 'required',
+            'link_lokasi'            => 'nullable|url',
+            'batas_waktu'            => 'nullable|date',
+            'is_active'              => 'nullable',
+            'judul_header'           => 'nullable|string|max:255',
+            'judul_header_atas'      => 'nullable|string|max:255', // Validasi baru
+            'judul_header_bawah'     => 'nullable|string|max:255', // Validasi baru
+            'logo_kiri'              => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_kanan'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_option'           => 'required|in:previous,new,none',
+            'previous_presence_id'   => 'nullable|exists:presences,id',
+            'slide_images'           => 'nullable|array|max:5',
+            'slide_images.*'         => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_ig'                => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'link_ig'                => 'nullable|string|max:255',
         ]);
 
         $presence = new Presence();
@@ -77,6 +79,8 @@ class PresenceController extends Controller
         $presence->batas_waktu = $validated['batas_waktu'] ?? null;
         $presence->is_active = $request->has('is_active');
         $presence->judul_header = $validated['judul_header'] ?? null;
+        $presence->judul_header_atas = $validated['judul_header_atas'] ?? null; // Simpan nilai baru
+        $presence->judul_header_bawah = $validated['judul_header_bawah'] ?? null; // Simpan nilai baru
 
         foreach (['logo_kiri', 'logo_kanan'] as $field) {
             if ($request->hasFile($field)) {
@@ -136,22 +140,24 @@ class PresenceController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'nama_kegiatan'  => 'required',
-            'tgl_kegiatan'   => 'required',
-            'waktu_mulai'    => 'required',
-            'lokasi'         => 'required',
-            'link_lokasi'    => 'nullable|url',
-            'batas_waktu'    => 'nullable|date',
-            'is_active'      => 'nullable',
-            'judul_header'   => 'nullable|string|max:255',
-            'logo_kiri'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'logo_kanan'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'slide_option'   => 'required|in:keep,previous,new,none',
-            'previous_presence_id' => 'nullable|exists:presences,id',
-            'slide_images' => 'nullable|array|max:5',
-            'slide_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'logo_ig'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'link_ig' => 'nullable|string|max:255',
+            'nama_kegiatan'          => 'required',
+            'tgl_kegiatan'           => 'required',
+            'waktu_mulai'            => 'required',
+            'lokasi'                 => 'required',
+            'link_lokasi'            => 'nullable|url',
+            'batas_waktu'            => 'nullable|date',
+            'is_active'              => 'nullable',
+            'judul_header'           => 'nullable|string|max:255',
+            'judul_header_atas'      => 'nullable|string|max:255', // Validasi baru
+            'judul_header_bawah'     => 'nullable|string|max:255', // Validasi baru
+            'logo_kiri'              => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_kanan'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'slide_option'           => 'required|in:keep,previous,new,none',
+            'previous_presence_id'   => 'nullable|exists:presences,id',
+            'slide_images'           => 'nullable|array|max:5',
+            'slide_images.*'         => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_ig'                => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'link_ig'                => 'nullable|string|max:255',
         ]);
 
         $presence = Presence::findOrFail($id);
@@ -163,6 +169,8 @@ class PresenceController extends Controller
         $presence->batas_waktu = $validated['batas_waktu'] ?? null;
         $presence->is_active = $request->has('is_active');
         $presence->judul_header = $validated['judul_header'] ?? null;
+        $presence->judul_header_atas = $validated['judul_header_atas'] ?? null; // Simpan nilai baru
+        $presence->judul_header_bawah = $validated['judul_header_bawah'] ?? null; // Simpan nilai baru
 
         foreach (['logo_kiri', 'logo_kanan'] as $field) {
             if ($request->hasFile($field)) {

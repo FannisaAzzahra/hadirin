@@ -18,7 +18,9 @@ class Presence extends Model
         'logo_kiri',
         'logo_kanan',
         'logo_ig',     
-        'link_ig',     
+        'link_ig',
+        'judul_header_atas',
+        'judul_header_bawah',
     ];
 
     public function slides()

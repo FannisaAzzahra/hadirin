@@ -721,14 +721,31 @@
                 <div class="form-grid">
                     <div class="form-row single">
                         <div class="form-group">
-                            <label for="judul_header" class="hadirin-label">Judul Header</label>
+                            <label for="judul_header_atas" class="hadirin-label">
+                                Judul Header Atas
+                            </label>
                             <input type="text"
-                                   class="hadirin-input"
-                                   name="judul_header"
-                                   id="judul_header"
-                                   value="{{ old('judul_header', $presence->judul_header) }}"
-                                   placeholder="Masukkan judul header">
-                            <div class="form-helper">Judul ini akan tampil di bagian atas halaman presensi</div>
+                                class="hadirin-input"
+                                name="judul_header_atas"
+                                id="judul_header_atas"
+                                value="{{ old('judul_header_atas', $presence->judul_header_atas) }}"
+                                placeholder="Masukkan judul baris pertama">
+                            <div class="form-helper">Baris pertama judul header yang akan tampil tebal</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label for="judul_header_bawah" class="hadirin-label">
+                                Judul Header Bawah
+                            </label>
+                            <input type="text"
+                                class="hadirin-input"
+                                name="judul_header_bawah"
+                                id="judul_header_bawah"
+                                value="{{ old('judul_header_bawah', $presence->judul_header_bawah) }}"
+                                placeholder="Masukkan judul baris kedua">
+                            <div class="form-helper">Baris kedua judul header yang akan tampil tidak tebal</div>
                         </div>
                     </div>
 

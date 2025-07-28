@@ -405,7 +405,10 @@
         <div class="card-body">
           <div class="header-logos">
             <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120" alt="Logo Kiri">
-            <h2 class="header-title">{{ $presence->judul_header ?? env('APP_NAME') }}</h2>
+              <div class="text-center">
+                  <h2 class="header-title d-block fw-bold">{{ $presence->judul_header_atas ?? 'ABSENSI ONLINE' }}</h2>
+                  <h3 class="d-block">{{ $presence->judul_header_bawah ?? 'Judul Baris Dua' }}</h3>
+              </div>
             <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120" alt="Logo Kanan">
           </div>
           <div class="detail-table">
