@@ -13,10 +13,10 @@
             {{-- Hero Section --}}
             <div class="pln-hero-section text-center mb-5">
                 <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" class="pln-hero-logo mb-4">
-                <h1 class="pln-hero-title mb-3 animate__animated animate__fadeInDown">Selamat Datang di Sistem Informasi PLN!</h1>
-                <p class="pln-hero-subtitle mb-4 animate__animated animate__fadeInUp">Kelola kegiatan dan data anggota dengan mudah dan efisien.</p>
+                <h1 class="pln-hero-title mb-3 animate__animated animate__fadeInDown">Selamat Datang di HADIRIN</h1>
+                <p class="pln-hero-subtitle mb-4 animate__animated animate__fadeInUp" style="max-width: 700px; margin: 0 auto 2rem;">Sistem Informasi Absensi Online PLN UPT Malang untuk pengelolaan kegiatan dan data anggota.</p>
                 <a href="{{ route('presence.index') }}" class="btn pln-btn-hero animate__animated animate__zoomIn">
-                    <i class="fas fa-play-circle me-2"></i> Mulai Sekarang
+                    <i class="fas fa-play-circle me-2"></i> Tambah Agenda
                 </a>
             </div>
 
@@ -40,7 +40,7 @@
                         <div class="pln-stat-value">
                             <span class="count-up" data-target="{{ $totalAnggota }}">0</span>
                         </div>
-                        <div class="pln-stat-label">Total Anggota</div>
+                        <div class="pln-stat-label">Total Anggota Terdaftar</div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4 animate__animated animate__fadeInUp animate__delay-2s">
@@ -125,20 +125,20 @@
 
 {{-- Modal untuk detail kegiatan --}}
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered"> {{-- Tambahkan modal-dialog-centered --}}
-        <div class="modal-content pln-modal-content"> {{-- Tambahkan kelas kustom --}}
-            <div class="modal-header pln-modal-header"> {{-- Tambahkan kelas kustom --}}
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content pln-modal-content">
+            <div class="modal-header pln-modal-header">
                 <h5 class="modal-title" id="eventModalLabel">Detail Kegiatan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body pln-modal-body"> {{-- Tambahkan kelas kustom --}}
+            <div class="modal-body pln-modal-body">
                 <p><strong>Nama Kegiatan:</strong> <span id="modalEventTitle"></span></p>
                 <p><strong>Tanggal:</strong> <span id="modalEventDate"></span></p>
                 <p><strong>Waktu Mulai:</strong> <span id="modalEventTime"></span></p>
                 <p><strong>Lokasi:</strong> <span id="modalEventLocation"></span></p>
                 <p><strong>Link Lokasi:</strong> <span id="modalEventLink"></span></p>
             </div>
-            <div class="modal-footer pln-modal-footer"> {{-- Tambahkan kelas kustom --}}
+            <div class="modal-footer pln-modal-footer">
                 <button type="button" class="btn btn-secondary pln-btn-secondary-modal" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
@@ -150,10 +150,10 @@
 {{-- CSS untuk Bootstrap 5 dan Font Awesome --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" xintegrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 {{-- JS untuk Bootstrap, FullCalendar, dan Count-up --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js"></script>
 <script>
     // JavaScript for Count-Up Animation
