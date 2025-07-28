@@ -159,14 +159,16 @@
                 <ul class="navbar-nav ms-auto">
                     @guest
                         {{-- Ini adalah blok yang sebelumnya berisi tombol Login/Register.
-                             Sekarang, blok ini dikosongkan karena tombol sudah ada di halaman otentikasi.
-                             Jika kamu ingin tetap ada tautan ke halaman login, bisa seperti ini: --}}
+                                Sekarang, blok ini dikosongkan karena tombol sudah ada di halaman otentikasi.
+                                Jika kamu ingin tetap ada tautan ke halaman login, bisa seperti ini: --}}
                         {{-- <li class="nav-item">
                             <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                         </li> --}}
                     @else
                         <li class="nav-item d-flex align-items-center me-2">
-                            <span class="nav-link text-white-50">{{ Auth::user()->name }}</span>
+                            <a class="nav-link text-white-50" href="{{ route('profile') }}">
+                                <i class="fas fa-user me-1"></i> {{ Auth::user()->name }}
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link btn btn-outline-warning btn-sm" href="{{ route('logout') }}"
@@ -180,7 +182,6 @@
                         </li>
                     @endguest
                 </ul>
-
             </div>
         </div>
     </nav>

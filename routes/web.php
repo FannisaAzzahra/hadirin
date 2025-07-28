@@ -20,6 +20,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/api/notifications', [App\Http\Controllers\HomeController::class, 'notifications'])->name('api.notifications'); // Tambahkan nama rute jika diperlukan
     
     Route::get('/calendar-data', [HomeController::class, 'calendarData'])->name('calendar.data');
+    Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
     Route::resource('presence', PresenceController::class);
     Route::delete('presence-detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence-detail.destroy');
     Route::get('presence-detail/export-pdf/{id}', [PresenceDetailController::class, 'exportPdf'])->name('presence-detail.export-pdf');
