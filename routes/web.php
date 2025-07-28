@@ -20,7 +20,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/api/notifications', [App\Http\Controllers\HomeController::class, 'notifications'])->name('api.notifications'); // Tambahkan nama rute jika diperlukan
     
     Route::get('/calendar-data', [HomeController::class, 'calendarData'])->name('calendar.data');
+
+    // Rute untuk Profil
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
+    Route::get('/profile/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\UserController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('profile.password.update');
+    
     Route::resource('presence', PresenceController::class);
     Route::delete('presence-detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence-detail.destroy');
     Route::get('presence-detail/export-pdf/{id}', [PresenceDetailController::class, 'exportPdf'])->name('presence-detail.export-pdf');

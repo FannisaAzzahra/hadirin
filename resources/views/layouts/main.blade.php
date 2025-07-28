@@ -166,7 +166,7 @@
                         </li> --}}
                     @else
                         <li class="nav-item d-flex align-items-center me-2">
-                            <a class="nav-link text-white-50" href="{{ route('profile') }}">
+                            <a class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }} text-white-50" href="{{ route('profile') }}">
                                 <i class="fas fa-user me-1"></i> {{ Auth::user()->name }}
                             </a>
                         </li>

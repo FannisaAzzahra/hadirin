@@ -114,8 +114,8 @@
             </div>
             
             <div class="text-center mt-5 mb-3 animate__animated animate__fadeInUp">
-                <p class="pln-cta-text">Butuh bantuan atau ingin mengatur profil Anda?</p>
-                <a href="#" class="btn pln-btn-secondary">
+                <p class="pln-cta-text">Atur profil dan data akun Anda di sini</p>
+                <a href="{{ route('profile') }}" class="btn pln-btn-secondary pln-btn-full">
                     <i class="fas fa-user-cog me-2"></i> Pengaturan Akun
                 </a>
             </div>
@@ -699,6 +699,7 @@
 
     .notification-list {
         flex-grow: 1; /* Biarkan elemen ini mengisi sisa ruang yang tersedia */
+        /* max-height: 400px; Tambahkan baris ini untuk membatasi tinggi wadah */
         overflow-y: auto; /* Aktifkan scrollbar jika konten melebihi tinggi */
         padding-right: 10px; /* Beri ruang untuk scrollbar */
     }
