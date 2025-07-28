@@ -69,20 +69,34 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
+        .detail-table table {
+            width: 100%; /* Ensure the table itself takes full width */
+            table-layout: fixed; /* Important for exact column widths */
+        }
+
         .detail-table td {
             padding: 0.75rem 0;
             border: none;
             font-size: 1rem;
+            vertical-align: top; /* Align content to the top */
         }
 
         .detail-table td:first-child {
             font-weight: 600;
             color: #0077b6;
-            min-width: 150px;
+            min-width: 25px;
+        }
+
+        .detail-table td:nth-child(2) {
+            width: 20px; /* Adjust width of the colon column, make it slightly wider if needed */
+            text-align: center; /* Center the colon */
+            padding-left: 0; /* Remove extra padding */
+            padding-right: 0; /* Remove extra padding */
         }
 
         .detail-table td:last-child {
             color: #333;
+            width: 75%; /* The remaining width for the details */
         }
 
         .detail-table .location-link {
@@ -407,7 +421,7 @@
             <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120" alt="Logo Kiri">
               <div class="text-center">
                   <h2 class="header-title d-block fw-bold">{{ $presence->judul_header_atas ?? 'ABSENSI ONLINE' }}</h2>
-                  <h3 class="d-block">{{ $presence->judul_header_bawah ?? 'Judul Baris Dua' }}</h3>
+                  <h3 class="d-block">{{ $presence->judul_header_bawah ?? '' }}</h3>
               </div>
             <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120" alt="Logo Kanan">
           </div>

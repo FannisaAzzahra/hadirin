@@ -729,7 +729,7 @@
                                 name="judul_header_atas"
                                 id="judul_header_atas"
                                 value="{{ old('judul_header_atas', $presence->judul_header_atas) }}"
-                                placeholder="Masukkan judul baris pertama">
+                                placeholder="Masukkan judul kegiatan (kosongkan untuk default: ABSENSI ONLINE)">
                             <div class="form-helper">Baris pertama judul header yang akan tampil tebal</div>
                         </div>
                     </div>
@@ -744,7 +744,7 @@
                                 name="judul_header_bawah"
                                 id="judul_header_bawah"
                                 value="{{ old('judul_header_bawah', $presence->judul_header_bawah) }}"
-                                placeholder="Masukkan judul baris kedua">
+                                placeholder="Masukkan teks tambahan untuk header">
                             <div class="form-helper">Baris kedua judul header yang akan tampil tidak tebal</div>
                         </div>
                     </div>
