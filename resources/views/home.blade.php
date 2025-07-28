@@ -190,6 +190,7 @@
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             events: '/calendar-data', // Mengambil data dari rute calendar-data
+            displayEventTime: false, // <-- Baris ini untuk menyembunyikan waktu di tampilan grid
             eventClick: function(info) {
                 // Mengambil detail event dari objek info.event
                 let eventTitle = info.event.title;
@@ -279,7 +280,6 @@
 </script>
 
 <style>
-    /* ... (All your combined CSS styles below) ... */
     /* Global Styles */
     body {
         background-color: #f0f8ff;
