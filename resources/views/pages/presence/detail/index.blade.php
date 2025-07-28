@@ -99,11 +99,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pln-modal-body text-center">
-                    <i class="fas fa-check-circle text-success mb-3" style="font-size: 3rem; color: #28a745;"></i>
-                    <p>Link presensi kegiatan telah berhasil disalin ke clipboard Anda.</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="#28a745" class="bi bi-check-circle-fill mb-3" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                    <p class="mb-1">Link presensi kegiatan telah berhasil disalin ke clipboard Anda.</p>
                     <p class="text-muted small">Anda bisa membagikannya sekarang.</p>
                 </div>
-                <div class="modal-footer pln-modal-footer">
+                <div class="modal-footer pln-modal-footer d-flex justify-content-end">
                     <button type="button" class="btn pln-btn-secondary-modal" data-bs-dismiss="modal">Oke</button>
                 </div>
             </div>
@@ -214,6 +216,53 @@
                 padding: 1rem;
             }
         }
+        
+        /* Custom Modal CSS for Copy Link */
+        .pln-modal-content {
+            border-radius: 1rem;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .pln-modal-header-success {
+            background-color: #28a745;
+            color: white;
+            border-bottom: none;
+            padding: 1rem 1.5rem;
+            position: relative;
+        }
+        .pln-modal-header-success .btn-close {
+            color: white;
+            opacity: 1;
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        .pln-modal-body {
+            padding: 2rem;
+            text-align: center;
+        }
+        .pln-modal-body p {
+            margin-bottom: 0.5rem;
+        }
+        .pln-modal-body .text-muted {
+            font-size: 0.875rem;
+        }
+        .pln-modal-footer {
+            border-top: none;
+            padding: 1rem 2rem;
+        }
+        .pln-btn-secondary-modal {
+            border-radius: 0.5rem;
+            border: 2px solid #007bff;
+            color: #007bff;
+            background-color: transparent;
+            font-weight: 600;
+            padding: 0.5rem 2rem;
+            transition: all 0.3s ease;
+        }
+        .pln-btn-secondary-modal:hover {
+            background-color: #007bff;
+            color: white;
+        }
     </style>
 
     <script>
@@ -274,7 +323,7 @@
                     console.log(error);
                 }
             });
-            }       
+            }      
         })
     </script>
 
