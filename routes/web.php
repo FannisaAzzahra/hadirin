@@ -23,9 +23,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Rute untuk Profil
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
-    Route::get('/profile/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [App\Http\Controllers\UserController::class, 'update'])->name('profile.update');
+    Route::get('/profile/edit', [App\Http\Controllers\UserController::class, 'editProfile'])->name('profile.edit'); // Ubah ke editProfile
+    Route::put('/profile', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('profile.update'); // Ubah ke updateProfile
     Route::put('/profile/password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('profile.password.update');
+
+    Route::resource('users', App\Http\Controllers\UserController::class)->except(['show']); // Biarkan ini tetap seperti ini
     
     Route::resource('presence', PresenceController::class);
     Route::delete('presence-detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence-detail.destroy');
