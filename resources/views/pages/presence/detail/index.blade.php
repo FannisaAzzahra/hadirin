@@ -11,13 +11,13 @@
                         </h4>
                     </div>
                     <div class="col text-end">
-                        {{-- Memanggil fungsi copyLink dengan slug kegiatan --}}
-                        <button type="button" onclick="copyLink('{{ $presence->slug }}')" class="btn btn-warning">
+                        {{-- Generate link publik tanpa kode --}}
+                        <button type="button" onclick="generatePublicLink({{ $presence->id }})" class="btn btn-warning">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-fill" viewBox="0 0 16 16">
                                 <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
                                 <path d="M3.5 1h.585A1.5 1.5 0 0 0 4 1.5V2a1.5 1.5 0 0 0 1.5 1.5h5A1.5 1.5 0 0 0 12 2v-.5q-.001-.264-.085-.5h.585A1.5 1.5 0 0 1 14 2.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-12A1.5 1.5 0 0 1 3.5 1"/>
                             </svg>
-                            Copy Link
+                            Copy Link Publik
                         </button>
                         <a href="{{ route('presence-detail.export-pdf', $presence->id) }}" target="_blank" class="btn btn-danger">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf-fill" viewBox="0 0 16 16">
@@ -102,8 +102,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="#28a745" class="bi bi-check-circle-fill mb-3" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                     </svg>
-                    <p class="mb-1">Link presensi kegiatan telah berhasil disalin ke clipboard Anda.</p>
-                    <p class="text-muted small">Anda bisa membagikannya sekarang.</p>
+                    <p class="mb-1">Link publik telah berhasil disalin ke clipboard Anda.</p>
+                    <p class="text-muted small">Setiap pengunjung yang membuka link ini akan mendapatkan kode unik yang berbeda secara otomatis.</p>
                 </div>
                 <div class="modal-footer pln-modal-footer d-flex justify-content-end">
                     <button type="button" class="btn pln-btn-secondary-modal" data-bs-dismiss="modal">Oke</button>
@@ -266,38 +266,63 @@
     </style>
 
     <script>
-        // Function to copy link (replaces alert with custom modal)
-        function copyLink(presenceSlug) {
-            const linkToCopy = `{{ url('/absen') }}/${presenceSlug}`; // Use url() helper for full URL
-            
-            // Try modern Clipboard API first
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(linkToCopy).then(() => {
-                    var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
-                    copySuccessModal.show();
-                }).catch(err => {
-                    console.error('Failed to copy text using Clipboard API: ', err);
-                    // Fallback to execCommand if Clipboard API fails
-                    const tempInput = document.createElement('input');
-                    document.body.appendChild(tempInput);
-                    tempInput.value = linkToCopy;
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                    var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
-                    copySuccessModal.show();
-                });
-            } else {
-                // Fallback for browsers that don't support Clipboard API
-                const tempInput = document.createElement('input');
-                document.body.appendChild(tempInput);
-                tempInput.value = linkToCopy;
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
-                copySuccessModal.show();
-            }
+        // Function to generate public link (without code)
+        function generatePublicLink(presenceId) {
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            button.disabled = true;
+
+            // Make AJAX request to generate public link
+            fetch(`/presence/${presenceId}/generate-public-link`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Copy the public URL
+                    const linkToCopy = data.url;
+                    
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(linkToCopy).then(() => {
+                            var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+                            copySuccessModal.show();
+                        }).catch(err => {
+                            console.error('Failed to copy text using Clipboard API: ', err);
+                            fallbackCopy(linkToCopy);
+                        });
+                    } else {
+                        fallbackCopy(linkToCopy);
+                    }
+                } else {
+                    alert('Gagal generate link publik. Silakan coba lagi.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            })
+            .finally(() => {
+                // Restore button state
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+
+        function fallbackCopy(text) {
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = text;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+            copySuccessModal.show();
         }
 
         $(document).ready(function() {
