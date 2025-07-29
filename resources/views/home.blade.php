@@ -135,6 +135,8 @@
                 <p><strong>Nama Kegiatan:</strong> <span id="modalEventTitle"></span></p>
                 <p><strong>Tanggal:</strong> <span id="modalEventDate"></span></p>
                 <p><strong>Waktu Mulai:</strong> <span id="modalEventTime"></span></p>
+                {{-- Tambahkan baris ini untuk Batas Waktu --}}
+                <p><strong>Batas Waktu:</strong> <span id="modalEventDeadline"></span></p>
                 <p><strong>Lokasi:</strong> <span id="modalEventLocation"></span></p>
                 <p><strong>Link Lokasi:</strong> <span id="modalEventLink"></span></p>
             </div>
@@ -191,6 +193,8 @@
             initialView: 'dayGridMonth',
             events: '/calendar-data', // Mengambil data dari rute calendar-data
             displayEventTime: false, // <-- Baris ini untuk menyembunyikan waktu di tampilan grid
+            // ... kode sebelumnya ...
+
             eventClick: function(info) {
                 // Mengambil detail event dari objek info.event
                 let eventTitle = info.event.title;
@@ -212,7 +216,31 @@
                 document.getElementById('modalEventTitle').textContent = eventTitle;
                 document.getElementById('modalEventDate').textContent = eventDate;
                 document.getElementById('modalEventTime').textContent = eventTime + ' WIB'; // Tambahkan WIB
-                
+
+                // Menambahkan batas waktu
+                let batasWaktuRaw = eventExtendedProps.batas_waktu;
+                let formattedBatasWaktu = 'Tidak ada'; // Default value
+
+                if (batasWaktuRaw) {
+                    // Coba parse sebagai tanggal dan waktu lengkap
+                    let dateObjBatasWaktu = new Date(batasWaktuRaw);
+
+                    // Periksa apakah parsing berhasil (valid date)
+                    if (!isNaN(dateObjBatasWaktu.getTime())) {
+                        formattedBatasWaktu = dateObjBatasWaktu.toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) + ' WIB';
+                    } else {
+                        // Jika parsing sebagai tanggal gagal, mungkin itu hanya string waktu atau format lain
+                        formattedBatasWaktu = batasWaktuRaw + ' WIB';
+                    }
+                }
+                document.getElementById('modalEventDeadline').textContent = formattedBatasWaktu; // Memperbarui elemen modal
+
                 // Mengambil lokasi dari extendedProps
                 document.getElementById('modalEventLocation').textContent = eventExtendedProps.lokasi || 'Tidak ada';
                 

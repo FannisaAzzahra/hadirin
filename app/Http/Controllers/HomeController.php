@@ -61,6 +61,7 @@ class HomeController extends Controller
                 'extendedProps' => [
                     'lokasi' => $event->lokasi,
                     'link_lokasi' => $event->link_lokasi,
+                    'batas_waktu' => $event->batas_waktu, // Menambahkan batas_waktu di sini
                     // Waktu mulai sudah termasuk dalam 'start', tapi bisa ditambahkan jika perlu terpisah
                     // 'waktu_mulai' => Carbon::parse($event->tgl_kegiatan)->format('H:i'),
                 ],
