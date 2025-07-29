@@ -1,349 +1,488 @@
 @extends('layouts.main')
 
 @section('content')
+{{-- Link Font Awesome dihapus dari sini, seharusnya sudah ada di layouts.main --}}
 <style>
-    /* General styles for the app container */
+    /* Reset and Box Sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main Container (pembungkus luar, Hadirin style) */
+.app-container {
+    width: 100%;
+    max-width: 900px; /* Lebar maksimum disesuaikan untuk form yang luas */
+    margin: 20px auto; /* Margin atas/bawah otomatis untuk posisi tengah */
+    padding: 0 20px; /* Padding samping untuk responsivitas */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font konsisten dengan Hadirin */
+}
+
+/* App Card (ini adalah wadah utama untuk header dan form, membuatnya terlihat sebagai satu kartu) */
+.hadirin-app-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 15px 45px rgba(0, 116, 182, 0.2); /* Bayangan sedang */
+    backdrop-filter: blur(15px); /* Efek blur untuk menonjolkan form */
+    background: rgba(255, 255, 255, 0.95); /* Latar putih semi-transparan */
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 480px; /* Tinggi minimum agar terlihat solid */
+    position: relative;
+    animation: slideInUp 0.8s ease-out forwards; /* Animasi muncul */
+    border: 1px solid rgba(0, 180, 216, 0.1); /* Border aksen sangat tipis */
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hadirin-app-card:hover {
+    box-shadow: 0 20px 55px rgba(0, 116, 182, 0.25);
+    transform: translateY(-2px);
+}
+
+/* App Header (bagian atas kartu form) */
+.hadirin-app-header {
+    background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); /* Gradien biru Hadirin */
+    color: white;
+    padding: 2.2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem; /* Jarak antara judul dan tombol kembali */
+}
+
+.hadirin-app-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 214, 10, 0.15), transparent);
+    transform: rotate(-45deg);
+    animation: headerShimmer 4s infinite; /* Efek shimmer pada header */
+}
+
+@keyframes headerShimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
+}
+
+.hadirin-header-title {
+    font-weight: 700;
+    font-size: 2rem; /* Ukuran font lebih besar */
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-grow: 1;
+    justify-content: center; /* Pusatkan judul */
+}
+
+/* Tombol Kembali di Header */
+.hadirin-header-btn {
+    background: rgba(255, 255, 255, 0.25); /* Agak lebih solid */
+    border: none;
+    color: white;
+    padding: 0.8rem 1.8rem; /* Padding lebih besar */
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.95rem;
+    backdrop-filter: blur(8px); /* Sedikit mengurangi blur */
+}
+
+.hadirin-header-btn:hover {
+    background: rgba(255, 255, 255, 0.4); /* Lebih terang saat hover */
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+/* App Body (bagian form itu sendiri) */
+.hadirin-app-body {
+    padding: 2.5rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 249, 255, 0.98) 100%); /* Latar form yang sangat terang */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Header Bagian (misalnya "Informasi Anggota") */
+.hadirin-section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem; /* Jarak lebih besar */
+    padding-bottom: 0.8rem; /* Padding bawah */
+    border-bottom: 2px solid rgba(0, 180, 216, 0.1); /* Garis bawah yang lebih jelas tapi tidak terlalu tebal */
+    gap: 1rem;
+}
+
+.hadirin-section-icon {
+    width: 42px; /* Ukuran ikon sedikit lebih besar */
+    height: 42px;
+    background: linear-gradient(135deg, #00b4d8, #0077b6); /* Gradien biru */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 19px; /* Ukuran font ikon */
+    box-shadow: 0 4px 10px rgba(0, 116, 182, 0.2); /* Bayangan untuk ikon */
+}
+
+.hadirin-section-title {
+    font-size: 1.7rem; /* Ukuran font lebih besar */
+    font-weight: 700;
+    color: #0077b6; /* Warna biru gelap */
+    margin: 0;
+}
+
+/* Grid Form */
+.form-grid {
+    display: grid;
+    gap: 2.5rem; /* Meningkatkan jarak antar grup form */
+    margin-bottom: 2.5rem; /* Jarak bawah sebelum tombol */
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem; /* Meningkatkan jarak antar kolom dalam satu baris */
+}
+
+.form-row.single {
+    grid-template-columns: 1fr;
+}
+
+/* Grup Form (label dan input) */
+.form-group { /* Menggunakan nama umum agar lebih fleksibel */
+    display: flex;
+    flex-direction: column;
+}
+
+.hadirin-label {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.8rem; /* Meningkatkan jarak bawah label */
+    font-size: 0.98rem; /* Ukuran font label */
+    display: block;
+}
+
+.hadirin-input {
+    border: 2px solid #a8dadc; /* Border lebih tebal dan warna Hadirin */
+    border-radius: 12px; /* Radius lebih besar */
+    padding: 0.9rem 1.1rem; /* Padding lebih besar */
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95); /* Background input semi-transparan */
+    width: 100%;
+    color: #3c4043; /* Warna teks gelap */
+}
+
+.hadirin-input:focus {
+    outline: none;
+    border-color: #00b4d8; /* Warna biru Hadirin saat fokus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.18); /* Bayangan fokus lebih solid */
+    background: white;
+    transform: translateY(-1px);
+}
+
+.hadirin-input:hover {
+    border-color: #00b4d8;
+    background: white;
+}
+
+/* Pesan Error */
+.invalid-feedback { /* Menggunakan nama umum */
+    font-size: 0.88rem; /* Ukuran font pesan error */
+    margin-top: 0.6rem; /* Meningkatkan jarak atas pesan error */
+    color: #dc3545; /* Warna merah standard */
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.invalid-feedback::before {
+    content: '⚠️'; /* Tambahkan emoji peringatan */
+    font-size: 0.85rem;
+}
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+/* Tanda bintang merah untuk field wajib */
+.required-star {
+    color: #dc3545;
+}
+
+/* Tombol Aksi */
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.2rem; /* Jarak antar tombol */
+    margin-top: 3rem; /* Jarak atas dari form */
+    padding-top: 1.8rem; /* Padding atas untuk garis pemisah */
+    border-top: 1px solid rgba(0, 180, 216, 0.1); /* Garis pemisah Hadirin */
+}
+
+.hadirin-btn { /* Gaya dasar tombol */
+    padding: 0.9rem 2.2rem; /* Padding lebih besar */
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem; /* Jarak ikon dengan teks */
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.hadirin-btn-primary {
+    background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); /* Gradien biru Hadirin */
+    color: white;
+    box-shadow: 0 6px 20px rgba(0, 180, 216, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hadirin-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 214, 10, 0.3), transparent); /* Efek shimmer kuning */
+    transition: left 0.6s ease;
+}
+
+.hadirin-btn-primary:hover::before {
+    left: 100%;
+}
+
+.hadirin-btn-primary:hover {
+    background: linear-gradient(135deg, #0096c7 0%, #005577 100%); /* Warna sedikit lebih gelap saat hover */
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 180, 216, 0.4);
+}
+
+.hadirin-btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 180, 216, 0.2);
+}
+
+.hadirin-btn-secondary {
+    background: none;
+    border: 2px solid #00b4d8; /* Border biru Hadirin */
+    color: #00b4d8; /* Warna teks biru Hadirin */
+}
+
+.hadirin-btn-secondary:hover {
+    background: #e0f2f7; /* Latar belakang sangat terang saat hover */
+    border-color: #0077b6; /* Border lebih gelap saat hover */
+    color: #0077b6; /* Teks lebih gelap saat hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 180, 216, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
     .app-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
+        margin: 10px;
+        padding: 0 10px;
     }
 
-    /* Card styling */
     .hadirin-app-card {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        box-shadow: 0 15px 45px rgba(0, 116, 182, 0.2);
-        backdrop-filter: blur(15px); /* For a frosted glass effect */
-        overflow: hidden; /* Ensures content respects border-radius */
-        animation: slideInUp 0.8s ease-out forwards;
+        min-height: auto; /* Biarkan tinggi menyesuaikan konten */
+        border-radius: 15px; /* Radius sedikit lebih kecil */
     }
 
-    /* Card Header styling */
     .hadirin-app-header {
-        background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
-        padding: 25px 30px;
-        color: white;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
-    }
-
-    .hadirin-app-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -75%;
-        width: 50%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.2);
-        transform: skewX(-20deg);
-        animation: headerShimmer 2s infinite;
+        padding: 1.8rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
     }
 
     .hadirin-header-title {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-size: 1.6rem;
+        text-align: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
     }
 
-    /* Card Body styling */
+    .hadirin-header-btn {
+        width: 100%;
+    }
+
     .hadirin-app-body {
-        padding: 30px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 249, 255, 0.98) 100%);
+        padding: 1.8rem;
     }
 
-    /* Section Header styling */
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem; /* Meningkatkan jarak di mobile */
+    }
+
     .hadirin-section-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #e0f2f7;
-    }
-
-    .hadirin-section-icon {
-        font-size: 1.8rem;
-        margin-right: 15px;
-        color: #0077b6;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        background: -webkit-linear-gradient(45deg, #00b4d8, #0077b6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        flex-direction: column;
+        align-items: flex-start; /* Sejajarkan ke kiri di mobile */
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
     }
 
     .hadirin-section-title {
         font-size: 1.5rem;
-        font-weight: 600;
-        color: #333;
     }
 
-    /* Form Grid and Row styling */
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 25px;
+    .action-buttons {
+        flex-direction: column;
+        gap: 1rem;
     }
 
-    .form-row {
-        margin-bottom: 20px; /* Adjust mb-3 equivalent */
-    }
-
-    /* Input Field styling */
-    .hadirin-input {
+    .hadirin-btn {
         width: 100%;
-        padding: 12px 18px;
-        border: 2px solid #a8dadc;
-        border-radius: 12px;
-        font-size: 1rem;
-        color: #333;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        background-color: #f8faff;
-    }
-
-    .hadirin-input:focus {
-        border-color: #0077b6;
-        box-shadow: 0 0 0 4px rgba(0, 119, 182, 0.2);
-        outline: none;
-        background-color: #ffffff;
-    }
-
-    .hadirin-input::placeholder {
-        color: #999;
-    }
-
-    .hadirin-input.is-invalid {
-        border-color: #dc3545; /* Bootstrap's invalid color */
-    }
-
-    /* Label styling */
-    .hadirin-label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #555;
+        padding: 0.8rem 1.5rem;
         font-size: 0.95rem;
     }
+}
 
-    .required-star {
-        color: #dc3545; /* Red color for asterisk */
-        margin-left: 4px;
+@media (max-width: 480px) {
+    .hadirin-app-header h1 {
+        font-size: 1.4rem;
     }
 
-    /* Invalid feedback styling */
-    .invalid-feedback {
-        color: #dc3545;
-        font-size: 0.875em;
-        margin-top: 0.25rem;
-        display: block; /* Ensure it shows up properly */
+    .hadirin-header-btn,
+    .hadirin-btn {
+        font-size: 0.88rem;
     }
 
-    /* Action Buttons styling */
-    .action-buttons {
-        padding-top: 25px;
-        border-top: 1px solid rgba(0, 180, 216, 0.1);
-        display: flex;
-        justify-content: flex-end;
-        gap: 15px;
-        margin-top: 30px; /* Add some space above the buttons */
+    .hadirin-section-title {
+        font-size: 1.3rem;
     }
 
-    /* Primary Button styling */
-    .hadirin-btn-primary {
-        background: linear-gradient(45deg, #00b4d8 0%, #0077b6 100%);
-        color: white;
-        padding: 12px 25px;
-        border: none;
-        border-radius: 12px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 15px rgba(0, 119, 182, 0.3);
-        position: relative;
-        overflow: hidden;
+    .hadirin-input {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
     }
-
-    .hadirin-btn-primary:hover {
-        background: linear-gradient(45deg, #0077b6 0%, #005f90 100%);
-        box-shadow: 0 12px 20px rgba(0, 119, 182, 0.4);
-        transform: translateY(-2px);
-    }
-
-    .hadirin-btn-primary::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 30%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: skewX(-20deg);
-        transition: all 0.7s ease;
-    }
-
-    .hadirin-btn-primary:hover::before {
-        left: 100%;
-    }
-
-    /* Secondary Button styling */
-    .hadirin-btn-secondary {
-        background: none;
-        color: #0077b6;
-        padding: 12px 25px;
-        border: 2px solid #a8dadc;
-        border-radius: 12px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .hadirin-btn-secondary:hover {
-        background-color: #e0f2f7;
-        border-color: #0077b6;
-        color: #005f90;
-    }
-
-    /* Animations */
-    @keyframes slideInUp {
-        from {
-            transform: translateY(50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes headerShimmer {
-        0% {
-            left: -75%;
-        }
-        100% {
-            left: 100%;
-        }
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .hadirin-app-header {
-            padding: 20px;
-        }
-
-        .hadirin-header-title {
-            font-size: 1.6rem;
-        }
-
-        .hadirin-app-body {
-            padding: 20px;
-        }
-
-        .hadirin-section-header {
-            margin-bottom: 20px;
-        }
-
-        .hadirin-section-title {
-            font-size: 1.3rem;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .hadirin-btn-primary,
-        .hadirin-btn-secondary {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .hadirin-app-card {
-            border-radius: 15px;
-        }
-
-        .hadirin-app-header {
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-        }
-
-        .hadirin-header-title {
-            font-size: 1.4rem;
-        }
-
-        .hadirin-app-body {
-            padding: 15px;
-        }
-
-        .hadirin-section-icon {
-            font-size: 1.5rem;
-        }
-
-        .hadirin-section-title {
-            font-size: 1.2rem;
-        }
-        /* Make password fields stack on small screens */
-        .password-fields {
-            flex-direction: column;
-        }
-    }
+}
 </style>
 
-<div class="container my-5 app-container">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="hadirin-app-card">
-                <div class="hadirin-app-header">
-                    <h5 class="hadirin-header-title">Edit User: {{ $user->name }}</h5>
-                </div>
-                <div class="hadirin-app-body">
-                    <div class="hadirin-section-header">
-                        <i class="fas fa-user-edit hadirin-section-icon"></i>
-                        <h6 class="hadirin-section-title">Informasi Akun</h6>
-                    </div>
-                    <form action="{{ route('users.update', $user->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="form-row mb-3">
-                            <label for="name" class="hadirin-label">Nama <span class="required-star">*</span></label>
-                            <input type="text" class="hadirin-input @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $user->name) }}" placeholder="Nama pengguna" required>
-                            @error('name')
-                                <div class="invalid-feedback">⚠️ {{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-row mb-3">
-                            <label for="email" class="hadirin-label">Email <span class="required-star">*</span></label>
-                            <input type="email" class="hadirin-input @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" placeholder="email@example.com" required>
-                            @error('email')
-                                <div class="invalid-feedback">⚠️ {{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-grid password-fields">
-                            <div class="form-row mb-3">
-                                <label for="password" class="hadirin-label">Password (isi jika ingin mengubah)</label>
-                                <input type="password" class="hadirin-input @error('password') is-invalid @enderror" id="password" name="password" placeholder="Biarkan kosong jika tidak ingin mengubah">
-                                @error('password')
-                                    <div class="invalid-feedback">⚠️ {{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-row mb-3">
-                                <label for="password_confirmation" class="hadirin-label">Konfirmasi Password</label>
-                                <input type="password" class="hadirin-input" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi password baru">
-                            </div>
-                        </div>
+<div class="app-container">
+    <div class="hadirin-app-card">
+        <div class="hadirin-app-header">
+            <h1 class="hadirin-header-title">
+                <i class="fas fa-user-edit"></i> {{-- Ikon untuk Edit User --}}
+                Edit User: {{ $user->name }}
+            </h1>
+            <a href="{{ route('users.index') }}" class="hadirin-header-btn">
+                <i class="fas fa-arrow-left"></i>
+                Kembali
+            </a>
+        </div>
 
-                        <div class="action-buttons">
-                            <a href="{{ route('users.index') }}" class="hadirin-btn-secondary">Batal</a>
-                            <button type="submit" class="hadirin-btn-primary">Update</button>
-                        </div>
-                    </form>
+        <div class="hadirin-app-body">
+            <div class="hadirin-section-header">
+                <div class="hadirin-section-icon">
+                    <i class="fas fa-info-circle"></i>
                 </div>
+                <h3 class="hadirin-section-title">Informasi Akun</h3>
             </div>
+
+            <form action="{{ route('users.update', $user->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="form-grid">
+                    <div class="form-row single"> {{-- Nama --}}
+                        <div class="form-group">
+                            <label for="name" class="hadirin-label">Nama <span style="color: #dc3545;">*</span></label>
+                            <input type="text"
+                                   class="hadirin-input @error('name') is-invalid @enderror"
+                                   id="name"
+                                   name="name"
+                                   value="{{ old('name', $user->name) }}"
+                                   placeholder="Nama pengguna"
+                                   required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-row single"> {{-- Email --}}
+                        <div class="form-group">
+                            <label for="email" class="hadirin-label">Email <span style="color: #dc3545;">*</span></label>
+                            <input type="email"
+                                   class="hadirin-input @error('email') is-invalid @enderror"
+                                   id="email"
+                                   name="email"
+                                   value="{{ old('email', $user->email) }}"
+                                   placeholder="email@example.com"
+                                   required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-row"> {{-- Password dan Konfirmasi Password --}}
+                        <div class="form-group">
+                            <label for="password" class="hadirin-label">Password (isi jika ingin mengubah)</label>
+                            <input type="password"
+                                   class="hadirin-input @error('password') is-invalid @enderror"
+                                   id="password"
+                                   name="password"
+                                   placeholder="Biarkan kosong jika tidak ingin mengubah">
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="password_confirmation" class="hadirin-label">Konfirmasi Password</label>
+                            <input type="password"
+                                   class="hadirin-input"
+                                   id="password_confirmation"
+                                   name="password_confirmation"
+                                   placeholder="Konfirmasi password baru">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="{{ route('users.index') }}" class="hadirin-btn hadirin-btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Batal
+                    </a>
+                    <button type="submit" class="hadirin-btn hadirin-btn-primary">
+                        <i class="fas fa-save"></i>
+                        Update User
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
