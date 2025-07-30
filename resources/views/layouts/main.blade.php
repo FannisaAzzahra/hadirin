@@ -152,7 +152,7 @@
                         <a class="nav-link {{ request()->routeIs('presence.*') ? 'active' : '' }}" href="{{ route('presence.index') }}">Daftar Kegiatan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pln-members.*') ? 'active' : '' }}" href="{{ route('pln-members.index') }}">Data Anggota PLN</a>
+                        <a class="nav-link {{ request()->routeIs('pln-members.*') ? 'active' : '' }}" href="{{ route('pln-members.index') }}">Daftar Anggota</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Data User</a>

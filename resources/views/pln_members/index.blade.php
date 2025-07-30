@@ -6,7 +6,7 @@
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    <h4 class="card-title">Daftar Anggota PLN</h4>
+                    <h4 class="card-title">Daftar Anggota</h4>
                 </div>
                 <div class="col text-end">
                     <!-- Tombol Tambah Data -->
