@@ -497,29 +497,6 @@
                     @enderror
                 </div>
 
-                <!-- Kode Unik -->
-                @if($attendanceCode)
-                <div class="mb-3">
-                  <label for="unique_code" class="form-label">Kode Unik Anda</label>
-                  <input type="text" name="unique_code" id="unique_code" class="form-control" value="{{ $attendanceCode->code }}" readonly>
-                  <small class="text-muted">Kode ini bersifat rahasia dan hanya dapat digunakan satu kali</small>
-                </div>
-                @else
-                <div class="mb-3">
-                  <label for="unique_code" class="form-label">Kode Unik</label>
-                  <input type="text" name="unique_code" id="unique_code" class="form-control" placeholder="Masukkan kode unik" required>
-                  @error('unique_code')
-                      <div class="text-danger">{{ $message }}</div>
-                  @enderror
-                  @if($code)
-                  <div class="alert alert-warning mt-2">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Kode unik yang Anda gunakan sudah digunakan. Silakan masukkan kode unik yang baru atau hubungi panitia.
-                  </div>
-                  @endif
-                </div>
-                @endif
-
                 <!-- Nama -->
                 <div class="mb-3" id="nama-field">
                   <label for="nama" class="form-label">Nama</label>

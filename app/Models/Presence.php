@@ -27,14 +27,4 @@ class Presence extends Model
     {
         return $this->hasMany(PresenceSlide::class);
     }
-
-    public function attendanceCodes()
-    {
-        return $this->hasMany(AttendanceCode::class);
-    }
-
-    public function presenceDetails()
-    {
-        return $this->hasMany(PresenceDetail::class);
-    }
 }
