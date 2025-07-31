@@ -30,11 +30,11 @@
         background: white;
         border: 2px solid #a8dadc;
         border-radius: 12px;
-        padding: 1.2rem;
+        padding: 1rem; /* Disesuaikan agar lebih ringkas */
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
-        min-height: 120px;
+        min-height: 90px; /* Disesuaikan agar lebih ringkas */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -56,19 +56,19 @@
 
     .display-option-content {
         display: flex;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: center; /* Disesuaikan dari flex-start */
+        gap: 0.8rem; /* Disesuaikan dari 1rem */
         margin-bottom: 0.8rem;
     }
 
     .display-option-icon {
-        width: 44px;
-        height: 44px;
+        width: 38px; /* Disesuaikan dari 44px */
+        height: 38px; /* Disesuaikan dari 44px */
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
+        font-size: 1rem; /* Disesuaikan dari 1.1rem */
         flex-shrink: 0;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
@@ -93,14 +93,14 @@
     }
 
     .display-option-title {
-        font-size: 1.1rem;
+        font-size: 1rem; /* Disesuaikan dari 1.1rem */
         font-weight: 600;
         color: #0077b6;
-        margin: 0 0 0.3rem 0;
+        margin: 0 0 0.2rem 0; /* Disesuaikan dari 0.3rem */
     }
 
     .display-option-description {
-        font-size: 0.95rem;
+        font-size: 0.85rem; /* Disesuaikan dari 0.95rem */
         color: #5f6368;
         margin: 0;
         line-height: 1.4;
@@ -108,10 +108,10 @@
 
     .display-option-radio {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
-        width: 20px;
-        height: 20px;
+        top: 0.8rem; /* Disesuaikan dari 1rem */
+        right: 0.8rem; /* Disesuaikan dari 1rem */
+        width: 18px; /* Disesuaikan */
+        height: 18px; /* Disesuaikan */
         border: 2px solid #dadce0;
         border-radius: 50%;
         background: white;
@@ -128,8 +128,8 @@
 
     .display-option-card.selected .display-option-radio::after {
         content: '';
-        width: 8px;
-        height: 8px;
+        width: 7px; /* Disesuaikan dari 8px */
+        height: 7px; /* Disesuaikan dari 8px */
         background: white;
         border-radius: 50%;
     }
@@ -428,38 +428,33 @@
         }
 
         .display-option-card {
-            padding: 1rem;
-            min-height: 100px;
+            padding: 0.8rem; /* Disesuaikan agar lebih ringkas di mobile */
+            min-height: 80px; /* Disesuaikan agar lebih ringkas di mobile */
+        }
+
+        .display-option-icon {
+            width: 34px; /* Disesuaikan untuk mobile */
+            height: 34px; /* Disesuaikan untuk mobile */
+            font-size: 0.9rem; /* Disesuaikan untuk mobile */
         }
 
         .display-option-title {
-            font-size: 1rem;
+            font-size: 0.95rem; /* Disesuaikan untuk mobile */
         }
 
         .display-option-description {
-            font-size: 0.85rem;
+            font-size: 0.8rem; /* Disesuaikan untuk mobile */
         }
 
-        .display-content-section {
-            padding: 1rem;
+        .display-option-radio {
+            top: 0.6rem; /* Disesuaikan untuk mobile */
+            right: 0.6rem; /* Disesuaikan untuk mobile */
+            width: 16px; /* Disesuaikan untuk mobile */
+            height: 16px; /* Disesuaikan untuk mobile */
         }
-
-        .display-section-title {
-            font-size: 1.1rem;
-        }
-
-        .form-row.triple {
-            grid-template-columns: 1fr;
-        }
-
-        .preview-logos {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.8rem;
-        }
-
-        .preview-logo-image {
-            width: 50px;
-            height: 50px;
+        .display-option-card.selected .display-option-radio::after {
+            width: 6px; /* Disesuaikan untuk mobile */
+            height: 6px; /* Disesuaikan untuk mobile */
         }
     }
 </style>

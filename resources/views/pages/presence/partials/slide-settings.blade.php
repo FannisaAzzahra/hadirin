@@ -27,44 +27,25 @@
             margin-bottom: 2.5rem;
         }
 
-        /* Grid Area Definitions */
+        /* Grid Area Definitions - Disesuaikan untuk mode create/edit */
         .slide-options-grid.create-mode {
             grid-template-areas:
-                "keep previous"
-                "upload none";
+                "previous new"
+                "none none"; /* 'keep' tidak ada di create mode */
         }
-        .slide-options-grid.create-mode .slide-option-card[data-option="keep"] { grid-area: keep; }
         .slide-options-grid.create-mode .slide-option-card[data-option="previous"] { grid-area: previous; }
-        .slide-options-grid.create-mode .slide-option-card[data-option="new"] { grid-area: upload; }
+        .slide-options-grid.create-mode .slide-option-card[data-option="new"] { grid-area: new; }
         .slide-options-grid.create-mode .slide-option-card[data-option="none"] { grid-area: none; }
 
         .slide-options-grid.edit-mode {
             grid-template-areas:
                 "keep previous"
-                "upload none";
+                "new none";
         }
         .slide-options-grid.edit-mode .slide-option-card[data-option="keep"] { grid-area: keep; }
         .slide-options-grid.edit-mode .slide-option-card[data-option="previous"] { grid-area: previous; }
-        .slide-options-grid.edit-mode .slide-option-card[data-option="new"] { grid-area: upload; }
+        .slide-options-grid.edit-mode .slide-option-card[data-option="new"] { grid-area: new; }
         .slide-options-grid.edit-mode .slide-option-card[data-option="none"] { grid-area: none; }
-
-        .slide-options-grid.create-mode-no-keep {
-            grid-template-areas:
-                "previous none"
-                "upload upload";
-        }
-        .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="previous"] { grid-area: previous; }
-        .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="new"] { grid-area: upload; }
-        .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="none"] { grid-area: none; }
-
-        .slide-options-grid.edit-mode-no-keep {
-            grid-template-areas:
-                "previous none"
-                "upload upload";
-        }
-        .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="previous"] { grid-area: previous; }
-        .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="new"] { grid-area: upload; }
-        .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="none"] { grid-area: none; }
 
         .slide-option-card {
             background: white;
@@ -335,7 +316,7 @@
             margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid #e8eaed;
-            display: none;
+            display: none; /* Default hidden, shown by JS */
         }
 
         .slide-preview-section.active {
@@ -444,27 +425,19 @@
         @media (max-width: 768px) {
             .slide-options-grid,
             .slide-options-grid.create-mode,
-            .slide-options-grid.edit-mode,
-            .slide-options-grid.create-mode-no-keep,
-            .slide-options-grid.edit-mode-no-keep {
+            .slide-options-grid.edit-mode {
                 grid-template-columns: 1fr;
-                grid-template-areas: unset;
+                grid-template-areas: unset; /* Reset grid areas for mobile */
             }
 
-            .slide-options-grid.create-mode .slide-option-card[data-option="keep"],
+            /* Reset specific grid areas for mobile */
             .slide-options-grid.create-mode .slide-option-card[data-option="previous"],
             .slide-options-grid.create-mode .slide-option-card[data-option="new"],
             .slide-options-grid.create-mode .slide-option-card[data-option="none"],
             .slide-options-grid.edit-mode .slide-option-card[data-option="keep"],
             .slide-options-grid.edit-mode .slide-option-card[data-option="previous"],
             .slide-options-grid.edit-mode .slide-option-card[data-option="new"],
-            .slide-options-grid.edit-mode .slide-option-card[data-option="none"],
-            .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="previous"],
-            .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="new"],
-            .slide-options-grid.create-mode-no-keep .slide-option-card[data-option="none"],
-            .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="previous"],
-            .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="new"],
-            .slide-options-grid.edit-mode-no-keep .slide-option-card[data-option="none"] {
+            .slide-options-grid.edit-mode .slide-option-card[data-option="none"] {
                 grid-area: unset;
             }
 
@@ -538,7 +511,7 @@
 
         @php
             $hasExistingSlides = isset($isEdit) && $isEdit && isset($presence) && $presence->slides->count() > 0;
-            $isEditMode = isset($isEdit) && $isEdit;
+            $isEditMode = isset($isEdit) && $isEdit; // Deteksi mode edit dari PHP
 
             // Penentuan currentSlideOption yang diperbaiki
             $currentSlideOption = null;
@@ -548,24 +521,19 @@
                 if (!$currentSlideOption && $hasExistingSlides) {
                     $currentSlideOption = 'keep';
                 } elseif (!$currentSlideOption && !$hasExistingSlides) {
-                    $currentSlideOption = 'none';
+                    $currentSlideOption = 'none'; // Default jika edit tapi tidak ada slide
                 }
             } else {
-                // Mode create - default ke 'new' untuk tampilkan preview upload
+                // Mode create - default ke 'new'
                 $currentSlideOption = 'new';
             }
 
-            if ($hasExistingSlides) {
-                $gridClass = 'edit-mode';
-            } elseif ($isEditMode) {
-                $gridClass = 'edit-mode-no-keep';
-            } else {
-                $gridClass = 'create-mode-no-keep';
-            }
+            // Tentukan kelas grid berdasarkan mode
+            $gridClass = $isEditMode ? 'edit-mode' : 'create-mode';
         @endphp
 
         <div class="slide-options-grid {{ $gridClass }}">
-            @if($hasExistingSlides)
+            @if($isEditMode) {{-- Opsi 'keep' hanya muncul di mode edit --}}
                 <div class="slide-option-card compact {{ $currentSlideOption == 'keep' ? 'selected' : '' }}" data-option="keep" id="slide-option-keep">
                     <input type="radio" name="slide_option" value="keep" id="slide_keep" {{ $currentSlideOption == 'keep' ? 'checked' : '' }}>
                     <div class="slide-option-content">
@@ -574,21 +542,24 @@
                         </div>
                         <div class="slide-option-text">
                             <h4 class="slide-option-title">Tetap gunakan slide saat ini</h4>
-                            <p class="slide-option-description">{{ $presence->slides->count() }} foto akan tetap digunakan</p>
+                            <p class="slide-option-description">{{ $hasExistingSlides ? $presence->slides->count() . ' foto akan tetap digunakan' : 'Tidak ada slide saat ini' }}</p>
                         </div>
                     </div>
                     <div class="slide-option-radio"></div>
 
-                    <div class="slide-preview-section" id="slide-keep-preview-section">
-                        <div class="slide-preview-label">Preview slide saat ini:</div>
-                        <div class="slide-preview-grid" id="slide-keep-preview-grid">
-                            @foreach($presence->slides as $slide)
-                                <div class="slide-preview-item">
-                                    <img src="/uploads/{{ $slide->image_path }}" class="slide-preview-image" alt="Current slide preview">
-                                </div>
-                            @endforeach
+                    {{-- Preview untuk opsi 'keep' --}}
+                    @if($hasExistingSlides)
+                        <div class="slide-preview-section" id="slide-keep-preview-section">
+                            <div class="slide-preview-label">Preview slide saat ini:</div>
+                            <div class="slide-preview-grid" id="slide-keep-preview-grid">
+                                @foreach($presence->slides as $slide)
+                                    <div class="slide-preview-item">
+                                        <img src="{{ asset('uploads/' . $slide->image_path) }}" class="slide-preview-image" alt="Current slide preview">
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             @endif
 
@@ -635,6 +606,7 @@
             </div>
         </div>
 
+        {{-- Section untuk opsi 'previous' --}}
         <div class="slide-content-section {{ $currentSlideOption == 'previous' ? 'active' : '' }}" id="slide-previous-section">
             <h4 class="section-title">Pilih Kegiatan Sebelumnya</h4>
             <select class="slide-previous-select" name="previous_presence_id" id="slide_previous_presence_id">
@@ -655,6 +627,7 @@
             </div>
         </div>
 
+        {{-- Section untuk opsi 'new' (upload baru) --}}
         <div class="slide-content-section {{ $currentSlideOption == 'new' ? 'active' : '' }}" id="slide-upload-section">
             <h4 class="section-title">Upload Slide Foto (Maksimal 5 foto)</h4>
 
@@ -673,27 +646,27 @@
                     Pilih File
                 </button>
             </div>
-            
+
             <!-- Hidden File Input -->
-            <input type="file" 
-                class="file-input" 
-                name="slide_images[]" 
-                id="slide_images" 
-                multiple 
-                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" 
+            <input type="file"
+                class="file-input"
+                name="slide_images[]"
+                id="slide_images"
+                multiple
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                 max="5"
                 style="display: none;">
 
-            <!-- Preview Section -->
+            <!-- Preview Section (akan disembunyikan di mode create oleh JS) -->
             <div class="slide-preview-section" id="slide-upload-preview">
                 <div class="slide-preview-label">Preview gambar yang akan diupload:</div>
                 <div class="slide-preview-grid" id="slide-upload-preview-grid"></div>
-                
+
                 <!-- File Info -->
                 <div id="file-info" style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
                     <!-- File information will be displayed here -->
                 </div>
-                
+
                 <!-- Clear Files Button -->
                 <button type="button" id="clear-files-btn" class="upload-button" style="background: #dc3545; margin-top: 1rem; display: none;">
                     <i class="fas fa-trash"></i>
@@ -704,7 +677,8 @@
         </div>
     </div>
 
-    {{-- Custom Modal for Alerts --}}
+    {{-- Custom Modal for Alerts (Pastikan ini ada di satu tempat saja, misal di layout utama atau di display-settings) --}}
+    {{-- Jika Anda sudah memiliki modal ini di display-settings.blade.php, Anda bisa menghapusnya dari sini. --}}
     <div class="slide-custom-modal-overlay" id="slideCustomAlertModal">
         <div class="slide-custom-modal-content">
             <h4 id="slideModalTitle">Peringatan!</h4>
@@ -715,400 +689,130 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        const slideOptions = document.querySelectorAll('.slide-option-card');
-        const radioInputs = document.querySelectorAll('input[name="slide_option"]');
-        const contentSections = document.querySelectorAll('.slide-content-section');
-        const keepPreviewSection = document.getElementById('slide-keep-preview-section');
+            // --- Elemen DOM Umum ---
+            const slideOptions = document.querySelectorAll('.slide-option-card');
+            const radioInputs = document.querySelectorAll('input[name="slide_option"]');
+            const contentSections = document.querySelectorAll('.slide-content-section');
+            const keepPreviewSection = document.getElementById('slide-keep-preview-section');
 
-        // Custom Alert Modal Elements
-        const customAlertModal = document.getElementById('slideCustomAlertModal');
-        const modalTitle = document.getElementById('slideModalTitle');
-        const modalMessage = document.getElementById('slideModalMessage');
-        const modalCloseButton = document.getElementById('slideModalCloseButton');
+            // --- Elemen Modal Alert Kustom ---
+            const customAlertModal = document.getElementById('slideCustomAlertModal');
+            const modalTitle = document.getElementById('slideModalTitle');
+            const modalMessage = document.getElementById('slideModalMessage');
+            const modalCloseButton = document.getElementById('slideModalCloseButton');
 
-        // Function to show custom alert
-        function showCustomAlert(message, title = 'Peringatan!') {
-            if (modalTitle && modalMessage && customAlertModal) {
-                modalTitle.textContent = title;
-                modalMessage.textContent = message;
-                customAlertModal.classList.add('active');
+            // Fungsi untuk menampilkan alert kustom
+            function showCustomAlert(message, title = 'Peringatan!') {
+                if (modalTitle && modalMessage && customAlertModal) {
+                    modalTitle.textContent = title;
+                    modalMessage.textContent = message;
+                    customAlertModal.classList.add('active');
+                }
             }
-        }
 
-        // Function to hide custom alert
-        function hideCustomAlert() {
+            // Fungsi untuk menyembunyikan alert kustom
+            function hideCustomAlert() {
+                if (customAlertModal) {
+                    customAlertModal.classList.remove('active');
+                }
+            }
+
+            // Event listener untuk tombol tutup modal
+            if (modalCloseButton) {
+                modalCloseButton.addEventListener('click', hideCustomAlert);
+            }
+
+            // Event listener untuk klik di luar modal (overlay)
             if (customAlertModal) {
-                customAlertModal.classList.remove('active');
+                customAlertModal.addEventListener('click', function(event) {
+                    if (event.target === customAlertModal) {
+                        hideCustomAlert();
+                    }
+                });
             }
-        }
 
-        // Close modal on button click
-        if (modalCloseButton) {
-            modalCloseButton.addEventListener('click', hideCustomAlert);
-        }
+            // --- Inisialisasi Pilihan Slide ---
+            updateSelectedOption();
+            showContentSection(getSelectedOption());
 
-        // Close modal on overlay click
-        if (customAlertModal) {
-            customAlertModal.addEventListener('click', function(event) {
-                if (event.target === customAlertModal) {
-                    hideCustomAlert();
-                }
-            });
-        }
-
-        // Initialize
-        updateSelectedOption();
-        showContentSection(getSelectedOption());
-
-        // Handle option card clicks
-        slideOptions.forEach(card => {
-            card.addEventListener('click', function() {
-                const option = this.dataset.option;
-                const radio = document.getElementById(`slide_${option}`);
-
-                if (radio) {
-                    radio.checked = true;
-                    updateSelectedOption();
-                    showContentSection(option);
-                }
-            });
-        });
-
-        // Handle radio button changes
-        radioInputs.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    updateSelectedOption();
-                    showContentSection(this.value);
-                }
-            });
-        });
-
-        function getSelectedOption() {
-            return document.querySelector('input[name="slide_option"]:checked')?.value || 'none';
-        }
-
-        function updateSelectedOption() {
-            const selectedValue = getSelectedOption();
-
+            // Event listener untuk klik pada kartu opsi slide
             slideOptions.forEach(card => {
-                card.classList.toggle('selected', card.dataset.option === selectedValue);
-            });
-        }
+                card.addEventListener('click', function() {
+                    const option = this.dataset.option;
+                    const radio = document.getElementById(`slide_${option}`);
 
-        function showContentSection(option) {
-            contentSections.forEach(section => {
-                section.classList.remove('active');
-            });
-
-            // Sembunyikan semua slide-preview-section secara default
-            document.querySelectorAll('.slide-preview-section').forEach(section => {
-                section.style.display = 'none';
-            });
-
-            if (option === 'previous') {
-                document.getElementById('slide-previous-section')?.classList.add('active');
-                // Tampilkan preview previous hanya jika ada pilihan di select
-                const previousSelect = document.getElementById('slide_previous_presence_id');
-                if (previousSelect && previousSelect.value) {
-                    document.getElementById('slide-previous-preview').style.display = 'block';
-                }
-            } else if (option === 'new') {
-                document.getElementById('slide-upload-section')?.classList.add('active');
-                // Tampilkan preview section untuk upload jika ada file yang dipilih
-                const fileInput = document.getElementById('slide_images');
-                if (fileInput && fileInput.files.length > 0) {
-                    document.getElementById('slide-upload-preview').style.display = 'block';
-                }
-            } else if (option === 'keep') {
-                if (keepPreviewSection) {
-                    keepPreviewSection.style.display = 'block';
-                }
-            }
-        }
-
-        // File upload handling - PERBAIKAN UTAMA
-        const fileInput = document.getElementById('slide_images');
-        const uploadArea = document.querySelector('.upload-area');
-        const uploadPreview = document.getElementById('slide-upload-preview');
-        const uploadPreviewGrid = document.getElementById('slide-upload-preview-grid');
-
-        if (fileInput && uploadArea) {
-            // Drag and drop events
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, e => { 
-                    e.preventDefault(); 
-                    e.stopPropagation(); 
-                }, false);
-            });
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => {
-                    uploadArea.classList.add('dragover');
-                }, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => {
-                    uploadArea.classList.remove('dragover');
-                }, false);
-            });
-
-            // Handle drag and drop
-            uploadArea.addEventListener('drop', e => {
-                e.preventDefault();
-                const files = e.dataTransfer.files;
-                
-                // PERBAIKAN: Set files ke input element
-                if (files.length > 0) {
-                    // Create new FileList untuk input
-                    const dt = new DataTransfer();
-                    const maxFiles = Math.min(files.length, 5);
-                    
-                    for (let i = 0; i < maxFiles; i++) {
-                        dt.items.add(files[i]);
+                    if (radio) {
+                        radio.checked = true;
+                        updateSelectedOption();
+                        showContentSection(option);
                     }
-                    
-                    fileInput.files = dt.files;
-                    handleFiles(dt.files);
-                }
-            }, false);
-
-            // Handle file input change
-            fileInput.addEventListener('change', e => {
-                handleFiles(e.target.files);
+                });
             });
 
-            // Handle click on upload area
-            uploadArea.addEventListener('click', (e) => {
-                // Jangan trigger jika yang diklik adalah button
-                if (!e.target.closest('.upload-button')) {
-                    fileInput.click();
-                }
+            // Event listener untuk perubahan pada radio button (jika diklik langsung)
+            radioInputs.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        updateSelectedOption();
+                        showContentSection(this.value);
+                    }
+                });
             });
 
-            // Handle button click specifically
-            const uploadButton = uploadArea.querySelector('.upload-button');
-            if (uploadButton) {
-                uploadButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    fileInput.click();
+            // Mendapatkan opsi slide yang sedang dipilih
+            function getSelectedOption() {
+                return document.querySelector('input[name="slide_option"]:checked')?.value || 'none';
+            }
+
+            // Memperbarui kelas 'selected' pada kartu opsi
+            function updateSelectedOption() {
+                const selectedValue = getSelectedOption();
+                slideOptions.forEach(card => {
+                    card.classList.toggle('selected', card.dataset.option === selectedValue);
                 });
             }
-        }
 
-        function handleFiles(files) {
-            console.log('HandleFiles called with:', files.length, 'files'); // Debug log
-            
-            if (!files || files.length === 0) {
-                if (uploadPreview) {
-                    uploadPreview.style.display = 'none';
-                }
-                const uploadButton = document.querySelector('.upload-button');
-                if (uploadButton) {
-                    uploadButton.innerHTML = `<i class="fas fa-plus"></i> Pilih File`;
-                }
-                return;
-            }
-
-            const fileList = Array.from(files).slice(0, 5); // Batasi hingga 5 file
-            console.log('Processing files:', fileList.length); // Debug log
-            
-            if (uploadPreviewGrid) {
-                uploadPreviewGrid.innerHTML = ''; // Kosongkan preview lama
-            }
-
-            const uploadButton = document.querySelector('.upload-button');
-            if (uploadButton) {
-                uploadButton.innerHTML = `<i class="fas fa-check"></i> ${fileList.length} file${fileList.length > 1 ? 's' : ''} dipilih`;
-            }
-
-            let validFileCount = 0;
-            
-            fileList.forEach((file, index) => {
-                console.log('Processing file:', file.name, file.type); // Debug log
-                
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        console.log('File loaded:', file.name); // Debug log
-                        
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'slide-preview-item';
-
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.className = 'slide-preview-image';
-                        img.alt = file.name;
-                        
-                        // Add error handling for image load
-                        img.onerror = function() {
-                            console.error('Failed to load image:', file.name);
-                            previewItem.remove();
-                        };
-
-                        previewItem.appendChild(img);
-                        if (uploadPreviewGrid) {
-                            uploadPreviewGrid.appendChild(previewItem);
-                        }
-                        
-                        validFileCount++;
-                        
-                        // Show preview section when first valid image is added
-                        if (validFileCount === 1 && uploadPreview) {
-                            uploadPreview.style.display = 'block';
-                            console.log('Preview section shown'); // Debug log
-                        }
-                    };
-                    
-                    reader.onerror = function() {
-                        console.error('FileReader error for:', file.name);
-                    };
-                    
-                    reader.readAsDataURL(file);
-                } else {
-                    console.warn('File is not an image:', file.name, file.type);
-                    showCustomAlert(`File ${file.name} bukan format gambar yang valid.`);
-                }
-            });
-
-            // If no valid images, hide preview
-            if (validFileCount === 0 && uploadPreview) {
-                uploadPreview.style.display = 'none';
-            }
-        }
-
-        // Previous slides selection handling
-        const previousSelect = document.getElementById('slide_previous_presence_id');
-        const previousPreview = document.getElementById('slide-previous-preview');
-        const previousPreviewGrid = document.getElementById('slide-previous-preview-grid');
-
-        if (previousSelect) {
-            previousSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-                const slidesData = selectedOption.getAttribute('data-slides');
-
-                if (previousPreviewGrid) {
-                    previousPreviewGrid.innerHTML = '';
-                }
-
-                if (slidesData && slidesData !== '[]' && this.value) {
-                    try {
-                        const slides = JSON.parse(slidesData);
-
-                        slides.forEach((slide, index) => {
-                            const previewItem = document.createElement('div');
-                            previewItem.className = 'slide-preview-item';
-
-                            const img = document.createElement('img');
-                            img.src = `/uploads/${slide.image_path}`;
-                            img.className = 'slide-preview-image';
-                            img.alt = 'Slide preview';
-
-                            previewItem.appendChild(img);
-                            if (previousPreviewGrid) {
-                                previousPreviewGrid.appendChild(previewItem);
-                            }
-                        });
-
-                        if (previousPreview) {
-                            previousPreview.style.display = 'block';
-                        }
-                    } catch (error) {
-                        console.error('Error parsing slides data:', error);
-                        if (previousPreview) {
-                            previousPreview.style.display = 'none';
-                        }
-                    }
-                } else {
-                    if (previousPreview) {
-                        previousPreview.style.display = 'none';
-                    }
-                }
-            });
-        }
-
-        // Initial check for previous slides section visibility on page load
-        const initialSelectedOption = getSelectedOption();
-        if (initialSelectedOption === 'previous' && previousSelect && previousSelect.value) {
-            const event = new Event('change');
-            previousSelect.dispatchEvent(event);
-        }
-
-        // PERBAIKAN: Validation function yang lebih robust
-        window.validateSlideSettings = function() {
-            const selectedOption = document.querySelector('input[name="slide_option"]:checked')?.value;
-            console.log('Validating slide option:', selectedOption); // Debug log
-
-            if (selectedOption === 'previous') {
-                const previousSelect = document.getElementById('slide_previous_presence_id');
-                if (!previousSelect || !previousSelect.value) {
-                    showCustomAlert('Silakan pilih kegiatan sebelumnya untuk menggunakan slide yang ada.');
-                    return false;
-                }
-            } else if (selectedOption === 'new') {
-                const fileInput = document.getElementById('slide_images');
-                console.log('File input files:', fileInput?.files?.length); // Debug log
-                
-                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                    showCustomAlert('Silakan pilih file gambar untuk slide baru.');
-                    return false;
-                }
-                
-                // Validate file types
-                const validFiles = Array.from(fileInput.files).filter(file => 
-                    file.type.startsWith('image/')
-                );
-                
-                if (validFiles.length === 0) {
-                    showCustomAlert('Silakan pilih file gambar yang valid (JPG, PNG, GIF).');
-                    return false;
-                }
-                
-                console.log('Valid files found:', validFiles.length); // Debug log
-            }
-
-            return true;
-        };
-
-        // TAMBAHAN: Auto-trigger validation ketika form akan di-submit
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                // Cek apakah form ini memiliki slide settings
-                const slideOptionInputs = form.querySelectorAll('input[name="slide_option"]');
-                if (slideOptionInputs.length > 0) {
-                    if (!window.validateSlideSettings()) {
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-            });
-        });
-
-        // TAMBAHAN: Debug function untuk troubleshooting
-        window.debugSlideSettings = function() {
-            const selectedOption = getSelectedOption();
-            const fileInput = document.getElementById('slide_images');
-            
-            console.log('=== SLIDE SETTINGS DEBUG ===');
-            console.log('Selected option:', selectedOption);
-            console.log('File input element:', fileInput);
-            console.log('Files in input:', fileInput?.files?.length || 0);
-            console.log('Upload preview visible:', uploadPreview?.style.display !== 'none');
-            console.log('Preview grid children:', uploadPreviewGrid?.children?.length || 0);
-            
-            if (fileInput && fileInput.files) {
-                Array.from(fileInput.files).forEach((file, index) => {
-                    console.log(`File ${index}:`, file.name, file.type, file.size);
+            // Menampilkan atau menyembunyikan bagian konten slide yang relevan
+            function showContentSection(option) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
                 });
-            }
-            console.log('=== END DEBUG ===');
-        };
 
-        // Enhanced File Upload Handler - Tambahkan setelah DOMContentLoaded
-        function initializeFileUpload() {
+                // Sembunyikan semua slide-preview-section secara default
+                document.querySelectorAll('.slide-preview-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+
+                if (option === 'previous') {
+                    document.getElementById('slide-previous-section')?.classList.add('active');
+                    // Tampilkan preview previous hanya jika ada pilihan di select
+                    const previousSelect = document.getElementById('slide_previous_presence_id');
+                    if (previousSelect && previousSelect.value) {
+                        document.getElementById('slide-previous-preview').style.display = 'block';
+                    }
+                } else if (option === 'new') {
+                    document.getElementById('slide-upload-section')?.classList.add('active');
+                    // Di mode 'new', preview hanya akan muncul di mode edit
+                    // Logika tampilan preview di handleFiles() dan updatePreview()
+                    const fileInput = document.getElementById('slide_images');
+                    const uploadPreview = document.getElementById('slide-upload-preview');
+                    const modeContainer = document.querySelector('.slide-options-grid');
+                    const isEditMode = modeContainer ? modeContainer.classList.contains('edit-mode') : false;
+
+                    if (isEditMode && fileInput && fileInput.files.length > 0 && uploadPreview) {
+                        uploadPreview.style.display = 'block';
+                    } else if (uploadPreview) {
+                        uploadPreview.style.display = 'none'; // Sembunyikan di mode create
+                    }
+
+                } else if (option === 'keep') {
+                    if (keepPreviewSection) {
+                        keepPreviewSection.style.display = 'block';
+                    }
+                }
+            }
+
+            // --- Penanganan Upload File (Inti Perbaikan) ---
             const fileInput = document.getElementById('slide_images');
             const uploadArea = document.getElementById('upload-area');
             const uploadButton = document.getElementById('upload-trigger-button');
@@ -1117,54 +821,54 @@
             const fileInfo = document.getElementById('file-info');
             const clearFilesBtn = document.getElementById('clear-files-btn');
 
-            if (!fileInput || !uploadArea) {
-                console.error('Required upload elements not found');
-                return;
-            }
+            // Deteksi mode edit/create dari kelas CSS pada kontainer utama
+            const modeContainer = document.querySelector('.slide-options-grid');
+            // Pastikan elemen ditemukan sebelum mengakses classList
+            const isEditMode = modeContainer ? modeContainer.classList.contains('edit-mode') : false;
 
-            // Track selected files
+            // Variabel untuk melacak file yang dipilih
             let selectedFiles = [];
 
-            // Clear files function
+            // Fungsi untuk mengosongkan semua file yang dipilih dan mereset UI
             function clearAllFiles() {
                 selectedFiles = [];
-                fileInput.value = '';
-                
+                fileInput.value = ''; // Mengosongkan input file
+
                 if (uploadPreviewGrid) {
-                    uploadPreviewGrid.innerHTML = '';
+                    uploadPreviewGrid.innerHTML = ''; // Hapus semua pratinjau
                 }
-                
+
                 if (uploadPreview) {
-                    uploadPreview.style.display = 'none';
+                    uploadPreview.style.display = 'none'; // Sembunyikan bagian pratinjau
                 }
-                
+
                 if (clearFilesBtn) {
-                    clearFilesBtn.style.display = 'none';
+                    clearFilesBtn.style.display = 'none'; // Sembunyikan tombol hapus semua
                 }
-                
+
                 if (uploadButton) {
-                    uploadButton.innerHTML = `<i class="fas fa-plus"></i> Pilih File`;
+                    uploadButton.innerHTML = `<i class="fas fa-plus"></i> Pilih File`; // Reset teks tombol
                 }
-                
+
                 if (fileInfo) {
-                    fileInfo.innerHTML = '';
+                    fileInfo.innerHTML = ''; // Kosongkan info file
                 }
-                
+
                 console.log('All files cleared');
             }
 
-            // Update file info display
+            // Memperbarui tampilan informasi file (jumlah & total ukuran)
             function updateFileInfo() {
                 if (!fileInfo) return;
-                
+
                 if (selectedFiles.length === 0) {
                     fileInfo.innerHTML = '';
                     return;
                 }
-                
+
                 const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
                 const sizeText = formatFileSize(totalSize);
-                
+
                 fileInfo.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span><strong>${selectedFiles.length}</strong> file(s) dipilih - Total: <strong>${sizeText}</strong></span>
@@ -1172,7 +876,7 @@
                 `;
             }
 
-            // Format file size
+            // Fungsi pembantu untuk memformat ukuran file
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -1181,39 +885,39 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
 
-            // Validate file
+            // Fungsi untuk memvalidasi satu file
             function validateFile(file) {
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
                 const maxSize = 2 * 1024 * 1024; // 2MB
-                
+
                 if (!allowedTypes.includes(file.type)) {
                     return `File ${file.name} bukan format gambar yang didukung.`;
                 }
-                
+
                 if (file.size > maxSize) {
                     return `File ${file.name} terlalu besar. Maksimal 2MB.`;
                 }
-                
-                return null;
+
+                return null; // File valid
             }
 
-            // Handle files
+            // Fungsi utama untuk menangani file yang dipilih (baik dari input atau drag & drop)
             function handleFiles(files) {
                 console.log('Handling files:', files.length);
-                
+
                 if (!files || files.length === 0) {
                     clearAllFiles();
                     return;
                 }
 
-                // Clear previous files
+                // Kosongkan file sebelumnya saat ada file baru yang dipilih
                 selectedFiles = [];
-                
-                // Validate and add files (max 5)
+
+                // Validasi dan tambahkan file (maksimal 5)
                 const filesToProcess = Array.from(files).slice(0, 5);
                 const validFiles = [];
                 const errors = [];
-                
+
                 filesToProcess.forEach(file => {
                     const error = validateFile(file);
                     if (error) {
@@ -1222,159 +926,117 @@
                         validFiles.push(file);
                     }
                 });
-                
-                // Show errors if any
+
+                // Tampilkan error jika ada
                 if (errors.length > 0) {
                     showCustomAlert(errors.join('\n'));
                 }
-                
+
                 if (validFiles.length === 0) {
                     clearAllFiles();
                     return;
                 }
-                
+
                 selectedFiles = validFiles;
-                
-                // Update input files using DataTransfer
+
+                // Perbarui input file menggunakan DataTransfer agar file yang valid saja yang terkirim
                 const dt = new DataTransfer();
                 validFiles.forEach(file => dt.items.add(file));
                 fileInput.files = dt.files;
-                
-                // Update UI
-                updatePreview();
-                updateFileInfo();
-                
+
+                // Perbarui UI
+                updateFileInfo(); // Selalu perbarui info file
+                updatePreview(); // Perbarui pratinjau berdasarkan mode
+
                 if (uploadButton) {
                     uploadButton.innerHTML = `<i class="fas fa-check"></i> ${validFiles.length} file${validFiles.length > 1 ? 's' : ''} dipilih`;
                 }
-                
+
                 if (clearFilesBtn) {
-                    clearFilesBtn.style.display = 'inline-flex';
+                    clearFilesBtn.style.display = 'inline-flex'; // Tampilkan tombol hapus semua
                 }
-                
+
                 console.log('Files processed:', validFiles.length);
             }
 
-            // Update preview
+            // Fungsi untuk memperbarui tampilan pratinjau gambar
             function updatePreview() {
                 if (!uploadPreviewGrid) return;
-                
-                uploadPreviewGrid.innerHTML = '';
-                
+
+                uploadPreviewGrid.innerHTML = ''; // Kosongkan pratinjau yang ada
+
                 if (selectedFiles.length === 0) {
                     if (uploadPreview) {
                         uploadPreview.style.display = 'none';
                     }
                     return;
                 }
-                
-                selectedFiles.forEach((file, index) => {
+
+                // Logika tampilan pratinjau berdasarkan mode (create/edit)
+                if (!isEditMode) {
+                    // Jika di mode CREATE, JANGAN tampilkan pratinjau
+                    if (uploadPreview) {
+                        uploadPreview.style.display = 'none';
+                    }
+                    return; // Hentikan eksekusi fungsi
+                }
+
+                // Jika di mode EDIT, tampilkan pratinjau (TANPA tombol 'x')
+                selectedFiles.forEach((file) => {
                     const reader = new FileReader();
-                    
+
                     reader.onload = function(e) {
                         const previewItem = document.createElement('div');
                         previewItem.className = 'slide-preview-item';
-                        previewItem.style.position = 'relative';
-                        
+                        previewItem.style.position = 'relative'; // Diperlukan untuk positioning jika ada elemen lain
+
                         const img = document.createElement('img');
                         img.src = e.target.result;
                         img.className = 'slide-preview-image';
                         img.alt = file.name;
-                        
-                        // Add remove button for individual files
-                        const removeBtn = document.createElement('button');
-                        removeBtn.type = 'button';
-                        removeBtn.innerHTML = '×';
-                        removeBtn.style.cssText = `
-                            position: absolute;
-                            top: 5px;
-                            right: 5px;
-                            background: rgba(220, 53, 69, 0.9);
-                            color: white;
-                            border: none;
-                            border-radius: 50%;
-                            width: 20px;
-                            height: 20px;
-                            font-size: 12px;
-                            cursor: pointer;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        `;
-                        
-                        removeBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            removeFile(index);
-                        });
-                        
+
                         previewItem.appendChild(img);
-                        previewItem.appendChild(removeBtn);
                         uploadPreviewGrid.appendChild(previewItem);
                     };
-                    
+
                     reader.onerror = function() {
                         console.error('Failed to read file:', file.name);
                     };
-                    
+
                     reader.readAsDataURL(file);
                 });
-                
+
+                // Tampilkan kontainer pratinjau jika ada file di mode edit
                 if (uploadPreview) {
                     uploadPreview.style.display = 'block';
                 }
             }
 
-            // Remove individual file
-            function removeFile(index) {
-                if (index >= 0 && index < selectedFiles.length) {
-                    selectedFiles.splice(index, 1);
-                    
-                    // Update input files
-                    const dt = new DataTransfer();
-                    selectedFiles.forEach(file => dt.items.add(file));
-                    fileInput.files = dt.files;
-                    
-                    // Update UI
-                    updatePreview();
-                    updateFileInfo();
-                    
-                    if (selectedFiles.length === 0) {
-                        clearAllFiles();
-                    } else {
-                        if (uploadButton) {
-                            uploadButton.innerHTML = `<i class="fas fa-check"></i> ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} dipilih`;
-                        }
-                    }
-                    
-                    console.log('File removed, remaining:', selectedFiles.length);
-                }
-            }
+            // --- Event Listeners ---
 
-            // Event listeners
-            
-            // File input change
+            // Event listener untuk perubahan pada input file
             fileInput.addEventListener('change', (e) => {
                 handleFiles(e.target.files);
             });
-            
-            // Upload button click
+
+            // Event listener untuk klik pada tombol "Pilih File"
             if (uploadButton) {
                 uploadButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
-                    fileInput.click();
+                    e.stopPropagation(); // Mencegah event bubbling ke uploadArea
+                    fileInput.click(); // Memicu klik pada input file tersembunyi
                 });
             }
-            
-            // Upload area click (but not on button)
+
+            // Event listener untuk klik pada area upload (selain tombol)
             uploadArea.addEventListener('click', (e) => {
+                // Hanya picu klik input file jika yang diklik bukan tombol upload atau tombol clear
                 if (!e.target.closest('.upload-button') && !e.target.closest('#clear-files-btn')) {
                     fileInput.click();
                 }
             });
-            
-            // Clear files button
+
+            // Event listener untuk tombol "Hapus Semua File"
             if (clearFilesBtn) {
                 clearFilesBtn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1382,45 +1044,94 @@
                     clearAllFiles();
                 });
             }
-            
-            // Drag and drop
+
+            // --- Drag and Drop Event Listeners ---
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 uploadArea.addEventListener(eventName, (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                 });
             });
-            
+
             ['dragenter', 'dragover'].forEach(eventName => {
                 uploadArea.addEventListener(eventName, () => {
                     uploadArea.classList.add('dragover');
                 });
             });
-            
+
             ['dragleave', 'drop'].forEach(eventName => {
                 uploadArea.addEventListener(eventName, () => {
                     uploadArea.classList.remove('dragover');
                 });
             });
-            
+
             uploadArea.addEventListener('drop', (e) => {
                 const files = e.dataTransfer.files;
                 if (files.length > 0) {
                     handleFiles(files);
                 }
             });
-            
-            console.log('File upload initialized');
-        }
 
-        // Call initialization after DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... (existing DOMContentLoaded code) ...
-            
-            // Initialize enhanced file upload
-            initializeFileUpload();
-            
-            // Enhanced validation function
+            console.log('File upload initialized');
+
+            // --- Penanganan Pratinjau Slide dari Kegiatan Sebelumnya ---
+            const previousSelect = document.getElementById('slide_previous_presence_id');
+            const previousPreview = document.getElementById('slide-previous-preview');
+            const previousPreviewGrid = document.getElementById('slide-previous-preview-grid');
+
+            if (previousSelect) {
+                previousSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const slidesData = selectedOption.getAttribute('data-slides');
+
+                    if (previousPreviewGrid) {
+                        previousPreviewGrid.innerHTML = ''; // Kosongkan pratinjau yang ada
+                    }
+
+                    if (slidesData && slidesData !== '[]' && this.value) {
+                        try {
+                            const slides = JSON.parse(slidesData);
+
+                            slides.forEach((slide) => {
+                                const previewItem = document.createElement('div');
+                                previewItem.className = 'slide-preview-item';
+
+                                const img = document.createElement('img');
+                                img.src = `/uploads/${slide.image_path}`; // Pastikan path benar
+                                img.className = 'slide-preview-image';
+                                img.alt = 'Slide preview';
+
+                                previewItem.appendChild(img);
+                                if (previousPreviewGrid) {
+                                    previousPreviewGrid.appendChild(previewItem);
+                                }
+                            });
+
+                            if (previousPreview) {
+                                previousPreview.style.display = 'block';
+                            }
+                        } catch (error) {
+                            console.error('Error parsing slides data:', error);
+                            if (previousPreview) {
+                                previousPreview.style.display = 'none';
+                            }
+                        }
+                    } else {
+                        if (previousPreview) {
+                            previousPreview.style.display = 'none';
+                        }
+                    }
+                });
+            }
+
+            // Pemicu perubahan awal untuk pratinjau slide sebelumnya jika sudah dipilih
+            const initialSelectedOption = getSelectedOption();
+            if (initialSelectedOption === 'previous' && previousSelect && previousSelect.value) {
+                const event = new Event('change');
+                previousSelect.dispatchEvent(event);
+            }
+
+            // --- Fungsi Validasi Global (untuk form submission) ---
             window.validateSlideSettings = function() {
                 const selectedOption = document.querySelector('input[name="slide_option"]:checked')?.value;
                 console.log('Validating slide option:', selectedOption);
@@ -1433,36 +1144,61 @@
                     }
                 } else if (selectedOption === 'new') {
                     const fileInput = document.getElementById('slide_images');
-                    
+
                     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
                         showCustomAlert('Silakan pilih file gambar untuk slide baru.');
                         return false;
                     }
-                    
-                    // Validate each file
+
+                    // Validasi setiap file yang dipilih
                     const files = Array.from(fileInput.files);
-                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                    
                     for (let file of files) {
-                        if (!allowedTypes.includes(file.type)) {
-                            showCustomAlert(`File ${file.name} bukan format gambar yang didukung.`);
-                            return false;
-                        }
-                        
-                        if (file.size > 2 * 1024 * 1024) {
-                            showCustomAlert(`File ${file.name} terlalu besar. Maksimal 2MB per file.`);
+                        const error = validateFile(file); // Gunakan fungsi validateFile yang sudah ada
+                        if (error) {
+                            showCustomAlert(error);
                             return false;
                         }
                     }
-                    
                     console.log('Valid files found:', files.length);
                 }
-
                 return true;
             };
-        });
 
-    });
+            // --- Debugging Helper (Opsional, bisa dihapus di produksi) ---
+            window.debugSlideSettings = function() {
+                const selectedOption = getSelectedOption();
+                const fileInput = document.getElementById('slide_images');
+
+                console.log('=== SLIDE SETTINGS DEBUG ===');
+                console.log('Selected option:', selectedOption);
+                console.log('File input element:', fileInput);
+                console.log('Files in input:', fileInput?.files?.length || 0);
+                console.log('Upload preview visible:', uploadPreview?.style.display !== 'none');
+                console.log('Preview grid children:', uploadPreviewGrid?.children?.length || 0);
+
+                if (fileInput && fileInput.files) {
+                    Array.from(fileInput.files).forEach((file, index) => {
+                        console.log(`File ${index}:`, file.name, file.type, file.size);
+                    });
+                }
+                console.log('=== END DEBUG ===');
+            };
+
+            // Panggil inisialisasi upload file setelah DOM dimuat
+            // Ini akan menangani tampilan awal jika ada file yang sudah ada (misal di mode edit)
+            if (fileInput && uploadArea) {
+                // Simulasikan event change jika ada file yang sudah ada saat halaman dimuat (misal dari backend di mode edit)
+                // Ini penting agar preview tampil jika ada existing files
+                if (fileInput.files && fileInput.files.length > 0) {
+                    handleFiles(fileInput.files);
+                } else {
+                    // Pastikan preview tersembunyi jika tidak ada file saat inisialisasi
+                    if (uploadPreview) {
+                        uploadPreview.style.display = 'none';
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
