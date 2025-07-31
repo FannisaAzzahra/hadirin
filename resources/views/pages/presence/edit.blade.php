@@ -711,7 +711,7 @@
                 <div class="section-divider"></div>
 
                 {{-- Pengaturan Tampilan Section Header --}}
-                <div class="hadirin-section-header">
+                {{-- <div class="hadirin-section-header">
                     <div class="hadirin-section-icon">
                         <i class="fas fa-palette"></i>
                     </div>
@@ -817,7 +817,9 @@
                             <div class="form-helper">Username Instagram tanpa tanda @</div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
+
+                @include('pages.presence.partials.display-settings')
 
                 <div class="section-divider"></div>
 
