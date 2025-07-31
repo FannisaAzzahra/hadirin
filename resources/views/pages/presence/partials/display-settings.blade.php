@@ -30,11 +30,11 @@
         background: white;
         border: 2px solid #a8dadc;
         border-radius: 12px;
-        padding: 1rem; /* Disesuaikan agar lebih ringkas */
+        padding: 1rem; /* Disamakan dengan .slide-option-card.compact */
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
-        min-height: 90px; /* Disesuaikan agar lebih ringkas */
+        min-height: 90px; /* Disamakan dengan .slide-option-card.compact */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -56,19 +56,18 @@
 
     .display-option-content {
         display: flex;
-        align-items: center; /* Disesuaikan dari flex-start */
-        gap: 0.8rem; /* Disesuaikan dari 1rem */
-        margin-bottom: 0.8rem;
+        align-items: center; /* Disamakan dengan .slide-option-card.compact */
+        gap: 0.8rem; /* Disamakan dengan .slide-option-card.compact */
     }
 
     .display-option-icon {
-        width: 38px; /* Disesuaikan dari 44px */
-        height: 38px; /* Disesuaikan dari 44px */
+        width: 38px; /* Disamakan dengan .slide-option-card.compact .slide-option-icon */
+        height: 38px; /* Disamakan dengan .slide-option-card.compact .slide-option-icon */
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem; /* Disesuaikan dari 1.1rem */
+        font-size: 1rem; /* Disamakan dengan .slide-option-card.compact .slide-option-icon */
         flex-shrink: 0;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
@@ -93,14 +92,14 @@
     }
 
     .display-option-title {
-        font-size: 1rem; /* Disesuaikan dari 1.1rem */
+        font-size: 1rem; /* Disamakan dengan .slide-option-card.compact .slide-option-title */
         font-weight: 600;
         color: #0077b6;
-        margin: 0 0 0.2rem 0; /* Disesuaikan dari 0.3rem */
+        margin: 0 0 0.2rem 0; /* Disamakan dengan .slide-option-card.compact .slide-option-title */
     }
 
     .display-option-description {
-        font-size: 0.85rem; /* Disesuaikan dari 0.95rem */
+        font-size: 0.85rem; /* Disamakan dengan .slide-option-card.compact .slide-option-description */
         color: #5f6368;
         margin: 0;
         line-height: 1.4;
@@ -108,10 +107,10 @@
 
     .display-option-radio {
         position: absolute;
-        top: 0.8rem; /* Disesuaikan dari 1rem */
-        right: 0.8rem; /* Disesuaikan dari 1rem */
-        width: 18px; /* Disesuaikan */
-        height: 18px; /* Disesuaikan */
+        top: 1rem; /* Disamakan dengan .slide-option-card.compact */
+        right: 1rem; /* Disamakan dengan .slide-option-card.compact */
+        width: 20px; /* Disamakan dengan .slide-option-card.compact */
+        height: 20px; /* Disamakan dengan .slide-option-card.compact */
         border: 2px solid #dadce0;
         border-radius: 50%;
         background: white;
@@ -128,8 +127,8 @@
 
     .display-option-card.selected .display-option-radio::after {
         content: '';
-        width: 7px; /* Disesuaikan dari 8px */
-        height: 7px; /* Disesuaikan dari 8px */
+        width: 8px; /* Disamakan dengan .slide-option-card.compact */
+        height: 8px; /* Disamakan dengan .slide-option-card.compact */
         background: white;
         border-radius: 50%;
     }
@@ -428,33 +427,33 @@
         }
 
         .display-option-card {
-            padding: 0.8rem; /* Disesuaikan agar lebih ringkas di mobile */
-            min-height: 80px; /* Disesuaikan agar lebih ringkas di mobile */
+            padding: 0.8rem; /* Disamakan dengan .slide-option-card.compact di mobile */
+            min-height: 80px; /* Disamakan dengan .slide-option-card.compact di mobile */
         }
 
         .display-option-icon {
-            width: 34px; /* Disesuaikan untuk mobile */
-            height: 34px; /* Disesuaikan untuk mobile */
-            font-size: 0.9rem; /* Disesuaikan untuk mobile */
+            width: 34px; /* Disamakan dengan .slide-option-card.compact di mobile */
+            height: 34px; /* Disamakan dengan .slide-option-card.compact di mobile */
+            font-size: 0.9rem; /* Disamakan dengan .slide-option-card.compact di mobile */
         }
 
         .display-option-title {
-            font-size: 0.95rem; /* Disesuaikan untuk mobile */
+            font-size: 0.95rem; /* Disamakan dengan .slide-option-card.compact di mobile */
         }
 
         .display-option-description {
-            font-size: 0.8rem; /* Disesuaikan untuk mobile */
+            font-size: 0.8rem; /* Disamakan dengan .slide-option-card.compact di mobile */
         }
 
         .display-option-radio {
-            top: 0.6rem; /* Disesuaikan untuk mobile */
-            right: 0.6rem; /* Disesuaikan untuk mobile */
-            width: 16px; /* Disesuaikan untuk mobile */
-            height: 16px; /* Disesuaikan untuk mobile */
+            top: 0.6rem; /* Disamakan dengan .slide-option-card.compact di mobile */
+            right: 0.6rem; /* Disamakan dengan .slide-option-card.compact di mobile */
+            width: 16px; /* Disamakan dengan .slide-option-card.compact di mobile */
+            height: 16px; /* Disamakan dengan .slide-option-card.compact di mobile */
         }
         .display-option-card.selected .display-option-radio::after {
-            width: 6px; /* Disesuaikan untuk mobile */
-            height: 6px; /* Disesuaikan untuk mobile */
+            width: 6px; /* Disamakan dengan .slide-option-card.compact di mobile */
+            height: 6px; /* Disamakan dengan .slide-option-card.compact di mobile */
         }
     }
 </style>
@@ -481,7 +480,7 @@
         // Tentukan opsi default
         $currentDisplayOption = null;
         if ($isEditMode) {
-            $currentDisplayOption = $presence->display_option_type ?? ($hasExistingDisplay ? 'keep' : 'manual');
+            $currentDisplayOption = 'keep';
         } else {
             $currentDisplayOption = 'manual';
         }

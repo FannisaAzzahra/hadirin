@@ -517,11 +517,10 @@
             $currentSlideOption = null;
 
             if ($isEditMode) {
-                $currentSlideOption = $presence->slide_option_type ?? null;
-                if (!$currentSlideOption && $hasExistingSlides) {
-                    $currentSlideOption = 'keep';
-                } elseif (!$currentSlideOption && !$hasExistingSlides) {
-                    $currentSlideOption = 'none'; // Default jika edit tapi tidak ada slide
+                if ($hasExistingSlides) {
+                    $currentSlideOption = 'keep'; // Memaksa "Tetap gunakan slide saat ini" jika ada slide di mode edit
+                } else {
+                    $currentSlideOption = 'none'; // Jika tidak ada slide yang ada di mode edit, default ke 'none'
                 }
             } else {
                 // Mode create - default ke 'new'
