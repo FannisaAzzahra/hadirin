@@ -483,16 +483,37 @@
             <div class="card-body">
               <form id="form-absen" action="{{ route('absen.save', $presence->id) }}" method="post">
                 @csrf
-                <!-- Unit -->
+
+                <!-- Nama Perusahaan -->
                 <div class="mb-3">
-                  <label for="unit" class="form-label">Unit/Nama Perusahaan</label>
+                  <label for="unit" class="form-label">Nama Perusahaan</label>
                   <select name="unit" id="unit" class="form-select" required>
                       <option value="">-- Pilih Kategori Peserta --</option>
-                      <option value="PLN">PLN</option>
-                      <option value="PLN Group">PLN Group</option>
+                      <option value="PLN UIT JBM">PLN UIT JBM</option>
+                      <option value="PLN Lainnya">PLN Lainnya</option>
                       <option value="Non PLN">Non PLN</option>
                   </select>
                     @error('unit')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3" id="unit-dtl-field">
+                    <label for="unit_dtl" class="form-label">Unit Detail</label>
+                    {{-- Dropdown for PLN UIT JBM --}}
+                    <select name="unit_dtl" id="unit_dtl_select" class="form-select d-none">
+                        <option value="">-- Pilih Unit --</option>
+                        <option value="KANTOR INDUK">KANTOR INDUK</option>
+                        <option value="UPT SURABAYA">UPT SURABAYA</option>
+                        <option value="UPT MALANG">UPT MALANG</option>
+                        <option value="UPT GRESIK">UPT GRESIK</option>
+                        <option value="UPT MADIUN">UPT MADIUN</option>
+                        <option value="UPT PROBOLINGGO">UPT PROBOLINGGO</option>
+                        <option value="UPT BALI">UPT BALI</option>
+                    </select>
+                    {{-- Input text for PLN Lainnya / Non PLN --}}
+                    <input type="text" class="form-control d-none" id="unit_dtl_input" name="unit_dtl" placeholder="Masukkan unit detail">
+                    @error('unit_dtl')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
@@ -509,7 +530,7 @@
                       </option>
                     @endforeach
                   </select>
-                  <small id="nama-helper" class="text-muted d-none">Pilih nama anggota PLN</small>
+                  <small id="nama-helper" class="text-muted d-none">Ketik nama di sini</small>
                     @error('nama')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -664,59 +685,80 @@
 
     <script>
       $(function() {
-        // set signature pad width
-        let sig = $("#signature-pad").parent().width();
-        $('#signature-pad').attr('width', sig);
+          // set signature pad width
+          let sig = $("#signature-pad").parent().width();
+          $('#signature-pad').attr('width', sig);
 
-        // set canvas color
-        let signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
-            backgroundColor: 'rgb(255, 255, 255, 0)',
-            penColor: 'rgb(0, 0, 0)',
-        });
+          // set canvas color
+          let signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+              backgroundColor: 'rgb(255, 255, 255, 0)',
+              penColor: 'rgb(0, 0, 0)',
+          });
 
-        // fill signature to textarea
-        $('canvas').on('mouseup touchend', function() {
-            $('#signature64').val(signaturePad.toDataURL());
-        });
+          // fill signature to textarea
+          $('canvas').on('mouseup touchend', function() {
+              $('#signature64').val(signaturePad.toDataURL());
+          });
 
-        // clear signature
-        $('#clear').on('click', function(e) {
-            e.preventDefault();
-            signaturePad.clear();
-            $('#signature64').val('');
-        });
+          // clear signature
+          $('#clear').on('click', function(e) {
+              e.preventDefault();
+              signaturePad.clear();
+              $('#signature64').val('');
+          });
 
-        // submit form
-        $('#form-absen').on('submit', function() {
-            $(this).find('button[type="submit"]').attr('disabled', 'disabled');
-        });
+          // submit form
+          $('#form-absen').on('submit', function() {
+              $(this).find('button[type="submit"]').attr('disabled', 'disabled');
+          });
 
-        // Logika untuk PLN - autofill data anggota
-        function toggleNamaField() {
-            let unit = $('#unit').val();
-            if (unit === 'PLN') {
-                $('#nama').addClass('d-none').prop('disabled', true);
-                $('#nama-pln').removeClass('d-none').prop('disabled', false);
-                $('#nama-helper').removeClass('d-none');
-            } else {
-                $('#nama').removeClass('d-none').prop('disabled', false);
-                $('#nama-pln').addClass('d-none').prop('disabled', true);
-                $('#nama-helper').addClass('d-none');
-            }
-        }
+          // Logika untuk PLN - autofill data anggota
+          function toggleNamaField() {
+              let unit = $('#unit').val();
+              if (unit === 'PLN UIT JBM') { // Changed from 'PLN' to 'PLN UIT JBM'
+                  $('#nama').addClass('d-none').prop('disabled', true);
+                  $('#nama-pln').removeClass('d-none').prop('disabled', false);
+                  $('#nama-helper').removeClass('d-none');
+              } else {
+                  $('#nama').removeClass('d-none').prop('disabled', false);
+                  $('#nama-pln').addClass('d-none').prop('disabled', true);
+                  $('#nama-helper').addClass('d-none');
+              }
+          }
 
-        toggleNamaField();
-        $('#unit').on('change', toggleNamaField);
+          toggleNamaField();
+          $('#unit').on('change', toggleNamaField);
 
-        // Autofill NIP dan Email saat pilih nama anggota PLN
-        $('#nama-pln').on('change', function() {
-            let nip = $(this).find(':selected').data('nip') || '';
-            let email = $(this).find(':selected').data('email') || '';
-            $('#nip').val(nip);
-            $('#email').val(email);
-        });
+          // Autofill NIP dan Email saat pilih nama anggota PLN
+          $('#nama-pln').on('change', function() {
+              let nip = $(this).find(':selected').data('nip') || '';
+              let email = $(this).find(':selected').data('email') || '';
+              $('#nip').val(nip);
+              $('#email').val(email);
+          });
+
+          // Logika untuk Unit Detail
+          function toggleUnitDetailField() {
+              let unit = $('#unit').val();
+              if (unit === 'PLN UIT JBM') {
+                  $('#unit_dtl_select').removeClass('d-none').prop('disabled', false).attr('required', true);
+                  $('#unit_dtl_input').addClass('d-none').prop('disabled', true).removeAttr('required');
+              } else if (unit === 'PLN Lainnya' || unit === 'Non PLN') {
+                  $('#unit_dtl_select').addClass('d-none').prop('disabled', true).removeAttr('required');
+                  $('#unit_dtl_input').removeClass('d-none').prop('disabled', false).attr('required', true);
+              } else {
+                  // Hide both if no unit is selected
+                  $('#unit_dtl_select').addClass('d-none').prop('disabled', true).removeAttr('required');
+                  $('#unit_dtl_input').addClass('d-none').prop('disabled', true).removeAttr('required');
+              }
+          }
+
+          // Initial call and on change
+          toggleUnitDetailField();
+          $('#unit').on('change', toggleUnitDetailField);
       });
-    </script>
+  </script>
+
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
   </body>  
 </html>

@@ -33,21 +33,32 @@ class AbsenController extends Controller
     {
         $presence = Presence::findOrFail($id);
 
-        $request->validate([
+        $rules = [
             'nama'      => 'required|string',
-            'nip'       => 'required|string',
-            'email'     => 'required|email',
-            'jabatan'   => 'required|string',
-            'unit'      => 'required|in:PLN,PLN Group,Non PLN',
+            'nip'       => 'nullable|string', // Changed to nullable as per migration
+            'email'     => 'nullable|email', // Changed to nullable as per migration
+            'jabatan'   => 'nullable|string', // Changed to nullable as per migration
+            'unit'      => 'required|in:PLN UIT JBM,PLN Lainnya,Non PLN', // Updated options
             'no_hp'     => 'required|string',
             'signature' => 'required',
-        ]);
+        ];
+
+        // Conditional validation for unit_dtl
+        if ($request->unit === 'PLN UIT JBM') {
+            $rules['unit_dtl'] = 'required|in:KANTOR INDUK,UPT SURABAYA,UPT MALANG,UPT GRESIK,UPT MADIUN,UPT PROBOLINGGO,UPT BALI';
+        } else {
+            $rules['unit_dtl'] = 'required|string'; // For PLN Lainnya or Non PLN, it's a string input
+        }
+
+        $request->validate($rules);
+
 
         // Mengambil data presence nya berdasarkan id
         $presenceDetail = new PresenceDetail();
         $presenceDetail->presence_id = $presence->id;
         $presenceDetail->nama = $request->nama;
         $presenceDetail->unit = $request->unit;
+        $presenceDetail->unit_dtl = $request->unit_dtl; // Save unit_dtl
         $presenceDetail->no_hp = $request->no_hp;
 
         // Semua field diisi dari input, tidak ada yang dikosongkan
@@ -70,6 +81,6 @@ class AbsenController extends Controller
         $presenceDetail->signature = $signature;
         $presenceDetail->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Absensi berhasil disimpan!'); // Added success message
     }
 }
