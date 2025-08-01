@@ -14,11 +14,6 @@
             min-height: 100vh;
         }
 
-        /* Container Enhancement */
-        /* .container {
-            max-width: 1400px;
-        } */
-
         /* Header Card Styling */
         .header-card {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
@@ -70,15 +65,15 @@
         }
 
         .detail-table table {
-            width: 100%; /* Ensure the table itself takes full width */
-            table-layout: fixed; /* Important for exact column widths */
+            width: 100%;
+            table-layout: fixed;
         }
 
         .detail-table td {
             padding: 0.75rem 0;
             border: none;
             font-size: 1rem;
-            vertical-align: top; /* Align content to the top */
+            vertical-align: top;
         }
 
         .detail-table td:first-child {
@@ -88,15 +83,15 @@
         }
 
         .detail-table td:nth-child(2) {
-            width: 20px; /* Adjust width of the colon column, make it slightly wider if needed */
-            text-align: center; /* Center the colon */
-            padding-left: 0; /* Remove extra padding */
-            padding-right: 0; /* Remove extra padding */
+            width: 20px;
+            text-align: center;
+            padding-left: 0;
+            padding-right: 0;
         }
 
         .detail-table td:last-child {
             color: #333;
-            width: 75%; /* The remaining width for the details */
+            width: 75%;
         }
 
         .detail-table .location-link {
@@ -332,8 +327,6 @@
             font-size: 0.9rem;
         }
 
-        /* Table Responsive */
-
         /* Helper Text */
         .text-muted {
             font-size: 0.875rem;
@@ -435,17 +428,15 @@
               <tr>
                 <td>Tanggal Kegiatan</td>
                 <td>:</td>
-                {{-- <td>{{ date('d F Y', strtotime($presence->tgl_kegiatan)) }}</td> --}}
                 @php
                   \Carbon\Carbon::setLocale('id');
                   $tanggalKegiatan = \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('d F Y');
-              @endphp
-              <td>{{ $tanggalKegiatan }}</td>
+                @endphp
+                <td>{{ $tanggalKegiatan }}</td>
               </tr>
               <tr>
                 <td>Waktu Mulai</td>
                 <td>:</td>
-                {{-- <td>{{ date('H:i', strtotime($presence->tgl_kegiatan)) }} WIB</td> --}}
                 @php
                     $waktuMulai = \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('H:i');
                 @endphp
@@ -472,6 +463,26 @@
         </div>
       </div>
 
+      <!-- Success/Error Messages -->
+      @if(session('success'))
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+      @endif
+
+      @if($errors->any())
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="fas fa-exclamation-circle me-2"></i>
+              <ul class="mb-0">
+                  @foreach($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+      @endif
+
       <!-- Main Grid -->
       <div class="row">
         <!-- Kiri: Form Absensi -->
@@ -489,9 +500,11 @@
                   <label for="unit" class="form-label">Nama Perusahaan</label>
                   <select name="unit" id="unit" class="form-select" required>
                       <option value="">-- Pilih Kategori Peserta --</option>
-                      <option value="PLN UIT JBM">PLN UIT JBM</option>
-                      <option value="PLN Lainnya">PLN Lainnya</option>
-                      <option value="Non PLN">Non PLN</option>
+                      @foreach($companies as $company)
+                          <option value="{{ $company->name }}" {{ old('unit') == $company->name ? 'selected' : '' }}>
+                              {{ $company->name }}
+                          </option>
+                      @endforeach
                   </select>
                     @error('unit')
                         <div class="text-danger">{{ $message }}</div>
@@ -500,18 +513,11 @@
 
                 <div class="mb-3" id="unit-dtl-field">
                     <label for="unit_dtl" class="form-label">Unit Detail</label>
-                    {{-- Dropdown for PLN UIT JBM --}}
+                    {{-- Dropdown for companies with predefined units --}}
                     <select name="unit_dtl" id="unit_dtl_select" class="form-select d-none">
                         <option value="">-- Pilih Unit --</option>
-                        <option value="KANTOR INDUK">KANTOR INDUK</option>
-                        <option value="UPT SURABAYA">UPT SURABAYA</option>
-                        <option value="UPT MALANG">UPT MALANG</option>
-                        <option value="UPT GRESIK">UPT GRESIK</option>
-                        <option value="UPT MADIUN">UPT MADIUN</option>
-                        <option value="UPT PROBOLINGGO">UPT PROBOLINGGO</option>
-                        <option value="UPT BALI">UPT BALI</option>
                     </select>
-                    {{-- Input text for PLN Lainnya / Non PLN --}}
+                    {{-- Input text for companies without predefined units --}}
                     <input type="text" class="form-control d-none" id="unit_dtl_input" name="unit_dtl" placeholder="Masukkan unit detail">
                     @error('unit_dtl')
                         <div class="text-danger">{{ $message }}</div>
@@ -521,7 +527,7 @@
                 <!-- Nama -->
                 <div class="mb-3" id="nama-field">
                   <label for="nama" class="form-label">Nama</label>
-                  <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama lengkap">
+                  <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama lengkap" value="{{ old('nama') }}">
                   <select class="form-select d-none" id="nama-pln" name="nama" disabled>
                     <option value="">-- Pilih Anggota PLN --</option>
                     @foreach($plnMembers as $member)
@@ -539,7 +545,7 @@
                 <!-- NIP -->
                 <div class="mb-3">
                   <label for="nip" class="form-label">NIP</label>
-                  <input type="text" class="form-control" id="nip" name="nip" placeholder="Masukkan NIP">
+                  <input type="text" class="form-control" id="nip" name="nip" placeholder="Masukkan NIP" value="{{ old('nip') }}">
                     @error('nip')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -548,7 +554,7 @@
                 <!-- Email -->
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email" value="{{ old('email') }}">
                     @error('email')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -557,7 +563,7 @@
                 <!-- Jabatan -->
                 <div class="mb-3">
                   <label for="jabatan" class="form-label">Jabatan</label>
-                  <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Masukkan jabatan">
+                  <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Masukkan jabatan" value="{{ old('jabatan') }}">
                     @error('jabatan')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -566,7 +572,7 @@
                 <!-- No HP -->
                 <div class="mb-3">
                   <label for="no_hp" class="form-label">No HP</label>
-                  <input type="text" class="form-control" id="no_hp" name="no_hp" placeholder="Masukkan nomor HP">
+                  <input type="text" class="form-control" id="no_hp" name="no_hp" placeholder="Masukkan nomor HP" value="{{ old('no_hp') }}">
                     @error('no_hp')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -674,7 +680,7 @@
       </div>
       <!-- End row -->
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -684,6 +690,9 @@
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
 
     <script>
+      // Data companies dengan units (dari server)
+      const companiesData = @json($companies);
+
       $(function() {
           // set signature pad width
           let sig = $("#signature-pad").parent().width();
@@ -712,10 +721,10 @@
               $(this).find('button[type="submit"]').attr('disabled', 'disabled');
           });
 
-          // Logika untuk PLN - autofill data anggota
+          // Function to toggle nama field based on company selection
           function toggleNamaField() {
               let unit = $('#unit').val();
-              if (unit === 'PLN UIT JBM') { // Changed from 'PLN' to 'PLN UIT JBM'
+              if (unit === 'PLN UIT JBM') {
                   $('#nama').addClass('d-none').prop('disabled', true);
                   $('#nama-pln').removeClass('d-none').prop('disabled', false);
                   $('#nama-helper').removeClass('d-none');
@@ -726,8 +735,52 @@
               }
           }
 
+          // Function to populate unit detail dropdown
+          function populateUnitDropdown(companyName) {
+              const company = companiesData.find(c => c.name === companyName);
+              const selectElement = $('#unit_dtl_select');
+              const inputElement = $('#unit_dtl_input');
+              
+              // Clear existing options
+              selectElement.empty().append('<option value="">-- Pilih Unit --</option>');
+              
+              if (company && company.active_units && company.active_units.length > 0) {
+                  // Company has predefined units - show dropdown
+                  company.active_units.forEach(unit => {
+                      selectElement.append(`<option value="${unit.name}">${unit.name}</option>`);
+                  });
+                  
+                  selectElement.removeClass('d-none').prop('disabled', false).attr('required', true);
+                  inputElement.addClass('d-none').prop('disabled', true).removeAttr('required');
+              } else {
+                  // No predefined units - show text input
+                  selectElement.addClass('d-none').prop('disabled', true).removeAttr('required');
+                  inputElement.removeClass('d-none').prop('disabled', false).attr('required', true);
+              }
+          }
+
+          // Handle company selection change
+          $('#unit').on('change', function() {
+              const selectedCompany = $(this).val();
+              
+              // Toggle nama field
+              toggleNamaField();
+              
+              // Populate unit dropdown
+              if (selectedCompany) {
+                  populateUnitDropdown(selectedCompany);
+              } else {
+                  // Hide both unit detail fields if no company selected
+                  $('#unit_dtl_select').addClass('d-none').prop('disabled', true).removeAttr('required');
+                  $('#unit_dtl_input').addClass('d-none').prop('disabled', true).removeAttr('required');
+              }
+          });
+
+          // Initial setup
           toggleNamaField();
-          $('#unit').on('change', toggleNamaField);
+          if ($('#unit').val()) {
+              populateUnitDropdown($('#unit').val());
+          }
 
           // Autofill NIP dan Email saat pilih nama anggota PLN
           $('#nama-pln').on('change', function() {
@@ -736,26 +789,6 @@
               $('#nip').val(nip);
               $('#email').val(email);
           });
-
-          // Logika untuk Unit Detail
-          function toggleUnitDetailField() {
-              let unit = $('#unit').val();
-              if (unit === 'PLN UIT JBM') {
-                  $('#unit_dtl_select').removeClass('d-none').prop('disabled', false).attr('required', true);
-                  $('#unit_dtl_input').addClass('d-none').prop('disabled', true).removeAttr('required');
-              } else if (unit === 'PLN Lainnya' || unit === 'Non PLN') {
-                  $('#unit_dtl_select').addClass('d-none').prop('disabled', true).removeAttr('required');
-                  $('#unit_dtl_input').removeClass('d-none').prop('disabled', false).attr('required', true);
-              } else {
-                  // Hide both if no unit is selected
-                  $('#unit_dtl_select').addClass('d-none').prop('disabled', true).removeAttr('required');
-                  $('#unit_dtl_input').addClass('d-none').prop('disabled', true).removeAttr('required');
-              }
-          }
-
-          // Initial call and on change
-          toggleUnitDetailField();
-          $('#unit').on('change', toggleUnitDetailField);
       });
   </script>
 

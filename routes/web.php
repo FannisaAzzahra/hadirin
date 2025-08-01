@@ -5,6 +5,8 @@ use App\Http\Controllers\PlnMemberController;
 use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\PresenceDetailController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyUnitController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -38,10 +40,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('pln-members', PlnMemberController::class)->except(['show']);
     Route::get('pln-members/template', [PlnMemberController::class, 'downloadTemplate'])->name('pln-members.template');
     Route::post('pln-members/import-ajax', [PlnMemberController::class, 'importAjax'])->name('pln-members.import-ajax');
+
+    // NEW: Routes untuk Companies Management
+    Route::resource('companies', CompanyController::class);
+    Route::patch('companies/{company}/toggle-status', [CompanyController::class, 'toggleStatus'])->name('companies.toggle-status');
+    Route::get('/api/companies-with-units', [CompanyController::class, 'getCompaniesWithUnits'])->name('api.companies-with-units');
+
+    // NEW: Routes untuk Company Units Management
+    Route::resource('company-units', CompanyUnitController::class);
+    Route::patch('company-units/{companyUnit}/toggle-status', [CompanyUnitController::class, 'toggleStatus'])->name('company-units.toggle-status');
+    Route::get('/api/units-by-company', [CompanyUnitController::class, 'getUnitsByCompany'])->name('api.units-by-company');
 });
 
 //Publik
 Route::get('absen/{slug}', [AbsenController::class, 'index'])->name('absen.index');
 Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.save');
+Route::get('/api/units-by-company-public', [AbsenController::class, 'getUnitsByCompany'])->name('api.units-by-company-public');
 
 Auth::routes();

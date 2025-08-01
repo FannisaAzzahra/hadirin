@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\DataTables\AbsenDataTable;
 use App\Models\Presence;
 use App\Models\PresenceDetail;
+use App\Models\Company;
+use App\Models\CompanyUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PlnMember;
@@ -25,62 +27,92 @@ class AbsenController extends Controller
             abort(403, 'Absensi ini sudah ditutup (lewat batas waktu).');
         }
 
+        // Get data untuk dropdown
         $plnMembers = PlnMember::all();
-        return $dataTable->render('pages.absen.index', compact('presence', 'plnMembers'));
+        $companies = Company::getCompaniesWithUnits(); // Get companies with their units
+
+        return $dataTable->render('pages.absen.index', compact('presence', 'plnMembers', 'companies'));
     }
 
     public function save(Request $request, string $id)
     {
         $presence = Presence::findOrFail($id);
 
+        // Basic validation rules
         $rules = [
             'nama'      => 'required|string',
-            'nip'       => 'nullable|string', // Changed to nullable as per migration
-            'email'     => 'nullable|email', // Changed to nullable as per migration
-            'jabatan'   => 'nullable|string', // Changed to nullable as per migration
-            'unit'      => 'required|in:PLN UIT JBM,PLN Lainnya,Non PLN', // Updated options
+            'nip'       => 'nullable|string',
+            'email'     => 'nullable|email',
+            'jabatan'   => 'nullable|string',
+            'unit'      => 'required|exists:companies,name', // Validate against companies table
             'no_hp'     => 'required|string',
             'signature' => 'required',
         ];
 
-        // Conditional validation for unit_dtl
-        if ($request->unit === 'PLN UIT JBM') {
-            $rules['unit_dtl'] = 'required|in:KANTOR INDUK,UPT SURABAYA,UPT MALANG,UPT GRESIK,UPT MADIUN,UPT PROBOLINGGO,UPT BALI';
+        // Get the selected company
+        $selectedCompany = Company::where('name', $request->unit)->first();
+        
+        if (!$selectedCompany) {
+            return redirect()->back()->withErrors(['unit' => 'Perusahaan tidak valid.']);
+        }
+
+        // Dynamic validation for unit_dtl based on selected company
+        if ($selectedCompany->activeUnits()->count() > 0) {
+            // If company has predefined units, validate against them
+            $validUnits = $selectedCompany->activeUnits()->pluck('name')->toArray();
+            $rules['unit_dtl'] = 'required|in:' . implode(',', $validUnits);
         } else {
-            $rules['unit_dtl'] = 'required|string'; // For PLN Lainnya or Non PLN, it's a string input
+            // If no predefined units, allow free text input
+            $rules['unit_dtl'] = 'required|string';
         }
 
         $request->validate($rules);
 
-
-        // Mengambil data presence nya berdasarkan id
+        // Create presence detail
         $presenceDetail = new PresenceDetail();
         $presenceDetail->presence_id = $presence->id;
         $presenceDetail->nama = $request->nama;
         $presenceDetail->unit = $request->unit;
-        $presenceDetail->unit_dtl = $request->unit_dtl; // Save unit_dtl
+        $presenceDetail->unit_dtl = $request->unit_dtl;
         $presenceDetail->no_hp = $request->no_hp;
 
-        // Semua field diisi dari input, tidak ada yang dikosongkan
+        // Set optional fields
         $presenceDetail->nip = $request->nip;
         $presenceDetail->email = $request->email;
         $presenceDetail->jabatan = $request->jabatan;
 
-        // Decode base64 image
+        // Process signature
         $base64_image = $request->signature;
         @list($type, $file_data) = explode(';', $base64_image);
         @list(, $file_data) = explode(',', $file_data);
 
-        // Generate nama file
+        // Generate unique filename
         $uniqChar = date('YmdHis').uniqid();
         $signature = "tanda-tangan/{$uniqChar}.png";
 
-        // Simpan gambar ke public storage
+        // Save signature to storage
         Storage::disk('public_uploads')->put($signature, base64_decode($file_data));
 
         $presenceDetail->signature = $signature;
         $presenceDetail->save();
 
-        return redirect()->back()->with('success', 'Absensi berhasil disimpan!'); // Added success message
+        return redirect()->back()->with('success', 'Absensi berhasil disimpan!');
+    }
+
+    /**
+     * API endpoint untuk mendapatkan units berdasarkan company (untuk AJAX)
+     */
+    public function getUnitsByCompany(Request $request)
+    {
+        $companyName = $request->company_name;
+        $company = Company::where('name', $companyName)->first();
+        
+        if (!$company) {
+            return response()->json([]);
+        }
+
+        $units = $company->activeUnits;
+        
+        return response()->json($units);
     }
 }

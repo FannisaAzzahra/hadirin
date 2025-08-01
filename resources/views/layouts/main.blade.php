@@ -110,6 +110,41 @@
         box-shadow: 0 0 0 0.25rem rgba(255, 214, 10, 0.25);
       }
 
+      /* Dropdown Menu Styling */
+      .dropdown-menu {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 2px solid rgba(255, 214, 10, 0.2);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 119, 182, 0.15);
+        padding: 0.5rem 0;
+        margin-top: 0.5rem;
+      }
+
+      .dropdown-item {
+        color: #0077b6 !important;
+        padding: 0.7rem 1.5rem;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        margin: 0.2rem 0.5rem;
+        font-weight: 500;
+      }
+
+      .dropdown-item:hover {
+        background: linear-gradient(135deg, #ffd60a 0%, #ffed4a 100%);
+        color: #0077b6 !important;
+        transform: translateX(5px);
+      }
+
+      .dropdown-item.active {
+        background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
+        color: #ffffff !important;
+      }
+
+      .dropdown-divider {
+        border-color: rgba(255, 214, 10, 0.3);
+        margin: 0.5rem 0;
+      }
+
       /* Mobile responsiveness */
       @media (max-width: 991.98px) {
         .navbar-collapse {
@@ -123,6 +158,20 @@
 
         .navbar-nav .nav-link {
           margin: 0.2rem 0;
+        }
+
+        .dropdown-menu {
+          background: rgba(0, 180, 216, 0.9);
+          border: 1px solid rgba(255, 214, 10, 0.3);
+        }
+
+        .dropdown-item {
+          color: #ffffff !important;
+        }
+
+        .dropdown-item:hover {
+          background: rgba(255, 214, 10, 0.2);
+          color: #ffffff !important;
         }
       }
 
@@ -146,16 +195,49 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('presence.*') ? 'active' : '' }}" href="{{ route('presence.index') }}">Daftar Kegiatan</a>
+                        <a class="nav-link {{ request()->routeIs('presence.*') ? 'active' : '' }}" href="{{ route('presence.index') }}">
+                            <i class="fas fa-calendar-check me-1"></i> Daftar Kegiatan
+                        </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pln-members.*') ? 'active' : '' }}" href="{{ route('pln-members.index') }}">Daftar Anggota</a>
+                    
+                    {{-- NEW: Master Data Dropdown --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs(['companies.*', 'company-units.*', 'pln-members.*']) ? 'active' : '' }}" 
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-database me-1"></i> Master Data
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('companies.*') ? 'active' : '' }}" 
+                                   href="{{ route('companies.index') }}">
+                                    <i class="fas fa-building me-2"></i> Data Perusahaan
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('company-units.*') ? 'active' : '' }}" 
+                                   href="{{ route('company-units.index') }}">
+                                    <i class="fas fa-sitemap me-2"></i> Data Unit
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('pln-members.*') ? 'active' : '' }}" 
+                                   href="{{ route('pln-members.index') }}">
+                                    <i class="fas fa-users me-2"></i> Daftar Anggota PLN
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Data User</a>
+                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                            <i class="fas fa-user-cog me-1"></i> Data User
+                        </a>
                     </li>
                 </ul>
 
@@ -177,7 +259,7 @@
                             <a class="nav-link btn btn-outline-warning btn-sm" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
                                                 document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
+                                <i class="fas fa-sign-out-alt me-1"></i> {{ __('Logout') }}
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf

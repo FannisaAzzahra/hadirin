@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('presences', function (Blueprint $table) {
-            $table->string('display_option_type')->nullable()->after('slide_option_type');
+            $table->string('display_option_type')->nullable();
         });
     }
 
