@@ -87,15 +87,17 @@ class AbsenDataTable extends DataTable
             Column::make('id')
                 ->title('#')
                 ->render('meta.row + meta.settings._iDisplayStart + 1;')
-                ->width(100),
-            Column::make('waktu_absen'),
-            Column::make('nama'),
-            Column::make('nip'),
-            Column::make('email'),
-            Column::make('jabatan'),
-            Column::make('no_hp'),
-            Column::make('unit'),
-            Column::make('signature'),
+                ->width(100)
+                ->className('dt-left'),
+            Column::make('waktu_absen')->className('dt-left'),
+            Column::make('nama')->className('dt-left'),
+            Column::make('nip')->className('dt-left'),
+            Column::make('email')->className('dt-left'),
+            Column::make('jabatan')->className('dt-left'),
+            Column::make('no_hp')->className('dt-left'),
+            Column::make('unit')->title('Nama Perusahaan')->className('dt-left'),
+            Column::make('unit_dtl')->title('Unit Detail')->className('dt-left'),
+            Column::make('signature')->className('dt-left'),
         ];
     }
 
