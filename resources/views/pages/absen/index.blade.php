@@ -185,7 +185,7 @@
             opacity: 0.7;
         }
 
-        /* Select2 Custom Styling */
+        /* Select2 Custom Styling - PERBAIKAN WIDTH & WHITE TEXT */
         .select2-container--bootstrap-5 .select2-selection {
             border: 2px solid #e9ecef !important;
             border-radius: 10px !important;
@@ -193,6 +193,7 @@
             font-size: 0.95rem !important;
             display: flex !important;
             align-items: center !important;
+            width: 100% !important;
         }
 
         .select2-container--bootstrap-5.select2-container--focus .select2-selection,
@@ -207,7 +208,10 @@
             line-height: 1.5 !important;
             display: flex !important;
             align-items: center !important;
-            width: 100% !important;
+            width: calc(100% - 2.5rem) !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
         }
 
         .select2-container--bootstrap-5 .select2-selection__placeholder {
@@ -219,23 +223,45 @@
             height: 100% !important;
             right: 0.75rem !important;
             top: 0 !important;
+            width: 20px !important;
         }
 
+        /* Dropdown styling - PERBAIKAN UTAMA */
         .select2-dropdown {
             border: 2px solid #e9ecef !important;
             border-radius: 10px !important;
             box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1) !important;
             margin-top: 4px !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            width: 100% !important;
         }
 
         .select2-results__option {
             padding: 0.75rem !important;
             font-size: 0.95rem !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            color: #333 !important; /* Default text color for unselected items */
         }
 
+        /* PERBAIKAN UTAMA: Warna putih untuk item yang di-highlight/dipilih */
         .select2-results__option--highlighted {
             background-color: #0077b6 !important;
-            color: white !important;
+            color: white !important; /* TEXT PUTIH UNTUK ITEM YANG DI-HIGHLIGHT */
+        }
+
+        /* TAMBAHAN: Untuk item yang selected di dropdown (jika ada) */
+        .select2-results__option--selected {
+            background-color: #0077b6 !important;
+            color: white !important; /* TEXT PUTIH UNTUK ITEM YANG SELECTED */
+        }
+
+        /* Style untuk item yang selected DAN highlighted sekaligus */
+        .select2-results__option--selected.select2-results__option--highlighted {
+            background-color: #005577 !important; /* Warna lebih gelap */
+            color: white !important; /* TEXT PUTIH */
         }
 
         .select2-search--dropdown {
@@ -249,6 +275,7 @@
             padding: 0.5rem 0.75rem !important;
             width: 100% !important;
             font-size: 0.9rem !important;
+            box-sizing: border-box !important;
         }
 
         .select2-search--dropdown .select2-search__field:focus {
@@ -263,9 +290,61 @@
             font-style: italic !important;
         }
 
-        /* Ensure Select2 has full width */
+        /* Ensure Select2 has proper width constraint */
         .select2-container {
             width: 100% !important;
+            max-width: 100% !important;
+            display: block !important;
+        }
+
+        /* Fix untuk container parent */
+        #nama-field {
+            position: relative;
+            width: 100%;
+        }
+
+        #nama-field .select2-container {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        /* Clear button styling */
+        .select2-selection__clear {
+            color: #6c757d !important;
+            font-size: 1.2rem !important;
+            line-height: 1 !important;
+            padding-right: 0.5rem !important;
+        }
+
+        .select2-selection__clear:hover {
+            color: #dc3545 !important;
+        }
+
+        /* Custom styling untuk result items */
+        .select2-result-item {
+            padding: 0.5rem 0;
+        }
+
+        .select2-result-item .fw-medium {
+            font-weight: 500;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* PERBAIKAN: Style untuk hasil pencarian yang di-highlight */
+        .select2-results__option--highlighted .select2-result-item .fw-medium {
+            color: white !important; /* TEXT PUTIH UNTUK ITEM HASIL PENCARIAN YANG DI-HIGHLIGHT */
+        }
+
+        /* Z-index fix */
+        .select2-container--bootstrap-5.select2-container--open {
+            z-index: 1056;
+        }
+
+        .select2-dropdown {
+            z-index: 1056 !important;
         }
 
         /* Signature Pad Styling */
@@ -433,36 +512,6 @@
             cursor: not-allowed;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-logos {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header-title {
-                font-size: 1.5rem;
-                text-align: center;
-            }
-
-            .card-body {
-                padding: 1rem;
-            }
-
-            .btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .detail-table {
-                padding: 1rem;
-            }
-
-            .select2-container {
-                width: 100% !important;
-            }
-        }
-
         /* Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -499,6 +548,48 @@
             color: #6c757d;
             margin-top: 0.25rem;
             font-style: italic;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-logos {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-title {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .detail-table {
+                padding: 1rem;
+            }
+
+            .select2-container {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            
+            .select2-dropdown {
+                max-width: calc(100vw - 2rem) !important;
+                left: 1rem !important;
+                right: 1rem !important;
+            }
+            
+            .select2-results__option {
+                padding: 0.5rem !important;
+                font-size: 0.875rem !important;
+            }
         }
     </style>
   </head>
@@ -785,7 +876,7 @@
       <!-- End row -->
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLlvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -829,14 +920,15 @@
               $(this).find('button[type="submit"]').attr('disabled', 'disabled');
           });
 
-          // Initialize Select2 for PLN nama dropdown
+          // Initialize Select2 for PLN nama dropdown - PERBAIKAN WIDTH
           function initializeSelect2() {
               $('#nama-pln').select2({
                   theme: 'bootstrap-5',
                   placeholder: 'Pilih atau ketik nama anggota PLN',
                   allowClear: true,
-                  width: '100%',
-                  dropdownAutoWidth: true,
+                  width: '100%', // Explicit width setting
+                  dropdownAutoWidth: false, // Disable auto width - KEY FIX
+                  dropdownParent: $('#nama-field'), // Set parent container - KEY FIX
                   language: {
                       noResults: function() {
                           return "Tidak ada hasil yang ditemukan";
@@ -866,10 +958,10 @@
                           return data.text;
                       }
                       
-                      // Custom template untuk hasil pencarian
+                      // Custom template untuk hasil pencarian dengan width constraint
                       var $result = $(
                           '<div class="select2-result-item">' +
-                              '<div class="fw-medium">' + data.text + '</div>' +
+                              '<div class="fw-medium text-truncate">' + data.text + '</div>' +
                           '</div>'
                       );
                       
@@ -879,6 +971,14 @@
                       return data.text || data.placeholder;
                   }
               });
+              
+              // Force width adjustment after initialization - KEY FIX
+              setTimeout(function() {
+                  $('#nama-pln').next('.select2-container').css({
+                      'width': '100%',
+                      'max-width': '100%'
+                  });
+              }, 100);
           }
 
           // Function to toggle nama field based on company selection
@@ -976,6 +1076,31 @@
           $('#nama-pln').on('select2:clear', function (e) {
               $('#nip').val('');
               $('#email').val('');
+          });
+
+          // Handle window resize untuk responsive behavior - KEY FIX
+          $(window).on('resize', function() {
+              if ($('#nama-pln').hasClass('select2-hidden-accessible')) {
+                  // Force width recalculation on resize
+                  setTimeout(function() {
+                      $('#nama-pln').next('.select2-container').css({
+                          'width': '100%',
+                          'max-width': '100%'
+                      });
+                  }, 100);
+              }
+          });
+          
+          // Handle Select2 events dengan width constraint - KEY FIX
+          $('#nama-pln').on('select2:open', function(e) {
+              // Ensure dropdown width doesn't exceed container
+              setTimeout(function() {
+                  var containerWidth = $('#nama-field').width();
+                  $('.select2-dropdown').css({
+                      'max-width': containerWidth + 'px',
+                      'width': containerWidth + 'px'
+                  });
+              }, 10);
           });
       });
   </script>
