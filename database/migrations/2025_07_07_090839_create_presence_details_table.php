@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('email')->nullable(); // nullable jika tidak wajib
             $table->string('jabatan')->nullable();
             $table->string('unit'); // PLN / PLN Group / Non PLN
-            $table->string('unit_dtl')->nullable(); // Add this line for Unit Detail
             $table->string('no_hp');
             $table->string('signature');
             $table->timestamps();
