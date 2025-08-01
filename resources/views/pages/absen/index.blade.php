@@ -6,6 +6,10 @@
     <title>{{ env('APP_NAME') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    
     <style>
         /* Body and Background */
         body {
@@ -179,6 +183,89 @@
             background-color: #f8f9fa;
             border-color: #dee2e6;
             opacity: 0.7;
+        }
+
+        /* Select2 Custom Styling */
+        .select2-container--bootstrap-5 .select2-selection {
+            border: 2px solid #e9ecef !important;
+            border-radius: 10px !important;
+            min-height: calc(3.375rem + 2px) !important;
+            font-size: 0.95rem !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+        .select2-container--bootstrap-5.select2-container--open .select2-selection {
+            border-color: #ffd60a !important;
+            box-shadow: 0 0 0 0.2rem rgba(255, 214, 10, 0.25) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__rendered {
+            color: #495057 !important;
+            padding: 0.75rem !important;
+            line-height: 1.5 !important;
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__placeholder {
+            color: #6c757d !important;
+            text-align: left !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__arrow {
+            height: 100% !important;
+            right: 0.75rem !important;
+            top: 0 !important;
+        }
+
+        .select2-dropdown {
+            border: 2px solid #e9ecef !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1) !important;
+            margin-top: 4px !important;
+        }
+
+        .select2-results__option {
+            padding: 0.75rem !important;
+            font-size: 0.95rem !important;
+        }
+
+        .select2-results__option--highlighted {
+            background-color: #0077b6 !important;
+            color: white !important;
+        }
+
+        .select2-search--dropdown {
+            padding: 0.75rem !important;
+            border-bottom: 1px solid #e9ecef !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            border: 2px solid #e9ecef !important;
+            border-radius: 8px !important;
+            padding: 0.5rem 0.75rem !important;
+            width: 100% !important;
+            font-size: 0.9rem !important;
+        }
+
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: #ffd60a !important;
+            box-shadow: 0 0 0 0.2rem rgba(255, 214, 10, 0.25) !important;
+            outline: none !important;
+        }
+
+        .select2-results__message {
+            padding: 0.75rem !important;
+            color: #6c757d !important;
+            font-style: italic !important;
+        }
+
+        /* Ensure Select2 has full width */
+        .select2-container {
+            width: 100% !important;
         }
 
         /* Signature Pad Styling */
@@ -370,6 +457,10 @@
             .detail-table {
                 padding: 1rem;
             }
+
+            .select2-container {
+                width: 100% !important;
+            }
         }
 
         /* Animation */
@@ -400,6 +491,14 @@
             background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%);
             color: #721c24;
             border-left: 4px solid #dc3545;
+        }
+
+        /* Search Helper Text */
+        .search-helper {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+            font-style: italic;
         }
     </style>
   </head>
@@ -536,7 +635,12 @@
                       </option>
                     @endforeach
                   </select>
-                  <small id="nama-helper" class="text-muted d-none">Ketik nama di sini</small>
+                  <small id="nama-helper" class="search-helper d-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-search me-1" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                    Dropdown dengan fitur pencarian - klik untuk memilih atau ketik untuk mencari
+                  </small>
                     @error('nama')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -680,9 +784,13 @@
       </div>
       <!-- End row -->
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script src="{{ asset('js/signature.min.js') }}"></script>
 
@@ -721,17 +829,81 @@
               $(this).find('button[type="submit"]').attr('disabled', 'disabled');
           });
 
+          // Initialize Select2 for PLN nama dropdown
+          function initializeSelect2() {
+              $('#nama-pln').select2({
+                  theme: 'bootstrap-5',
+                  placeholder: 'Pilih atau ketik nama anggota PLN',
+                  allowClear: true,
+                  width: '100%',
+                  dropdownAutoWidth: true,
+                  language: {
+                      noResults: function() {
+                          return "Tidak ada hasil yang ditemukan";
+                      },
+                      searching: function() {
+                          return "Mencari...";
+                      },
+                      inputTooShort: function() {
+                          return "Ketik untuk mencari nama";
+                      },
+                      loadingMore: function() {
+                          return "Memuat lebih banyak hasil...";
+                      },
+                      maximumSelected: function() {
+                          return "Anda hanya dapat memilih satu item";
+                      }
+                  },
+                  escapeMarkup: function (markup) {
+                      return markup;
+                  },
+                  templateResult: function(data) {
+                      if (data.loading) {
+                          return 'Mencari...';
+                      }
+                      
+                      if (!data.id) {
+                          return data.text;
+                      }
+                      
+                      // Custom template untuk hasil pencarian
+                      var $result = $(
+                          '<div class="select2-result-item">' +
+                              '<div class="fw-medium">' + data.text + '</div>' +
+                          '</div>'
+                      );
+                      
+                      return $result;
+                  },
+                  templateSelection: function(data) {
+                      return data.text || data.placeholder;
+                  }
+              });
+          }
+
           // Function to toggle nama field based on company selection
           function toggleNamaField() {
               let unit = $('#unit').val();
               if (unit === 'PLN UIT JBM') {
+                  // Hide regular input, show Select2 dropdown
                   $('#nama').addClass('d-none').prop('disabled', true);
                   $('#nama-pln').removeClass('d-none').prop('disabled', false);
                   $('#nama-helper').removeClass('d-none');
+                  
+                  // Initialize Select2 if not already initialized
+                  if (!$('#nama-pln').hasClass('select2-hidden-accessible')) {
+                      initializeSelect2();
+                  }
               } else {
+                  // Show regular input, hide Select2 dropdown
                   $('#nama').removeClass('d-none').prop('disabled', false);
                   $('#nama-pln').addClass('d-none').prop('disabled', true);
                   $('#nama-helper').addClass('d-none');
+                  
+                  // Destroy Select2 if it exists
+                  if ($('#nama-pln').hasClass('select2-hidden-accessible')) {
+                      $('#nama-pln').select2('destroy');
+                  }
               }
           }
 
@@ -782,12 +954,28 @@
               populateUnitDropdown($('#unit').val());
           }
 
-          // Autofill NIP dan Email saat pilih nama anggota PLN
+          // Autofill NIP dan Email saat pilih nama anggota PLN (for Select2)
           $('#nama-pln').on('change', function() {
-              let nip = $(this).find(':selected').data('nip') || '';
-              let email = $(this).find(':selected').data('email') || '';
+              let selectedOption = $(this).find(':selected');
+              let nip = selectedOption.data('nip') || '';
+              let email = selectedOption.data('email') || '';
               $('#nip').val(nip);
               $('#email').val(email);
+          });
+
+          // Handle Select2 events
+          $('#nama-pln').on('select2:select', function (e) {
+              let data = e.params.data;
+              let selectedOption = $(this).find('option[value="' + data.id + '"]');
+              let nip = selectedOption.data('nip') || '';
+              let email = selectedOption.data('email') || '';
+              $('#nip').val(nip);
+              $('#email').val(email);
+          });
+
+          $('#nama-pln').on('select2:clear', function (e) {
+              $('#nip').val('');
+              $('#email').val('');
           });
       });
   </script>
