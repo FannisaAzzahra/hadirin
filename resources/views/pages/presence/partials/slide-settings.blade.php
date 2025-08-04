@@ -637,7 +637,7 @@
                 </div>
                 <div class="upload-title">Upload Slide Foto</div>
                 <div class="upload-description">
-                    Format: JPG, PNG, GIF. Disarankan rasio landscape 16:9 untuk hasil terbaik.<br>
+                    Format: JPG, PNG, GIF. Disarankan menggunakan rasio yang sama pada setiap slide foto.<br>
                     Klik atau drag & drop file di sini.
                 </div>
                 <button type="button" class="upload-button" id="upload-trigger-button">
