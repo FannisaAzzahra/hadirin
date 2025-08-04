@@ -9,6 +9,7 @@
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     
     <style>
         /* Body and Background */
@@ -512,6 +513,9 @@
             cursor: not-allowed;
         }
 
+
+        }
+
         /* Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -818,25 +822,18 @@
               </div>
               <div class="card-body">
                 @if ($presence->slides->count())
-                  <div id="slideCarousel-{{ $presence->id }}" class="carousel slide mb-3" data-bs-ride="carousel" data-bs-interval="8000">
-                    <div class="carousel-indicators">
-                      @foreach ($presence->slides as $key => $slide)
-                        <button type="button" data-bs-target="#slideCarousel-{{ $presence->id }}" data-bs-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}" aria-current="{{ $key == 0 ? 'true' : 'false' }}" aria-label="Slide {{ $key+1 }}"></button>
-                      @endforeach
-                    </div>
-                    <div class="carousel-inner">
-                      @foreach ($presence->slides as $key => $slide)
-                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                          <img src="{{ asset('uploads/' . $slide->image_path) }}" class="d-block w-100" alt="Slide {{ $key+1 }}">
+                  <!-- Swiper -->
+                  <div class="swiper mySwiper mb-3">
+                    <div class="swiper-wrapper">
+                      @foreach ($presence->slides as $slide)
+                        <div class="swiper-slide">
+                          <img src="{{ asset('uploads/' . $slide->image_path) }}" class="d-block w-100" alt="Slide Image">
                         </div>
                       @endforeach
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#slideCarousel-{{ $presence->id }}" data-bs-slide="prev">
-                      <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#slideCarousel-{{ $presence->id }}" data-bs-slide="next">
-                      <span class="carousel-control-next-icon"></span>
-                    </button>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
                   </div>
                 @endif
 
@@ -876,23 +873,37 @@
       <!-- End row -->
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLlvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script src="{{ asset('js/signature.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLlvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script src="{{ asset('js/signature.min.js') }}"></script>
 
     <script>
       // Data companies dengan units (dari server)
       const companiesData = @json($companies);
 
       $(function() {
+          // Initialize Swiper
+          var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,
+            centeredSlides: true,
+            autoplay: {
+              delay: 5000,
+              disableOnInteraction: false,
+            },
+            pagination: {
+              el: ".swiper-pagination",
+              clickable: true,
+            },
+            navigation: {
+              nextEl: ".swiper-button-next",
+              prevEl: ".swiper-button-prev",
+            },
+          });
           // set signature pad width
           let sig = $("#signature-pad").parent().width();
           $('#signature-pad').attr('width', sig);
@@ -914,6 +925,8 @@
               signaturePad.clear();
               $('#signature64').val('');
           });
+
+
 
           // submit form
           $('#form-absen').on('submit', function() {
@@ -989,9 +1002,9 @@
                   $('#nama').addClass('d-none').prop('disabled', true);
                   $('#nama-pln').removeClass('d-none').prop('disabled', false);
                   $('#nama-helper').removeClass('d-none');
-                  
+
                   // Initialize Select2 if not already initialized
-                  if (!$('#nama-pln').hasClass('select2-hidden-accessible')) {
+                  if (!$('#nama-pln').data('select2')) {
                       initializeSelect2();
                   }
               } else {
@@ -1001,7 +1014,7 @@
                   $('#nama-helper').addClass('d-none');
                   
                   // Destroy Select2 if it exists
-                  if ($('#nama-pln').hasClass('select2-hidden-accessible')) {
+                  if ($('#nama-pln').data('select2')) {
                       $('#nama-pln').select2('destroy');
                   }
               }
