@@ -516,6 +516,29 @@
 
         }
 
+        /* Swiper Responsive Fix */
+        .swiper-slide img {
+            display: block;
+            width: 100%;
+            max-height: 500px; /* Adjust this value as needed */
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .mySwiper {
+            border-radius: 10px;
+        }
+
+        /* DataTables Clarity */
+        .dataTables_wrapper .table {
+            font-size: 0.95rem;
+        }
+
+        .dataTables_wrapper .table td,
+        .dataTables_wrapper .table th {
+            vertical-align: middle;
+        }
+
         /* Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -680,7 +703,7 @@
       <!-- Main Grid -->
       <div class="row">
         <!-- Kiri: Form Absensi -->
-        <div class="col-md-4 mb-4">
+        <div class="col-lg-5 col-md-12 mb-4 mb-lg-0">
           <div class="card h-100">
             <div class="card-header">
               <h5 class="card-title">Form Absensi</h5>
@@ -808,7 +831,7 @@
         </div>
 
         <!-- Kanan: Slider + Daftar Kehadiran -->
-        <div class="col-md-8">
+        <div class="col-lg-7 col-md-12">
           <!-- Slider -->
           @if ($presence->slides->count() || ($presence->logo_ig && $presence->link_ig))
             <div class="card mb-4">
