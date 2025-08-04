@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PresenceController extends Controller
 {
@@ -232,6 +233,21 @@ class PresenceController extends Controller
         $this->handleSlideOptionsForUpdate($request, $presence, $validated);
 
         return redirect()->route('presence.index')->with('success', 'Data berhasil diupdate');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function barcode(string $slug)
+    {
+        $presence = Presence::where('slug', $slug)->firstOrFail();
+        $url = route('absen.index', $presence->slug);
+
+        // Generate QR code as SVG to avoid GD library dependency issues
+        $qrCode = QrCode::format('svg')->size(300)->generate($url);
+
+        // Return the QR code as an SVG image response
+        return response($qrCode)->header('Content-Type', 'image/svg+xml');
     }
 
     /**

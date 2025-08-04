@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('users', App\Http\Controllers\UserController::class)->except(['show']);
     
     // Presence management
+    Route::get('presence/barcode/{slug}', [PresenceController::class, 'barcode'])->name('presence.barcode');
     Route::resource('presence', PresenceController::class);
     
     // Presence Detail routes - IMPORTANT: Order matters!

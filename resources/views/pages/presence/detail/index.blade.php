@@ -9,6 +9,19 @@
                         <h4 class="card-title">Detail Absen</h4>
                     </div>
                     <div class="col text-end">
+                        <button type="button" id="showBarcodeBtn" class="btn btn-info" data-slug="{{ $presence->slug }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                                <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"/>
+                                <path d="M7 2H2v5h5zM3 3v3h3V3zm4 0h1v1H7zM2 8h1v1H2z"/>
+                                <path d="M7 9H2v5h5zm-4 1v3h3v-3zm4-1h1v1H7z"/>
+                                <path d="M7 4h1v1H7zM6 9h1v1H6z"/>
+                                <path d="M9 2h5v5H9zm1 1v3h3V3z"/>
+                                <path d="M13 9h-1v1h1z"/>
+                                <path d="M9 8h1v1H9zm-1 1H7v1h1zm1 1h1v1H9zm-1 1H7v1h1zm1 1h1v1H9zm1 1h1v1H9zm1 1h1v1h-1zm1-1h1v1h-1zm-1-1h1v1h-1zm-1-1h1v1h-1zm-1-1h1v1h-1z"/>
+                                <path d="M13 8h1v1h-1z"/>
+                            </svg>
+                            Tampilkan Barcode
+                        </button>
                         <button type="button" onclick="copyLink('{{ $presence->slug }}')" class="btn btn-warning">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-fill" viewBox="0 0 16 16">
                                 <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
@@ -116,6 +129,24 @@
                 </div>
                 <div class="modal-footer pln-modal-footer d-flex justify-content-end">
                     <button type="button" class="btn pln-btn-secondary-modal" data-bs-dismiss="modal">Oke</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Barcode Modal --}}
+    <div class="modal fade" id="barcodeModal" tabindex="-1" aria-labelledby="barcodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="barcodeModalLabel">Scan QR Code Presensi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="qrcode-container" class="mb-3">
+                        {{-- QR Code will be injected here --}}
+                    </div>
+                    <a href="#" id="downloadBarcodeBtn" class="btn btn-primary" download="qrcode.svg">Download QR Code</a>
                 </div>
             </div>
         </div>
@@ -291,6 +322,32 @@
                 fallbackCopyTextToClipboard(linkToCopy);
             }
         }
+
+
+        // Handle barcode modal
+        document.getElementById('showBarcodeBtn').addEventListener('click', function() {
+            const slug = this.getAttribute('data-slug');
+            const barcodeUrl = `{{ url('presence/barcode') }}/${slug}`;
+            const qrCodeContainer = document.getElementById('qrcode-container');
+            const downloadBtn = document.getElementById('downloadBarcodeBtn');
+
+            // Clear previous QR code
+            qrCodeContainer.innerHTML = '';
+
+            // Create image element
+            const img = document.createElement('img');
+            img.src = barcodeUrl;
+            img.style.maxWidth = '100%';
+            qrCodeContainer.appendChild(img);
+
+            // Set download button attributes
+            downloadBtn.href = barcodeUrl;
+            downloadBtn.download = `qrcode-${slug}.svg`;
+
+            // Show the modal
+            var barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
+            barcodeModal.show();
+        });
 
         function fallbackCopyTextToClipboard(text) {
             const tempInput = document.createElement('input');
