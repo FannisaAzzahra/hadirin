@@ -135,7 +135,6 @@
                 <p><strong>Nama Kegiatan:</strong> <span id="modalEventTitle"></span></p>
                 <p><strong>Tanggal:</strong> <span id="modalEventDate"></span></p>
                 <p><strong>Waktu Mulai:</strong> <span id="modalEventTime"></span></p>
-                {{-- Tambahkan baris ini untuk Batas Waktu --}}
                 <p><strong>Batas Waktu:</strong> <span id="modalEventDeadline"></span></p>
                 <p><strong>Lokasi:</strong> <span id="modalEventLocation"></span></p>
                 <p><strong>Link Lokasi:</strong> <span id="modalEventLink"></span></p>
@@ -152,11 +151,10 @@
 {{-- CSS untuk Bootstrap 5 dan Font Awesome --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-{{-- JS untuk Bootstrap, FullCalendar, dan Count-up --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+{{-- JS untuk FullCalendar dan Count-up - REMOVED BOOTSTRAP DUPLICATE --}}
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js"></script>
+
 <script>
     // JavaScript for Count-Up Animation
     document.addEventListener('DOMContentLoaded', function() {
@@ -191,17 +189,14 @@
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events: '/calendar-data', // Mengambil data dari rute calendar-data
-            displayEventTime: false, // <-- Baris ini untuk menyembunyikan waktu di tampilan grid
-            // ... kode sebelumnya ...
+            events: '/calendar-data',
+            displayEventTime: false,
 
             eventClick: function(info) {
-                // Mengambil detail event dari objek info.event
                 let eventTitle = info.event.title;
-                let eventStart = info.event.start; // Ini akan menjadi objek Date
-                let eventExtendedProps = info.event.extendedProps; // Properti tambahan yang kita kirim dari backend
+                let eventStart = info.event.start;
+                let eventExtendedProps = info.event.extendedProps;
 
-                // Format tanggal dan waktu
                 let eventDate = eventStart.toLocaleDateString('id-ID', {
                     day: '2-digit',
                     month: 'long',
@@ -212,20 +207,16 @@
                     minute: '2-digit'
                 });
 
-                // Mengisi data ke modal
                 document.getElementById('modalEventTitle').textContent = eventTitle;
                 document.getElementById('modalEventDate').textContent = eventDate;
-                document.getElementById('modalEventTime').textContent = eventTime + ' WIB'; // Tambahkan WIB
+                document.getElementById('modalEventTime').textContent = eventTime + ' WIB';
 
-                // Menambahkan batas waktu
                 let batasWaktuRaw = eventExtendedProps.batas_waktu;
-                let formattedBatasWaktu = 'Tidak ada'; // Default value
+                let formattedBatasWaktu = 'Tidak ada';
 
                 if (batasWaktuRaw) {
-                    // Coba parse sebagai tanggal dan waktu lengkap
                     let dateObjBatasWaktu = new Date(batasWaktuRaw);
 
-                    // Periksa apakah parsing berhasil (valid date)
                     if (!isNaN(dateObjBatasWaktu.getTime())) {
                         formattedBatasWaktu = dateObjBatasWaktu.toLocaleDateString('id-ID', {
                             day: '2-digit',
@@ -235,16 +226,13 @@
                             minute: '2-digit'
                         }) + ' WIB';
                     } else {
-                        // Jika parsing sebagai tanggal gagal, mungkin itu hanya string waktu atau format lain
                         formattedBatasWaktu = batasWaktuRaw + ' WIB';
                     }
                 }
-                document.getElementById('modalEventDeadline').textContent = formattedBatasWaktu; // Memperbarui elemen modal
+                document.getElementById('modalEventDeadline').textContent = formattedBatasWaktu;
 
-                // Mengambil lokasi dari extendedProps
                 document.getElementById('modalEventLocation').textContent = eventExtendedProps.lokasi || 'Tidak ada';
                 
-                // Mengambil link lokasi dari extendedProps
                 let linkLokasiElement = document.getElementById('modalEventLink');
                 if (eventExtendedProps.link_lokasi) {
                     linkLokasiElement.innerHTML = `<a href="${eventExtendedProps.link_lokasi}" target="_blank" class="pln-link-location">Klik di sini</a>`;
@@ -252,7 +240,7 @@
                     linkLokasiElement.textContent = 'Tidak ada';
                 }
 
-                // Menampilkan modal
+                // Use Bootstrap 5 Modal API
                 var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
                 eventModal.show();
             }
@@ -266,7 +254,7 @@
                 .then(response => response.json())
                 .then(data => {
                     let notificationsDiv = document.getElementById('notifications');
-                    notificationsDiv.innerHTML = ''; // Clear previous notifications
+                    notificationsDiv.innerHTML = '';
                     if (data.length === 0) {
                         notificationsDiv.innerHTML = '<p class="text-muted text-center">Tidak ada notifikasi baru.</p>';
                         return;
@@ -301,7 +289,6 @@
                 .catch(error => console.error('Error fetching notifications:', error));
         }
 
-        // Fetch notifications initially and then every 5 seconds
         fetchNotifications();
         setInterval(fetchNotifications, 5000);
     });
@@ -311,8 +298,7 @@
     /* Global Styles */
     body {
         background-color: #f0f8ff;
-        /* Light blue background for the whole page */
-        font-family: 'Inter', sans-serif; /* Menggunakan font Inter */
+        font-family: 'Inter', sans-serif;
     }
 
     /* Main Card Styling */
@@ -322,9 +308,7 @@
         box-shadow: 0 10px 40px rgba(0, 116, 182, 0.1);
         backdrop-filter: blur(5px);
         animation: fadeInScale 0.8s ease-out;
-        /* Custom animation for card appearance */
         overflow: hidden;
-        /* To contain any inner elements' overflow */
     }
 
     .pln-dashboard-body {
@@ -349,17 +333,14 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300b4d8' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zm0 15v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM12 34v-4H10v4H6v2h4v4h2v-4h4v-2h-4zm0-30V0H10v4H6v2h4v4h2V6h4V4h-4zm0 15v-4H10v4H6v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300b4d8' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zm0 15v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM12 34v-4H10v4H6v2h4v4h2v-4h4v-2h-4zm0-30V0H10v4H6v2h4v4h2V6h4V4h-4zm0 15v-4H10v4H6v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3e");
         opacity: 0.2;
-        z-index: 0;
     }
 
     .pln-hero-logo {
         height: 60px;
-        /* Larger logo for hero */
         animation: bounceIn 1s ease-out;
         position: relative;
-        z-index: 1;
     }
 
     .pln-hero-title {
@@ -368,7 +349,6 @@
         color: #0077b6;
         line-height: 1.2;
         position: relative;
-        z-index: 1;
     }
 
     .pln-hero-subtitle {
@@ -377,7 +357,6 @@
         max-width: 600px;
         margin: 0 auto 2rem;
         position: relative;
-        z-index: 1;
     }
 
     .pln-btn-hero {
@@ -391,7 +370,6 @@
         box-shadow: 0 8px 20px rgba(0, 116, 182, 0.3);
         transition: all 0.3s ease;
         position: relative;
-        z-index: 1;
         overflow: hidden;
     }
 
@@ -444,7 +422,6 @@
         box-shadow: 0 6px 20px rgba(0, 116, 182, 0.08);
         transition: all 0.3s ease;
         height: 100%;
-        /* Ensure cards are same height */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -475,7 +452,7 @@
         font-weight: 500;
     }
 
-    /* Action Cards (Improved Info Card) */
+    /* Action Cards */
     .pln-action-card {
         border: none;
         border-radius: 18px;
@@ -484,7 +461,6 @@
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
         position: relative;
-        z-index: 1;
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -497,7 +473,6 @@
         left: 0;
         width: 100%;
         height: 6px;
-        /* Garis tebal di atas */
         background: linear-gradient(90deg, #00b4d8, #0077b6);
         transition: all 0.3s ease;
         transform: scaleX(0);
@@ -506,7 +481,6 @@
 
     .pln-action-card:hover::before {
         transform: scaleX(1);
-        /* Garis meluas saat hover */
     }
 
     .pln-action-card:hover {
@@ -519,17 +493,14 @@
         display: flex;
         align-items: center;
         flex-grow: 1;
-        /* Allows content to expand */
     }
 
     .pln-action-icon {
         font-size: 4rem;
         color: #00b4d8;
-        /* Warna ikon yang lebih cerah */
         opacity: 0.7;
         margin-right: 1.5rem;
         min-width: 4rem;
-        /* Ensure consistent spacing */
     }
 
     .pln-action-title {
@@ -619,7 +590,7 @@
         margin-bottom: 1.5rem;
     }
 
-    /* New styles for dashboard cards */
+    /* Card titles */
     .card .card-title {
         color: #495057;
         font-weight: bold;
@@ -630,10 +601,10 @@
     #calendar {
         max-width: 100%;
         margin: 0 auto;
-        padding: 15px; /* Add some padding inside the calendar card */
-        border-radius: 15px; /* Match card border-radius */
-        background-color: #fdfdfd; /* Slightly off-white background for calendar */
-        box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.05); /* Soft inner shadow */
+        padding: 15px;
+        border-radius: 15px;
+        background-color: #fdfdfd;
+        box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.05);
     }
 
     .fc .fc-toolbar-title {
@@ -672,7 +643,7 @@
     }
 
     .fc-event {
-        background-color: #00b4d8; /* Warna event yang lebih cerah */
+        background-color: #00b4d8;
         border-color: #00b4d8;
         color: white;
         padding: 4px 8px;
@@ -691,7 +662,6 @@
     }
 
     /* Custom styles for Notification and Calendar cards */
-
     .pln-notification-card .card-body {
         display: flex;
         flex-direction: column;
@@ -726,13 +696,11 @@
     }
 
     .notification-list {
-        flex-grow: 1; /* Biarkan elemen ini mengisi sisa ruang yang tersedia */
-        /* max-height: 400px; Tambahkan baris ini untuk membatasi tinggi wadah */
-        overflow-y: auto; /* Aktifkan scrollbar jika konten melebihi tinggi */
-        padding-right: 10px; /* Beri ruang untuk scrollbar */
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-right: 10px;
     }
 
-    /* Custom Scrollbar for notification-list */
     .notification-list::-webkit-scrollbar {
         width: 8px;
     }
@@ -756,7 +724,7 @@
         align-items: flex-start;
         padding: 15px;
         margin-bottom: 10px;
-        background-color: #f8faff; /* Latar belakang item notifikasi */
+        background-color: #f8faff;
         border-radius: 10px;
         border: 1px solid rgba(0, 180, 216, 0.08);
         box-shadow: 0 2px 10px rgba(0, 116, 182, 0.05);
@@ -764,7 +732,7 @@
     }
 
     .pln-notification-item:hover {
-        background-color: #e6f7ff; /* Warna latar saat hover */
+        background-color: #e6f7ff;
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0, 116, 182, 0.1);
     }
@@ -773,8 +741,8 @@
         font-size: 1.5rem;
         color: #00b4d8;
         margin-right: 15px;
-        flex-shrink: 0; /* Pastikan ikon tidak menyusut */
-        padding-top: 3px; /* Penyesuaian vertikal ikon */
+        flex-shrink: 0;
+        padding-top: 3px;
     }
 
     .notification-content {
@@ -800,7 +768,7 @@
     }
 
     .notification-time .far {
-        font-size: 0.75rem; /* Ukuran ikon jam */
+        font-size: 0.75rem;
     }
 
     /* Modal Styling for Event Details */
@@ -874,12 +842,7 @@
     }
 
     @keyframes bounceIn {
-        0%,
-        20%,
-        40%,
-        60%,
-        80%,
-        100% {
+        0%, 20%, 40%, 60%, 80%, 100% {
             -webkit-animation-timing-function: cubic-bezier(0.215, .61, .355, 1);
             animation-timing-function: cubic-bezier(0.215, .61, .355, 1)
         }

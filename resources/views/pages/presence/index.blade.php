@@ -17,16 +17,16 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body px-3 pb-3"> {{-- Tambahkan padding agar filter tidak terlalu mepet --}}
+            <div class="card-body px-3 pb-3">
                 {{-- Form Filter Tanggal --}}
                 <div class="mb-4">
                     <form action="{{ route('presence.index') }}" method="GET" id="filterForm">
                         <div class="d-flex flex-wrap align-items-center justify-content-start">
-                            <div class="input-group flex-grow-1 me-2 mb-2" style="max-width: 250px;"> {{-- Batasi lebar input --}}
+                            <div class="input-group flex-grow-1 me-2 mb-2" style="max-width: 250px;">
                                 <input type="text" class="form-control datepicker-input" id="start_date" name="start_date" placeholder="Tanggal Mulai" value="{{ request('start_date') }}">
                             </div>
                             <span class="text-muted mx-2 mb-2">sampai</span>
-                            <div class="input-group flex-grow-1 me-2 mb-2" style="max-width: 250px;"> {{-- Batasi lebar input --}}
+                            <div class="input-group flex-grow-1 me-2 mb-2" style="max-width: 250px;">
                                 <input type="text" class="form-control datepicker-input" id="end_date" name="end_date" placeholder="Tanggal Akhir" value="{{ request('end_date') }}">
                             </div>
                             <button type="submit" class="btn btn-filter-primary ms-2 mb-2"><i class="fas fa-filter me-2"></i> Filter</button>
@@ -47,7 +47,7 @@
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header modal-header-gradient text-white"> {{-- Updated class for gradient --}}
+                <div class="modal-header modal-header-gradient text-white">
                     <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Hapus</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -84,9 +84,6 @@
 @push('js')
     {{-- CSS untuk Bootstrap Datepicker --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-    
-    {{-- Link CDN Font Awesome (jika belum terpasang di proyek) --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" xintegrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
         /* Card Styling */
@@ -128,11 +125,9 @@
             color: #333;
         }
 
-        /* --- STYLING BARU UNTUK FILTER, RESET, DAN TOMBOL AKSI --- */
-
-        /* Styles for Filter button (.btn-filter-primary) - Green */
+        /* Filter button - Green */
         .btn-filter-primary {
-            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); /* Green shades */
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
             border: none;
             color: white;
             font-weight: 600;
@@ -148,9 +143,9 @@
             color: white;
         }
 
-        /* Styles for Reset button (.btn-filter-secondary) - Blue */
+        /* Reset button - Blue */
         .btn-filter-secondary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); /* Blue shades */
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             border: none;
             color: white;
             font-weight: 600;
@@ -166,17 +161,16 @@
             color: white;
         }
 
-        /* Action Buttons (DataTable) - Pastikan btn-sm tidak terganggu oleh padding global */
-        /* Umum untuk semua btn-sm di dalam tabel */
+        /* Action Buttons in DataTable */
         .table .btn-sm { 
             border-radius: 6px;
             margin: 0 2px;
             transition: all 0.3s ease;
-            padding: 0.25rem 0.5rem; /* Padding standar untuk btn-sm */
-            font-size: 0.875rem; /* Ukuran font standar untuk btn-sm */
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
         }
 
-        /* Spesifik untuk tombol Detail (.table .btn-secondary) - Darker, professional grey/blue-grey */
+        /* Detail button */
         .table .btn-secondary {
             background: linear-gradient(135deg, #343a40 0%, #495057 100%); 
             border: none;
@@ -188,7 +182,7 @@
             color: white;
         }
 
-        /* Spesifik untuk tombol Edit (.table .btn-warning) - Tetap kuning, tapi pastikan konsisten */
+        /* Edit button */
         .table .btn-warning {
             background: linear-gradient(135deg, #ffd60a, #ffed4a);
             border: none;
@@ -201,7 +195,7 @@
             color: #333;
         }
 
-        /* Spesifik untuk tombol Hapus (.table .btn-danger) - Tetap merah, konsisten */
+        /* Delete button */
         .table .btn-danger {
             background: linear-gradient(135deg, #dc2626, #ef4444);
             border: none;
@@ -211,7 +205,6 @@
             background: linear-gradient(135deg, #b91c1c, #dc2626);
             transform: translateY(-1px);
         }
-        /* --- AKHIR STYLING BARU UNTUK FILTER, RESET, DAN TOMBOL AKSI --- */
 
         /* Table Styling */
         .table {
@@ -241,20 +234,19 @@
             vertical-align: middle;
         }
 
-        /* Styling for Datepicker Inputs */
+        /* Datepicker Inputs */
         .datepicker-input {
             border-radius: 10px !important;
-            padding: 0.75rem 1.5rem !important; /* Agar lebih besar seperti tombol filter */
+            padding: 0.75rem 1.5rem !important;
         }
 
-        /* Custom Modal Styling */
+        /* Modal Styling */
         .modal-content {
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
         }
 
-        /* New class for modal header gradient */
         .modal-header-gradient {
             background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
             color: white;
@@ -267,7 +259,7 @@
         }
 
         .btn-close-white {
-            filter: brightness(0) invert(1); /* Makes the close button white */
+            filter: brightness(0) invert(1);
         }
 
         .modal-body {
@@ -285,55 +277,53 @@
 
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 
-    {{-- JS untuk Bootstrap Datepicker --}}
+    {{-- JS untuk Bootstrap Datepicker - LOAD AFTER MAIN JS --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    {{-- JS untuk Bootstrap 5 (dibutuhkan untuk modal) --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 
     <script>
         $(document).ready(function() {
+            // CSRF Setup
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
 
-            // Inisialisasi Datepicker pada input dengan class datepicker-input
+            // Inisialisasi Datepicker
             $('.datepicker-input').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 todayHighlight: true
             });
 
-            // Handle klik tombol Reset
+            // Handle Reset filter
             $('#resetFilter').on('click', function() {
                 $('#start_date').val('');
                 $('#end_date').val('');
                 $('#filterForm').submit();
             });
 
-            // Variabel untuk menyimpan URL delete sementara
+            // Delete functionality
             let deleteUrl = '';
 
-            // Handle klik tombol Delete (menampilkan modal konfirmasi)
+            // Use event delegation for dynamically added buttons
             $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
-                deleteUrl = $(this).attr('href'); // Simpan URL delete
-                $('#confirmationModal').modal('show'); // Tampilkan modal konfirmasi
+                deleteUrl = $(this).attr('href');
+                
+                // Use Bootstrap 5 modal API
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                confirmModal.show();
             });
 
-            // Handle klik tombol "Hapus" di modal konfirmasi
             $('#confirmDeleteBtn').on('click', function() {
-                $('#confirmationModal').modal('hide'); // Sembunyikan modal konfirmasi
+                const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
+                confirmModal.hide();
 
                 $.ajax({
                     type: 'DELETE',
                     url: deleteUrl,
                     success: function(data) {
-                        // Reload DataTable atau halaman setelah berhasil menghapus
-                        // Jika Anda menggunakan Yajra Datatables, Anda bisa me-reload tabelnya
-                        // Contoh: $('#your-data-table-id').DataTable().ajax.reload();
                         window.location.reload(); 
                     },
                     error: function(xhr, status, error) {
@@ -342,8 +332,11 @@
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
-                        $('#errorMessage').text(errorMessage); // Set pesan error di modal
-                        $('#errorModal').modal('show'); // Tampilkan modal error
+                        $('#errorMessage').text(errorMessage);
+                        
+                        // Use Bootstrap 5 modal API
+                        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                        errorModal.show();
                     }
                 });
             });

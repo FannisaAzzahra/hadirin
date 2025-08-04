@@ -8,12 +8,13 @@
     {{-- CSRF TOKEN --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    {{-- BOOTSTRAP --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    {{-- BOOTSTRAP 5.3.3 - SINGLE VERSION --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     
     {{-- DATATABLES BOOTSTRAP5 --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
 
+    {{-- FONT AWESOME --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -28,8 +29,9 @@
         top: 0;
         left: 0;
         right: 0;
-        z-index: 1030;
+        z-index: 1050; /* Ensure navbar is above other content */
       }
+      
       body {
         padding-top: 70px; /* beri padding agar konten tidak ketimpa navbar */
       }
@@ -110,7 +112,7 @@
         box-shadow: 0 0 0 0.25rem rgba(255, 214, 10, 0.25);
       }
 
-      /* Dropdown Menu Styling */
+      /* Dropdown Menu Styling - CRITICAL FIX */
       .dropdown-menu {
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         border: 2px solid rgba(255, 214, 10, 0.2);
@@ -118,6 +120,8 @@
         box-shadow: 0 8px 32px rgba(0, 119, 182, 0.15);
         padding: 0.5rem 0;
         margin-top: 0.5rem;
+        z-index: 1060; /* Higher than navbar z-index */
+        position: absolute; /* Ensure proper positioning */
       }
 
       .dropdown-item {
@@ -145,6 +149,16 @@
         margin: 0.5rem 0;
       }
 
+      /* Ensure dropdown toggle works properly */
+      .nav-item.dropdown {
+        position: relative;
+      }
+
+      .nav-item.dropdown .dropdown-toggle::after {
+        margin-left: 0.5rem;
+        vertical-align: 0.1em;
+      }
+
       /* Mobile responsiveness */
       @media (max-width: 991.98px) {
         .navbar-collapse {
@@ -163,6 +177,12 @@
         .dropdown-menu {
           background: rgba(0, 180, 216, 0.9);
           border: 1px solid rgba(255, 214, 10, 0.3);
+          position: static; /* Different positioning for mobile */
+          float: none;
+          width: auto;
+          margin-top: 0;
+          background-clip: padding-box;
+          border-radius: 8px;
         }
 
         .dropdown-item {
@@ -205,13 +225,13 @@
                         </a>
                     </li>
                     
-                    {{-- NEW: Master Data Dropdown --}}
+                    {{-- NEW: Master Data Dropdown - FIXED --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs(['companies.*', 'company-units.*', 'pln-members.*']) ? 'active' : '' }}" 
-                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="masterDataDropdown">
                             <i class="fas fa-database me-1"></i> Master Data
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu" aria-labelledby="masterDataDropdown">
                             <li>
                                 <a class="dropdown-item {{ request()->routeIs('companies.*') ? 'active' : '' }}" 
                                    href="{{ route('companies.index') }}">
@@ -274,13 +294,33 @@
     {{-- Main Page Content --}}
     @yield('content')
 
-    {{-- JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    {{-- JS - FIXED ORDER AND VERSIONS --}}
+    {{-- jQuery FIRST --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
+    {{-- Bootstrap SECOND - SINGLE VERSION --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     {{-- DATATABLES CORE + BOOTSTRAP5 --}}
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+
+    {{-- Initialize Bootstrap components --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all dropdowns
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl);
+            });
+            
+            // Initialize all tooltips (if any)
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
 
     @stack('js')
   </body>
