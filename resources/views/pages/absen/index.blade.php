@@ -414,43 +414,119 @@
             color: white;
         }
 
-        /* Carousel Styling */
-        .carousel-item {
-            position: relative;
-            padding-top: 56.25%;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 10px;
+        /* PERBAIKAN UTAMA: Carousel/Swiper Styling untuk Responsive Images - TANPA BAYANGAN */
+        .mySwiper {
+            border-radius: 15px;
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1);
+            background: #f8f9fa;
         }
 
-        .carousel-item img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        /* Container untuk slide yang fleksibel */
+        .swiper-slide {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+            min-height: 200px; /* Minimum height untuk slide kosong */
+            max-height: 600px; /* Maximum height untuk membatasi slide terlalu tinggi */
+            position: relative;
+        }
+
+        /* PERBAIKAN: Image styling tanpa box-shadow */
+        .swiper-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain; /* PENTING: Gunakan contain agar seluruh gambar terlihat */
+            display: block;
+            margin: 0 auto;
             border-radius: 10px;
+            /* DIHAPUS: box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
         }
 
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 5%;
-            opacity: 0.8;
+        /* Untuk gambar landscape */
+        .swiper-slide img[data-orientation="landscape"] {
+            width: 100%;
+            height: auto;
         }
 
-        .carousel-control-prev:hover,
-        .carousel-control-next:hover {
+        /* Untuk gambar portrait */
+        .swiper-slide img[data-orientation="portrait"] {
+            height: 500px; /* Batas tinggi untuk portrait */
+            width: auto;
+        }
+
+        /* Swiper navigation buttons styling */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #0077b6 !important;
+            background: rgba(255, 255, 255, 0.9);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.2);
+        }
+
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Pagination styling */
+        .swiper-pagination-bullet {
+            width: 12px !important;
+            height: 12px !important;
+            background: rgba(255, 214, 10, 0.5) !important;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #ffd60a !important;
+            transform: scale(1.2);
+        }
+
+        /* Loading placeholder untuk gambar - hanya tampil saat loading */
+        .swiper-slide.loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e9ecef;
+            border-top: 3px solid #0077b6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1;
+        }
+
+        /* Hide loading saat gambar sudah loaded */
+        .swiper-slide img {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .swiper-slide img.loaded {
             opacity: 1;
         }
 
-        .carousel-indicators button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #ffd60a;
-            border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         /* Instagram Link Styling */
@@ -511,22 +587,6 @@
         .btn:disabled {
             opacity: 0.8;
             cursor: not-allowed;
-        }
-
-
-        }
-
-        /* Swiper Responsive Fix */
-        .swiper-slide img {
-            display: block;
-            width: 100%;
-            max-height: 500px; /* Adjust this value as needed */
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        .mySwiper {
-            border-radius: 10px;
         }
 
         /* DataTables Clarity */
@@ -616,6 +676,26 @@
             .select2-results__option {
                 padding: 0.5rem !important;
                 font-size: 0.875rem !important;
+            }
+
+            /* Mobile responsive untuk swiper */
+            .swiper-slide {
+                max-height: 400px; /* Kurangi tinggi maximum di mobile */
+            }
+
+            .swiper-slide img[data-orientation="portrait"] {
+                height: 350px; /* Sesuaikan tinggi portrait di mobile */
+            }
+
+            .swiper-button-next,
+            .swiper-button-prev {
+                width: 36px;
+                height: 36px;
+            }
+
+            .swiper-button-next::after,
+            .swiper-button-prev::after {
+                font-size: 14px;
             }
         }
     </style>
@@ -899,6 +979,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLlvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -910,7 +993,7 @@
       const companiesData = @json($companies);
 
       $(function() {
-          // Initialize Swiper
+          // Initialize Swiper dengan pengaturan responsive image
           var swiper = new Swiper(".mySwiper", {
             spaceBetween: 30,
             centeredSlides: true,
@@ -926,7 +1009,72 @@
               nextEl: ".swiper-button-next",
               prevEl: ".swiper-button-prev",
             },
+            // Pengaturan responsif untuk image
+            on: {
+              init: function () {
+                // Deteksi orientasi gambar setelah slide diinisialisasi
+                this.slides.forEach(function(slide) {
+                  const img = slide.querySelector('img');
+                  if (img) {
+                    // Tambahkan class loading
+                    slide.classList.add('loading');
+                    
+                    img.onload = function() {
+                      // Remove loading state
+                      slide.classList.remove('loading');
+                      this.classList.add('loaded');
+                      
+                      const aspectRatio = this.naturalWidth / this.naturalHeight;
+                      if (aspectRatio > 1.2) {
+                        // Landscape
+                        this.setAttribute('data-orientation', 'landscape');
+                        slide.style.height = 'auto';
+                        slide.style.minHeight = '300px';
+                        slide.style.maxHeight = '500px';
+                      } else {
+                        // Portrait atau square
+                        this.setAttribute('data-orientation', 'portrait');
+                        slide.style.height = '500px';
+                        slide.style.minHeight = '400px';
+                        slide.style.maxHeight = '600px';
+                      }
+                    };
+                    
+                    img.onerror = function() {
+                      // Remove loading state even if error
+                      slide.classList.remove('loading');
+                      console.log('Image failed to load:', this.src);
+                    };
+                    
+                    // Jika gambar sudah loaded
+                    if (img.complete && img.naturalHeight !== 0) {
+                      img.onload();
+                    }
+                  }
+                });
+              },
+              slideChangeTransitionStart: function () {
+                // Update tinggi container saat slide berubah
+                const activeSlide = this.slides[this.activeIndex];
+                const img = activeSlide.querySelector('img');
+                if (img && img.complete) {
+                  const aspectRatio = img.naturalWidth / img.naturalHeight;
+                  const swiperContainer = this.el;
+                  
+                  if (aspectRatio > 1.2) {
+                    // Landscape - set tinggi berdasarkan width container
+                    const containerWidth = swiperContainer.offsetWidth;
+                    const calculatedHeight = containerWidth / aspectRatio;
+                    swiperContainer.style.height = Math.min(calculatedHeight, 500) + 'px';
+                  } else {
+                    // Portrait - set tinggi maksimal
+                    swiperContainer.style.height = '500px';
+                  }
+                }
+              }
+            }
           });
+          
           // set signature pad width
           let sig = $("#signature-pad").parent().width();
           $('#signature-pad').attr('width', sig);
@@ -948,8 +1096,6 @@
               signaturePad.clear();
               $('#signature64').val('');
           });
-
-
 
           // submit form
           $('#form-absen').on('submit', function() {
@@ -1125,6 +1271,26 @@
                       });
                   }, 100);
               }
+              
+              // Update swiper slide heights saat resize
+              if (swiper && swiper.slides) {
+                  swiper.slides.forEach(function(slide) {
+                      const img = slide.querySelector('img');
+                      if (img && img.complete) {
+                          const aspectRatio = img.naturalWidth / img.naturalHeight;
+                          if (aspectRatio > 1.2) {
+                              // Landscape
+                              slide.style.height = 'auto';
+                              slide.style.minHeight = '250px';
+                              slide.style.maxHeight = '400px';
+                          } else {
+                              // Portrait
+                              slide.style.height = window.innerWidth < 768 ? '350px' : '500px';
+                          }
+                      }
+                  });
+                  swiper.update();
+              }
           });
           
           // Handle Select2 events dengan width constraint - KEY FIX
@@ -1137,6 +1303,41 @@
                       'width': containerWidth + 'px'
                   });
               }, 10);
+          });
+
+          // Tambahkan event listener untuk memuat ulang gambar jika ada error
+          $('.swiper-slide img').on('error', function() {
+              console.log('Image failed to load:', this.src);
+              $(this).closest('.swiper-slide').removeClass('loading');
+              // Optionally show placeholder or retry loading
+              $(this).attr('alt', 'Gambar tidak dapat dimuat');
+          });
+
+          // Preload images untuk performa yang lebih baik dan handle loading state
+          $('.swiper-slide img').each(function() {
+              const $img = $(this);
+              const $slide = $img.closest('.swiper-slide');
+              
+              // Set initial loading state
+              $slide.addClass('loading');
+              
+              // Create new image for preloading
+              const img = new Image();
+              img.onload = function() {
+                  $slide.removeClass('loading');
+                  $img.addClass('loaded');
+              };
+              img.onerror = function() {
+                  $slide.removeClass('loading');
+                  console.log('Preload failed for:', img.src);
+              };
+              img.src = this.src;
+              
+              // If already loaded
+              if (this.complete && this.naturalHeight !== 0) {
+                  $slide.removeClass('loading');
+                  $img.addClass('loaded');
+              }
           });
       });
   </script>
