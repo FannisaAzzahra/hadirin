@@ -6,12 +6,9 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col">
-                        <h4 class="card-title">
-                            Detail Absen
-                        </h4>
+                        <h4 class="card-title">Detail Absen</h4>
                     </div>
                     <div class="col text-end">
-                        {{-- Memanggil fungsi copyLink dengan slug kegiatan --}}
                         <button type="button" onclick="copyLink('{{ $presence->slug }}')" class="btn btn-warning">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-fill" viewBox="0 0 16 16">
                                 <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
@@ -32,9 +29,7 @@
                             </svg>
                             Export to Excel
                         </a>
-                        <a href="{{ route('presence.index') }}" class="btn btn-secondary">
-                            Kembali
-                        </a>
+                        <a href="{{ route('presence.index') }}" class="btn btn-secondary">Kembali</a>
                     </div>
                 </div>
             </div>
@@ -73,9 +68,7 @@
                             <td>:</td>
                             <td>
                                 @if ($presence->link_lokasi)
-                                    <a href="{{ $presence->link_lokasi }}" target="_blank" class="location-link">
-                                        Klik di sini
-                                    </a>
+                                    <a href="{{ $presence->link_lokasi }}" target="_blank" class="location-link">Klik di sini</a>
                                 @else
                                     -
                                 @endif
@@ -87,7 +80,7 @@
                             <td>
                                 @if ($presence->batas_waktu)
                                     @php
-                                        \Carbon\Carbon::setLocale('id'); // Pastikan locale disetel ke Indonesia
+                                        \Carbon\Carbon::setLocale('id');
                                         $batasWaktuFormatted = \Carbon\Carbon::parse($presence->batas_waktu)->translatedFormat('d F Y H:i');
                                     @endphp
                                     {{ $batasWaktuFormatted }} WIB
@@ -98,6 +91,7 @@
                         </tr>
                     </table>
                 </div>
+
                 <div class="table-responsive">
                     {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover nowrap'], true) }}
                 </div>
@@ -156,7 +150,6 @@
         }
 
         /* Detail Section Styling */
-
         .detail-table td:first-child {
             font-weight: 600;
             color: #0077b6;
@@ -191,9 +184,6 @@
             width: 100%;
         }
 
-        /* Button Styling */
-        
-
         /* Table Styling */
         .table {
             margin-bottom: 0;
@@ -209,29 +199,11 @@
             padding: 1rem;
         }
 
-        /* Table Responsive */
-        
-
-        /* Action Buttons in DataTable */
-
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .card-header .col {
-                margin-bottom: 0.5rem;
-            }
-            
-            .btn {
-                padding: 0.5rem 1rem;
-                margin: 0.25rem;
-                font-size: 0.875rem;
-            }
-            
-            .detail-section {
-                padding: 1rem;
-            }
+        /* Filter Styling */
+        .bg-light {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
         }
-        
+
         /* Custom Modal CSS for Copy Link */
         .pln-modal-content {
             border-radius: 1rem;
@@ -278,67 +250,100 @@
             background-color: #007bff;
             color: white;
         }
+
+        /* Filter section styling */
+        .filter-section .card {
+            box-shadow: 0 2px 10px rgba(0, 119, 182, 0.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card-header .col {
+                margin-bottom: 0.5rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                margin: 0.25rem;
+                font-size: 0.875rem;
+            }
+            
+            .detail-section {
+                padding: 1rem;
+            }
+        }
     </style>
 
     <script>
-        // Function to copy link (replaces alert with custom modal)
+        // Function to copy link
         function copyLink(presenceSlug) {
-            const linkToCopy = `{{ url('/absen') }}/${presenceSlug}`; // Use url() helper for full URL
+            const linkToCopy = `{{ url('/absen') }}/${presenceSlug}`;
             
-            // Try modern Clipboard API first
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(linkToCopy).then(() => {
                     var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
                     copySuccessModal.show();
                 }).catch(err => {
                     console.error('Failed to copy text using Clipboard API: ', err);
-                    // Fallback to execCommand if Clipboard API fails
-                    const tempInput = document.createElement('input');
-                    document.body.appendChild(tempInput);
-                    tempInput.value = linkToCopy;
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                    var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
-                    copySuccessModal.show();
+                    fallbackCopyTextToClipboard(linkToCopy);
                 });
             } else {
-                // Fallback for browsers that don't support Clipboard API
-                const tempInput = document.createElement('input');
-                document.body.appendChild(tempInput);
-                tempInput.value = linkToCopy;
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
-                copySuccessModal.show();
+                fallbackCopyTextToClipboard(linkToCopy);
             }
         }
+
+        function fallbackCopyTextToClipboard(text) {
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = text;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            var copySuccessModal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+            copySuccessModal.show();
+        }
+
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
         });
 
+        // Handle delete button
         $(document).on('click', '.btn-delete', function(e) {
             e.preventDefault();
             let url = $(this).attr('href');
 
             if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-            $.ajax({
-                type: 'DELETE',
-                url: url,
-                success: function(data) {
-                    window.location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.log(error);
-                }
-            });
+                $.ajax({
+                    type: 'DELETE',
+                    url: url,
+                    success: function(data) {
+                        console.log('Delete successful:', data);
+                        
+                        // Reload DataTable
+                        if (window.LaravelDataTables && window.LaravelDataTables['presencedetails-table']) {
+                            window.LaravelDataTables['presencedetails-table'].draw(false);
+                        } else if ($.fn.DataTable.isDataTable('#presencedetails-table')) {
+                            $('#presencedetails-table').DataTable().draw(false);
+                        } else {
+                            window.location.reload();
+                        }
+                        
+                        // Show success message
+                        if (data.message) {
+                            alert(data.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Delete error:', error);
+                        alert('Terjadi kesalahan saat menghapus data');
+                    }
+                });
             }      
-        })
+        });
     </script>
 
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}

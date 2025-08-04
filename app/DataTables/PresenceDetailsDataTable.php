@@ -3,108 +3,248 @@
 namespace App\DataTables;
 
 use App\Models\PresenceDetail;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class PresenceDetailsDataTable extends DataTable
 {
-    /**
-     * Build the DataTable class.
-     *
-     * @param QueryBuilder $query Results from query() method.
-     */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('waktu_absen', function($query) {
+            ->addIndexColumn()
+            ->editColumn('created_at', function ($query) {
                 return date('d-m-Y H:i:s', strtotime($query->created_at));
             })
             ->addColumn('signature', function ($query) {
-                return "<img width='100' src='" . asset('uploads/' . $query->signature) . "'>";
+                return $query->signature
+                    ? "<img width='100' src='" . asset('uploads/' . $query->signature) . "'>"
+                    : '-';
             })
-            ->addColumn('unit', function ($query) {
-                // Tampilkan label yang sesuai di tabel
-                if ($query->unit === 'PLN') {
-                    return 'PLN';
-                } elseif ($query->unit === 'PLN Group') {
-                    return 'PLN Group';
-                } elseif ($query->unit === 'Non PLN') {
-                    return 'Non PLN';
-                } else {
-                    return '-';
-                }
+            ->addColumn('action', function ($query) {
+                return "<a href='" . route('presence-detail.destroy', $query->id) . "' class='btn btn-delete btn-danger btn-sm'>Hapus</a>";
             })
-            ->addColumn('action', function($query){
-                $btnDelete = "<a href='" . route('presence-detail.destroy', $query->id) . "' class='btn btn-delete btn-danger'>Hapus</a>";
-                return $btnDelete;
+            ->filterColumn('unit', function($query, $keyword) {
+                $query->where('unit', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('unit_dtl', function($query, $keyword) {
+                $query->where('unit_dtl', 'like', "%{$keyword}%");
             })
             ->rawColumns(['signature', 'action'])
             ->setRowId('id');
     }
 
-    /**
-     * Get the query source of dataTable.
-     */
     public function query(PresenceDetail $model): QueryBuilder
     {
-        return $model->where('presence_id', request()->segment(2))->newQuery();
+        $presenceId = request()->segment(2);
+        return $model->where('presence_id', $presenceId)->orderBy('created_at', 'desc');
     }
 
-    /**
-     * Optional method if you want to use the html builder.
-     */
     public function html(): HtmlBuilder
     {
+        // Get companies data for filter dropdown
+        $companies = Company::with('activeUnits')->get();
+        
         return $this->builder()
-                    ->setTableId('presencedetails-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    ->responsive(true) // ✅ tambahkan ini!
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('presencedetails-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->dom('
+                <"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>
+                <"row"<"col-sm-12"<"filter-section">>>
+                <"row"<"col-sm-12"tr>>
+                <"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>
+            ')
+            ->orderBy(1, 'desc')
+            ->responsive(true)
+            ->selectStyleSingle()
+            ->pageLength(25)
+            ->lengthMenu([[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]])
+            ->buttons([
+                Button::make('excel')->text('Export Excel'),
+                Button::make('csv')->text('Export CSV'),
+                Button::make('pdf')->text('Export PDF'),
+                Button::make('print')->text('Print'),
+                Button::make('reset')->text('Reset'),
+                Button::make('reload')->text('Reload')
+            ])
+            ->parameters([
+                'processing' => true,
+                'serverSide' => true,
+                'language' => [
+                    'processing' => '<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>',
+                    'lengthMenu' => 'Show _MENU_ entries',
+                    'zeroRecords' => 'No matching records found',
+                    'info' => 'Showing _START_ to _END_ of _TOTAL_ entries',
+                    'infoEmpty' => 'Showing 0 to 0 of 0 entries',
+                    'infoFiltered' => '(filtered from _MAX_ total entries)',
+                    'search' => 'Search:',
+                    'paginate' => [
+                        'first' => 'First',
+                        'last' => 'Last',
+                        'next' => 'Next',
+                        'previous' => 'Previous'
+                    ],
+                    'emptyTable' => 'No data available in table',
+                ],
+                'initComplete' => 'function() {
+                    var api = this.api();
+                    var companies = ' . json_encode($companies) . ';
+                    
+                    // Create filter section
+                    var filterHtml = `
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-filter me-2"></i>Filter Data
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="filter-unit" class="form-label">Nama Perusahaan</label>
+                                        <select id="filter-unit" class="form-select">
+                                            <option value="">-- Semua Perusahaan --</option>`;
+                    
+                    companies.forEach(function(company) {
+                        filterHtml += `<option value="${company.name}">${company.name}</option>`;
+                    });
+                    
+                    filterHtml += `</select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="filter-unit-dtl" class="form-label">Unit Detail</label>
+                                        <div id="unit-dtl-container">
+                                            <select id="filter-unit-dtl-select" class="form-select d-none">
+                                                <option value="">-- Semua Unit --</option>
+                                            </select>
+                                            <input type="text" id="filter-unit-dtl-input" class="form-control d-none" placeholder="Cari unit detail...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <button type="button" id="reset-filters" class="btn btn-outline-secondary me-2">
+                                            <i class="fas fa-undo me-1"></i>Reset
+                                        </button>
+                                        <button type="button" id="apply-filters" class="btn btn-primary">
+                                            <i class="fas fa-search me-1"></i>Filter
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    $(".filter-section").html(filterHtml);
+                    
+                    // Company filter change handler
+                    $("#filter-unit").on("change", function() {
+                        var selectedCompany = $(this).val();
+                        var company = companies.find(c => c.name === selectedCompany);
+                        var selectElement = $("#filter-unit-dtl-select");
+                        var inputElement = $("#filter-unit-dtl-input");
+                        
+                        // Clear unit detail
+                        selectElement.empty().append("<option value=\"\">-- Semua Unit --</option>");
+                        inputElement.val("");
+                        
+                        if (company && company.active_units && company.active_units.length > 0) {
+                            // Show dropdown for predefined units
+                            company.active_units.forEach(function(unit) {
+                                selectElement.append(`<option value="${unit.name}">${unit.name}</option>`);
+                            });
+                            selectElement.removeClass("d-none");
+                            inputElement.addClass("d-none");
+                        } else if (selectedCompany) {
+                            // Show input for free text
+                            selectElement.addClass("d-none");
+                            inputElement.removeClass("d-none");
+                        } else {
+                            // Hide both when no company selected
+                            selectElement.addClass("d-none");
+                            inputElement.addClass("d-none");
+                        }
+                    });
+                    
+                    // Apply filters
+                    $("#apply-filters").on("click", function() {
+                        var unitFilter = $("#filter-unit").val();
+                        var unitDtlFilter = $("#filter-unit-dtl-select").is(":visible") 
+                            ? $("#filter-unit-dtl-select").val() 
+                            : $("#filter-unit-dtl-input").val();
+                        
+                        // Apply column filters
+                        api.column(4).search(unitFilter);
+                        api.column(5).search(unitDtlFilter);
+                        api.draw();
+                    });
+                    
+                    // Reset filters
+                    $("#reset-filters").on("click", function() {
+                        $("#filter-unit").val("");
+                        $("#filter-unit-dtl-select").val("").addClass("d-none");
+                        $("#filter-unit-dtl-input").val("").addClass("d-none");
+                        
+                        api.columns().search("");
+                        api.draw();
+                    });
+                    
+                    // Filter on Enter key
+                    $("#filter-unit-dtl-input").on("keypress", function(e) {
+                        if (e.which == 13) {
+                            $("#apply-filters").click();
+                        }
+                    });
+                }'
+            ]);
     }
 
-    /**
-     * Get the dataTable columns definition.
-     */
     public function getColumns(): array
     {
         return [
-            Column::make('id')
-                ->title('#')
-                ->render('meta.row + meta.settings._iDisplayStart + 1;')
-                ->width(100),
-            Column::make('waktu_absen'),
-            Column::make('nama'),
-            Column::make('no_hp'),
-            Column::make('unit')->title('Unit/Nama Perusahaan'),
-            Column::make('signature')->title('Tanda Tangan'),
+            Column::make('DT_RowIndex')
+                ->title('No')
+                ->width(50)
+                ->className('dt-center')
+                ->orderable(false)
+                ->searchable(false),
+            Column::make('created_at')
+                ->title('Waktu Absen')
+                ->className('dt-center')
+                ->width(150),
+            Column::make('nama')
+                ->title('Nama')
+                ->className('dt-left'),
+            Column::make('no_hp')
+                ->title('No. HP')
+                ->className('dt-center')
+                ->width(120),
+            Column::make('unit')
+                ->title('Nama Perusahaan')
+                ->className('dt-left'),
+            Column::make('unit_dtl')
+                ->title('Unit Detail')
+                ->className('dt-left'),
+            Column::make('signature')
+                ->title('Tanda Tangan')
+                ->className('dt-center')
+                ->width(120)
+                ->orderable(false)
+                ->searchable(false),
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
+                ->title('Aksi')
+                ->exportable(false)
+                ->printable(false)
+                ->width(80)
+                ->addClass('text-center')
+                ->orderable(false)
+                ->searchable(false),
         ];
     }
 
-    /**
-     * Get the filename for export.
-     */
     protected function filename(): string
     {
         return 'PresenceDetails_' . date('YmdHis');

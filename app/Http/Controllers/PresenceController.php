@@ -7,7 +7,8 @@ use App\DataTables\PresenceDetailsDataTable;
 use App\Models\Presence;
 use App\Models\PresenceDetail;
 use App\Models\PresenceSlide;
-use Illuminate\Http\Request; // Pastikan ini sudah ada
+use App\Models\Company; // Tambahkan import Company model
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,7 @@ class PresenceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(PresenceDataTable $dataTable, Request $request) // Tambahkan Request $request
+    public function index(PresenceDataTable $dataTable, Request $request)
     {
 
         // Ambil tanggal dari request, jika ada
@@ -28,7 +29,7 @@ class PresenceController extends Controller
         return $dataTable->with([
             'startDate' => $startDate,
             'endDate' => $endDate
-        ])->render('pages.presence.index'); // Sesuaikan dengan nama view Anda
+        ])->render('pages.presence.index');
     }
 
     /**
@@ -128,9 +129,9 @@ class PresenceController extends Controller
     public function show(string $id, PresenceDetailsDataTable $dataTable)
     {
         $presence = Presence::with('slides')->findOrFail($id);
+        
         return $dataTable->render('pages.presence.detail.index', compact('presence'));
     }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -277,9 +278,7 @@ class PresenceController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus']);
     }
 
-    /**
-     * Handle slide options for create
-     */
+    // Private methods remain the same...
     private function handleSlideOptions(Request $request, Presence $presence, array $validated)
     {
         $slideOption = $validated['slide_option'];
@@ -309,9 +308,6 @@ class PresenceController extends Controller
         }
     }
 
-    /**
-     * Handle slide options for update
-     */
     private function handleSlideOptionsForUpdate(Request $request, Presence $presence, array $validated)
     {
         $slideOption = $validated['slide_option'];
@@ -348,9 +344,6 @@ class PresenceController extends Controller
         }
     }
 
-    /**
-     * Copy slides from previous presence
-     */
     private function copySlides($fromPresenceId, $toPresenceId)
     {
         Log::info('Copying slides:', ['from' => $fromPresenceId, 'to' => $toPresenceId]);
@@ -409,9 +402,6 @@ class PresenceController extends Controller
         ]);
     }
 
-    /**
-     * Upload new slides
-     */
     private function uploadNewSlides(array $files, Presence $presence)
     {
         Log::info('Starting slide upload for presence ID: ' . $presence->id);
@@ -480,9 +470,6 @@ class PresenceController extends Controller
         ]);
     }
 
-    /**
-     * Delete existing slides
-     */
     private function deleteExistingSlides(Presence $presence)
     {
         Log::info('Deleting existing slides for presence ID: ' . $presence->id);
@@ -524,9 +511,6 @@ class PresenceController extends Controller
         ]);
     }
 
-    /**
-     * Handle display options for create
-     */
     private function handleDisplayOptions(Request $request, Presence $presence, array $validated)
     {
         $displayOption = $validated['display_option'];
@@ -546,9 +530,6 @@ class PresenceController extends Controller
         }
     }
 
-    /**
-     * Handle display options for update
-     */
     private function handleDisplayOptionsForUpdate(Request $request, Presence $presence, array $validated)
     {
         $displayOption = $validated['display_option'];
@@ -572,9 +553,6 @@ class PresenceController extends Controller
         }
     }
 
-    /**
-     * Copy display settings from previous presence
-     */
     private function copyDisplaySettings($fromPresenceId, Presence $toPresence)
     {
         $sourcePresence = Presence::findOrFail($fromPresenceId);
@@ -605,5 +583,48 @@ class PresenceController extends Controller
                 }
             }
         }
+    }
+
+    /**
+     * Handle AJAX request for presence details with filtering
+     */
+    public function showData(string $id, Request $request)
+    {
+        if ($request->ajax()) {
+            $query = PresenceDetail::where('presence_id', $id);
+
+            // Apply filters
+            if ($request->filled('unit')) {
+                $query->where('unit', $request->unit);
+                Log::info('AJAX - Filtering by unit: ' . $request->unit);
+            }
+
+            if ($request->filled('unit_dtl')) {
+                $query->where('unit_dtl', $request->unit_dtl);
+                Log::info('AJAX - Filtering by unit_dtl: ' . $request->unit_dtl);
+            }
+
+            Log::info('AJAX - Final query: ' . $query->toSql());
+            Log::info('AJAX - Query bindings: ', $query->getBindings());
+
+            return datatables()
+                ->eloquent($query)
+                ->addIndexColumn()
+                ->editColumn('created_at', function ($data) {
+                    return date('d-m-Y H:i:s', strtotime($data->created_at));
+                })
+                ->addColumn('signature', function ($data) {
+                    return $data->signature
+                        ? "<img width='100' src='" . asset('uploads/' . $data->signature) . "'>"
+                        : '-';
+                })
+                ->addColumn('action', function ($data) {
+                    return "<a href='" . route('presence-detail.destroy', $data->id) . "' class='btn btn-delete btn-danger btn-sm'>Hapus</a>";
+                })
+                ->rawColumns(['signature', 'action'])
+                ->make(true);
+        }
+
+        return response()->json(['error' => 'Invalid request'], 400);
     }
 }
