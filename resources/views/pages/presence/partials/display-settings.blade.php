@@ -30,11 +30,11 @@
         background: white;
         border: 2px solid #a8dadc;
         border-radius: 12px;
-        padding: 1rem; /* Disamakan dengan .slide-option-card.compact */
+        padding: 1rem;
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
-        min-height: 90px; /* Disamakan dengan .slide-option-card.compact */
+        min-height: 90px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -56,18 +56,18 @@
 
     .display-option-content {
         display: flex;
-        align-items: center; /* Disamakan dengan .slide-option-card.compact */
-        gap: 0.8rem; /* Disamakan dengan .slide-option-card.compact */
+        align-items: center;
+        gap: 0.8rem;
     }
 
     .display-option-icon {
-        width: 38px; /* Disamakan dengan .slide-option-card.compact .slide-option-icon */
-        height: 38px; /* Disamakan dengan .slide-option-card.compact .slide-option-icon */
+        width: 38px;
+        height: 38px;
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem; /* Disamakan dengan .slide-option-card.compact .slide-option-icon */
+        font-size: 1rem;
         flex-shrink: 0;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
@@ -92,14 +92,14 @@
     }
 
     .display-option-title {
-        font-size: 1rem; /* Disamakan dengan .slide-option-card.compact .slide-option-title */
+        font-size: 1rem;
         font-weight: 600;
         color: #0077b6;
-        margin: 0 0 0.2rem 0; /* Disamakan dengan .slide-option-card.compact .slide-option-title */
+        margin: 0 0 0.2rem 0;
     }
 
     .display-option-description {
-        font-size: 0.85rem; /* Disamakan dengan .slide-option-card.compact .slide-option-description */
+        font-size: 0.85rem;
         color: #5f6368;
         margin: 0;
         line-height: 1.4;
@@ -107,10 +107,10 @@
 
     .display-option-radio {
         position: absolute;
-        top: 1rem; /* Disamakan dengan .slide-option-card.compact */
-        right: 1rem; /* Disamakan dengan .slide-option-card.compact */
-        width: 20px; /* Disamakan dengan .slide-option-card.compact */
-        height: 20px; /* Disamakan dengan .slide-option-card.compact */
+        top: 1rem;
+        right: 1rem;
+        width: 20px;
+        height: 20px;
         border: 2px solid #dadce0;
         border-radius: 50%;
         background: white;
@@ -127,8 +127,8 @@
 
     .display-option-card.selected .display-option-radio::after {
         content: '';
-        width: 8px; /* Disamakan dengan .slide-option-card.compact */
-        height: 8px; /* Disamakan dengan .slide-option-card.compact */
+        width: 8px;
+        height: 8px;
         background: white;
         border-radius: 50%;
     }
@@ -427,33 +427,33 @@
         }
 
         .display-option-card {
-            padding: 0.8rem; /* Disamakan dengan .slide-option-card.compact di mobile */
-            min-height: 80px; /* Disamakan dengan .slide-option-card.compact di mobile */
+            padding: 0.8rem;
+            min-height: 80px;
         }
 
         .display-option-icon {
-            width: 34px; /* Disamakan dengan .slide-option-card.compact di mobile */
-            height: 34px; /* Disamakan dengan .slide-option-card.compact di mobile */
-            font-size: 0.9rem; /* Disamakan dengan .slide-option-card.compact di mobile */
+            width: 34px;
+            height: 34px;
+            font-size: 0.9rem;
         }
 
         .display-option-title {
-            font-size: 0.95rem; /* Disamakan dengan .slide-option-card.compact di mobile */
+            font-size: 0.95rem;
         }
 
         .display-option-description {
-            font-size: 0.8rem; /* Disamakan dengan .slide-option-card.compact di mobile */
+            font-size: 0.8rem;
         }
 
         .display-option-radio {
-            top: 0.6rem; /* Disamakan dengan .slide-option-card.compact di mobile */
-            right: 0.6rem; /* Disamakan dengan .slide-option-card.compact di mobile */
-            width: 16px; /* Disamakan dengan .slide-option-card.compact di mobile */
-            height: 16px; /* Disamakan dengan .slide-option-card.compact di mobile */
+            top: 0.6rem;
+            right: 0.6rem;
+            width: 16px;
+            height: 16px;
         }
         .display-option-card.selected .display-option-radio::after {
-            width: 6px; /* Disamakan dengan .slide-option-card.compact di mobile */
-            height: 6px; /* Disamakan dengan .slide-option-card.compact di mobile */
+            width: 6px;
+            height: 6px;
         }
     }
 </style>
@@ -468,6 +468,25 @@
 
     @php
         $isEditMode = isset($isEdit) && $isEdit;
+        
+        // Helper function untuk extract username dari URL Instagram
+        $getInstagramUsername = function($link_ig) {
+            if (empty($link_ig)) return '';
+            
+            // Jika sudah berupa username tanpa URL
+            if (!str_contains($link_ig, 'instagram.com') && !str_contains($link_ig, '@')) {
+                return $link_ig;
+            }
+            
+            // Jika berupa URL lengkap
+            if (str_contains($link_ig, 'instagram.com/')) {
+                return str_replace(['https://instagram.com/', 'http://instagram.com/', 'instagram.com/'], '', $link_ig);
+            }
+            
+            // Jika ada tanda @
+            return str_replace('@', '', $link_ig);
+        };
+        
         $hasExistingDisplay = $isEditMode && (
             !empty($presence->judul_header_atas) || 
             !empty($presence->judul_header_bawah) || 
@@ -477,15 +496,19 @@
             !empty($presence->link_ig)
         );
 
-        // Tentukan opsi default
-        $currentDisplayOption = null;
-        if ($isEditMode) {
-            $currentDisplayOption = 'keep';
-        } else {
-            $currentDisplayOption = 'manual';
+        // Tentukan opsi default berdasarkan mode
+        $currentDisplayOption = 'manual'; // Default selalu manual
+        if ($isEditMode && $hasExistingDisplay) {
+            $currentDisplayOption = 'manual'; // Ubah: Selalu default ke manual agar form terlihat
         }
 
         $gridClass = $isEditMode ? 'edit-mode' : 'create-mode';
+        
+        // Get current Instagram username for form display
+        $currentInstagramUsername = '';
+        if (isset($presence) && !empty($presence->link_ig)) {
+            $currentInstagramUsername = $getInstagramUsername($presence->link_ig);
+        }
     @endphp
 
     <div class="display-options-grid {{ $gridClass }}">
@@ -522,7 +545,7 @@
                             @if($presence->link_ig)
                                 <div class="preview-item">
                                     <div class="preview-item-label">Username Instagram:</div>
-                                    <div class="preview-item-value">{{ str_replace('https://instagram.com/', '', $presence->link_ig) }}</div>
+                                    <div class="preview-item-value">{{ $getInstagramUsername($presence->link_ig) }}</div>
                                 </div>
                             @endif
                             @if($presence->logo_kiri || $presence->logo_kanan || $presence->logo_ig)
@@ -589,14 +612,17 @@
             <option value="">-- Pilih Kegiatan --</option>
             @if(isset($previousSlides))
                 @foreach($previousSlides as $prevPresence)
+                    @php
+                        $prevInstagramUsername = $getInstagramUsername($prevPresence->link_ig ?? '');
+                    @endphp
                     <option value="{{ $prevPresence->id }}"
                             data-display='{
-                                "judul_header_atas": "{{ $prevPresence->judul_header_atas ?? "" }}",
-                                "judul_header_bawah": "{{ $prevPresence->judul_header_bawah ?? "" }}",
+                                "judul_header_atas": "{{ addslashes($prevPresence->judul_header_atas ?? "") }}",
+                                "judul_header_bawah": "{{ addslashes($prevPresence->judul_header_bawah ?? "") }}",
                                 "logo_kiri": "{{ $prevPresence->logo_kiri ?? "" }}",
                                 "logo_kanan": "{{ $prevPresence->logo_kanan ?? "" }}",
                                 "logo_ig": "{{ $prevPresence->logo_ig ?? "" }}",
-                                "link_ig": "{{ str_replace('https://instagram.com/', '', $prevPresence->link_ig ?? '') }}"
+                                "link_ig": "{{ $prevInstagramUsername }}"
                             }'>
                         {{ $prevPresence->nama_kegiatan }} ({{ date('d/m/Y', strtotime($prevPresence->tgl_kegiatan)) }})
                     </option>
@@ -711,7 +737,7 @@
                            name="link_ig"
                            id="link_ig"
                            placeholder="misal: eltrafo"
-                           value="{{ old('link_ig', isset($presence) ? str_replace('https://instagram.com/', '', $presence->link_ig) : '') }}">
+                           value="{{ old('link_ig', $currentInstagramUsername) }}">
                     <div class="form-helper">Username Instagram tanpa tanda @</div>
                 </div>
             </div>
@@ -822,8 +848,9 @@
                 section.classList.remove('active');
             });
 
-            // Sembunyikan semua preview-section secara default
+            // Hide all preview sections by default
             document.querySelectorAll('.preview-section').forEach(section => {
+                section.classList.remove('active');
                 section.style.display = 'none';
             });
 
@@ -832,7 +859,7 @@
                 if (previousSection) {
                     previousSection.classList.add('active');
                 }
-                // Tampilkan preview previous hanya jika ada pilihan di select
+                // Show previous preview only if there's a selection in select
                 const previousSelect = document.getElementById('display_previous_id');
                 const previousPreview = document.getElementById('display-previous-preview');
                 if (previousSelect && previousSelect.value && previousPreview) {
@@ -845,12 +872,45 @@
                 }
             } else if (option === 'keep') {
                 if (keepPreviewSection) {
+                    keepPreviewSection.classList.add('active');
                     keepPreviewSection.style.display = 'block';
                 }
             }
         }
 
-        // Previous display selection handling
+        // Function to clear manual form
+        function clearManualForm() {
+            const judulAtasField = document.getElementById('judul_header_atas');
+            const judulBawahField = document.getElementById('judul_header_bawah');
+            const linkIgField = document.getElementById('link_ig');
+            
+            if (judulAtasField) judulAtasField.value = '';
+            if (judulBawahField) judulBawahField.value = '';
+            if (linkIgField) linkIgField.value = '';
+        }
+
+        // Function to populate manual form from selected data
+        function populateManualForm(displayData) {
+            try {
+                const display = JSON.parse(displayData);
+                
+                // Populate text fields
+                const judulAtasField = document.getElementById('judul_header_atas');
+                const judulBawahField = document.getElementById('judul_header_bawah');
+                const linkIgField = document.getElementById('link_ig');
+                
+                if (judulAtasField) judulAtasField.value = display.judul_header_atas || '';
+                if (judulBawahField) judulBawahField.value = display.judul_header_bawah || '';
+                if (linkIgField) linkIgField.value = display.link_ig || '';
+                
+                console.log('Manual form populated with:', display);
+                console.log('Instagram field populated with:', display.link_ig);
+            } catch (error) {
+                console.error('Error populating manual form:', error);
+            }
+        }
+
+        // Previous display selection handling with auto form population
         const previousSelect = document.getElementById('display_previous_id');
         const previousPreview = document.getElementById('display-previous-preview');
         const previousPreviewContent = document.getElementById('display-previous-preview-content');
@@ -939,6 +999,12 @@
                             }
                         }
 
+                        // Store current display data
+                        previousSelect.setAttribute('data-current-display', displayData);
+
+                        // Immediately populate the manual form fields (hidden) so they're ready when submitted
+                        populateManualForm(displayData);
+
                     } catch (error) {
                         console.error('Error parsing display data:', error);
                         if (previousPreview) {
@@ -948,6 +1014,57 @@
                 } else {
                     if (previousPreview) {
                         previousPreview.style.display = 'none';
+                    }
+                    previousSelect.removeAttribute('data-current-display');
+                    
+                    // Clear manual form when no previous selection
+                    clearManualForm();
+                }
+            });
+        }
+
+        // Enhanced option switching with auto-population
+        displayOptions.forEach(card => {
+            card.addEventListener('click', function() {
+                const option = this.dataset.option;
+                const radio = document.getElementById(`display_${option}`);
+
+                if (radio) {
+                    radio.checked = true;
+                    updateSelectedOption();
+                    showContentSection(option);
+
+                    // If switching to manual and we have previous data selected, populate the form
+                    if (option === 'manual' && previousSelect && previousSelect.value) {
+                        const currentDisplayData = previousSelect.getAttribute('data-current-display');
+                        if (currentDisplayData) {
+                            // Small delay to ensure form is visible before populating
+                            setTimeout(() => {
+                                populateManualForm(currentDisplayData);
+                            }, 100);
+                        }
+                    }
+                }
+            });
+        });
+
+        // Handle form submission to copy previous data when "previous" option is selected
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const selectedOption = getSelectedOption();
+                
+                if (selectedOption === 'previous' && previousSelect && previousSelect.value) {
+                    const currentDisplayData = previousSelect.getAttribute('data-current-display');
+                    if (currentDisplayData) {
+                        // Populate hidden fields or form fields with previous data
+                        populateManualForm(currentDisplayData);
+                        
+                        // Switch to manual option so the data gets submitted
+                        const manualRadio = document.getElementById('display_manual');
+                        if (manualRadio) {
+                            manualRadio.checked = true;
+                        }
                     }
                 }
             });
@@ -973,6 +1090,14 @@
             }
 
             return true;
+        };
+
+        // Debug function to check current values
+        window.debugDisplaySettings = function() {
+            console.log('Current selected option:', getSelectedOption());
+            console.log('Instagram field value:', document.getElementById('link_ig')?.value);
+            console.log('Previous select value:', previousSelect?.value);
+            console.log('Previous display data:', previousSelect?.getAttribute('data-current-display'));
         };
     });
 </script>
