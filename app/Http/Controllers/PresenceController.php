@@ -88,7 +88,6 @@ class PresenceController extends Controller
 
         $presence = new Presence();
         $presence->nama_kegiatan = $validated['nama_kegiatan'];
-        $presence->slug = Str::slug($validated['nama_kegiatan']);
         $presence->tgl_kegiatan = $validated['tgl_kegiatan'] . ' ' . $validated['waktu_mulai'];
         $presence->lokasi = $validated['lokasi'];
         $presence->link_lokasi = $validated['link_lokasi'] ?? null;
@@ -115,7 +114,14 @@ class PresenceController extends Controller
             ? 'https://instagram.com/' . ltrim($validated['link_ig'], '@/')
             : null;
 
+        // Temporarily set a slug to satisfy NOT NULL constraint, will be overwritten.
+        $presence->slug = 'temp'; 
         $presence->save();
+
+        // Generate unique slug using the new ID and save again
+        $presence->slug = Str::slug($validated['nama_kegiatan']) . '-' . $presence->id;
+        $presence->save();
+
         Log::info('Presence saved with ID: ' . $presence->id);
 
         // Handle slide options
@@ -193,7 +199,7 @@ class PresenceController extends Controller
 
         $presence = Presence::findOrFail($id);
         $presence->nama_kegiatan = $validated['nama_kegiatan'];
-        $presence->slug = Str::slug($validated['nama_kegiatan']);
+        $presence->slug = Str::slug($validated['nama_kegiatan']) . '-' . $presence->id;
         $presence->tgl_kegiatan = $validated['tgl_kegiatan'] . ' ' . $validated['waktu_mulai'];
         $presence->lokasi = $validated['lokasi'];
         $presence->link_lokasi = $validated['link_lokasi'] ?? null;
