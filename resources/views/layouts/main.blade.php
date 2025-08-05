@@ -14,8 +14,8 @@
     {{-- DATATABLES BOOTSTRAP5 --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
 
-    {{-- FONT AWESOME --}}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    {{-- FONT AWESOME - UPDATED VERSION --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
       /* Custom PLN-inspired navbar styling */
@@ -200,6 +200,9 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
     </style>
+
+    {{-- Custom CSS dari halaman lain --}}
+    @stack('css')
   </head>
   <body>
     {{-- Professional PLN-inspired navbar --}}
@@ -225,7 +228,7 @@
                         </a>
                     </li>
                     
-                    {{-- NEW: Master Data Dropdown - FIXED --}}
+                    {{-- Master Data Dropdown --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs(['companies.*', 'company-units.*', 'pln-members.*']) ? 'active' : '' }}" 
                            href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="masterDataDropdown">
@@ -263,12 +266,7 @@
 
                 <ul class="navbar-nav ms-auto">
                     @guest
-                        {{-- Ini adalah blok yang sebelumnya berisi tombol Login/Register.
-                                Sekarang, blok ini dikosongkan karena tombol sudah ada di halaman otentikasi.
-                                Jika kamu ingin tetap ada tautan ke halaman login, bisa seperti ini: --}}
-                        {{-- <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                        </li> --}}
+                        {{-- Guest user menu bisa ditambahkan di sini jika diperlukan --}}
                     @else
                         <li class="nav-item d-flex align-items-center me-2">
                             <a class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }} text-white-50" href="{{ route('profile') }}">
@@ -294,14 +292,14 @@
     {{-- Main Page Content --}}
     @yield('content')
 
-    {{-- JS - FIXED ORDER AND VERSIONS --}}
+    {{-- JavaScript Libraries --}}
     {{-- jQuery FIRST --}}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     
-    {{-- Bootstrap SECOND - SINGLE VERSION --}}
+    {{-- Bootstrap SECOND --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-    {{-- DATATABLES CORE + BOOTSTRAP5 --}}
+    {{-- DataTables --}}
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
 
@@ -322,6 +320,7 @@
         });
     </script>
 
+    {{-- Custom JavaScript dari halaman lain --}}
     @stack('js')
   </body>
 </html>
