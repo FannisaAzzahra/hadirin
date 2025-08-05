@@ -1385,9 +1385,9 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
     
     // Function to draw the header content
     function drawHeaderContent() {
-        const logoSize = 50;
+        const logoSize = 65; // Increased size to match text height
         const logoX = 40;
-        const logoY = 45;
+        const logoY = 37; // Adjusted position for better alignment
         
         // Draw PLN logo jika berhasil dimuat
         if (logoImg.complete && logoImg.naturalWidth > 0) {
@@ -1399,20 +1399,20 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             ctx.fill();
             
             ctx.fillStyle = '#0077b6';
-            ctx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
+            ctx.font = 'bold 20px "Inter", "Segoe UI", system-ui, sans-serif'; // Adjusted font size to match logo
             ctx.textAlign = 'center';
             ctx.fillText('PLN', logoX + logoSize/2, logoY + logoSize/2 + 6);
         }
         
-        // Header text dengan positioning yang lebih baik
+        // Header text dengan format resmi dan positioning yang seimbang dengan logo
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 36px "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = 'bold 34px "Inter", "Segoe UI", system-ui, sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText('QR Code Presensi Kegiatan', logoX + logoSize + 20, logoY + 15);
+        ctx.fillText('Sistem Presensi Digital Kegiatan', logoX + logoSize + 25, logoY + 28); // Moved down more
         
-        ctx.font = '20px "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = '18px "Inter", "Segoe UI", system-ui, sans-serif';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.fillText('Sistem Presensi Digital Hadirin', logoX + logoSize + 20, logoY + 45);
+        ctx.fillText('PT PLN (Persero) UPT Malang', logoX + logoSize + 25, logoY + 56); // Moved down more
     }
     
     // Try to load PLN logo
@@ -1447,12 +1447,10 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 20;
         
-        // MODIFIED: Card background putih tanpa border
+        // Card background putih tanpa border
         ctx.fillStyle = '#ffffff';
         roundRect(ctx, cardPadding, cardY, leftColumnWidth, cardHeight, 24);
         ctx.fill();
-        
-        // REMOVED: Border biru tipis (sesuai permintaan)
         
         // Reset shadow
         ctx.shadowColor = 'transparent';
@@ -1464,9 +1462,9 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         const eventHeaderY = cardY + 50;
         const eventName = presenceData.nama_kegiatan;
         
-        // MODIFIED: Event name dengan warna biru (tidak ada kotak)
+        // Event name dengan warna biru
         ctx.fillStyle = '#0284c7';
-        ctx.font = 'bold 32px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = 'bold 32px "Inter", "Segoe UI", system-ui, sans-serif';
         ctx.textAlign = 'left';
         
         const maxEventWidth = leftColumnWidth - 100;
@@ -1476,14 +1474,12 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             ctx.fillText(line, cardPadding + 50, eventHeaderY + (index * 40));
         });
         
-        // REMOVED: Border around event name (sesuai permintaan)
-        
-        // Subtitle dengan warna abu-abu
+        // Subtitle dengan format resmi
         ctx.fillStyle = '#64748b';
-        ctx.font = '18px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
-        ctx.fillText('Detail Kegiatan Presensi', cardPadding + 50, eventHeaderY + (eventLines.length * 40) + 25);
+        ctx.font = '18px "Inter", "Segoe UI", system-ui, sans-serif';
+        ctx.fillText('Informasi Detail Kegiatan', cardPadding + 50, eventHeaderY + (eventLines.length * 40) + 25);
         
-        // Details grid - MODIFIED WITH FULL COLOR BACKGROUNDS AND ICONS
+        // Details grid dengan styling resmi
         const detailsStartY = eventHeaderY + (eventLines.length * 40) + 60;
         const details = [
             { 
@@ -1501,22 +1497,22 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
                 borderColor: '#f59e0b'
             },
             { 
-                label: 'LOKASI', 
+                label: 'LOKASI KEGIATAN', 
                 value: presenceData.lokasi || 'Zoom Meeting',
                 icon: '📍',
                 bgColor: '#dcfce7', // Light green
                 borderColor: '#22c55e'
             },
             { 
-                label: 'BATAS WAKTU', 
-                value: document.getElementById('eventDeadline') ? document.getElementById('eventDeadline').textContent : 'Tidak Ada Batas Waktu',
+                label: 'BATAS WAKTU PRESENSI', 
+                value: document.getElementById('eventDeadline') ? document.getElementById('eventDeadline').textContent : 'Sesuai Ketentuan yang Berlaku',
                 icon: '⏰',
                 bgColor: '#f1f5f9', // Light gray
                 borderColor: '#64748b'
             }
         ];
         
-        // Draw details in 2x2 grid dengan styling full color backgrounds
+        // Draw details in 2x2 grid dengan styling formal
         const detailItemWidth = (leftColumnWidth - 120) / 2;
         const detailItemHeight = 100;
         
@@ -1526,15 +1522,13 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             const itemX = cardPadding + 50 + (col * (detailItemWidth + 20));
             const itemY = detailsStartY + (row * (detailItemHeight + 20));
             
-            // MODIFIED: Full color background instead of light blue
+            // Background dengan warna sesuai kategori
             ctx.fillStyle = detail.bgColor;
             roundRect(ctx, itemX, itemY, detailItemWidth, detailItemHeight, 12);
             ctx.fill();
             
-            // REMOVED: Left accent bar (no more colored left border)
-            
-            // Optional subtle border
-            ctx.strokeStyle = detail.borderColor + '20';
+            // Border formal
+            ctx.strokeStyle = detail.borderColor + '40';
             ctx.lineWidth = 1;
             roundRect(ctx, itemX, itemY, detailItemWidth, detailItemHeight, 12);
             ctx.stroke();
@@ -1543,13 +1537,13 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             ctx.font = '20px "Segoe UI", system-ui, sans-serif';
             ctx.fillText(detail.icon, itemX + 15, itemY + 30);
             
-            // Label
+            // Label dengan format resmi
             ctx.fillStyle = '#64748b';
             ctx.font = 'bold 12px "Inter", "Segoe UI", system-ui, sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText(detail.label, itemX + 45, itemY + 30);
             
-            // Value
+            // Value dengan format formal
             ctx.fillStyle = '#1e293b';
             ctx.font = 'bold 16px "Inter", "Segoe UI", system-ui, sans-serif';
             
@@ -1566,16 +1560,16 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             }
         });
         
-        // Link presensi section - MOVED BELOW GRID
+        // Link presensi section dengan format resmi
         const linkY = detailsStartY + (2 * (detailItemHeight + 20)) + 20;
         
-        // Link section header
+        // Link section header dengan format resmi
         ctx.fillStyle = '#0284c7';
-        ctx.font = 'bold 16px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
-        ctx.fillText('🔗  LINK PRESENSI', cardPadding + 50, linkY);
+        ctx.font = 'bold 16px "Inter", "Segoe UI", system-ui, sans-serif';
+        ctx.fillText('🔗  TAUTAN PRESENSI DIGITAL', cardPadding + 50, linkY);
         
-        // Link background - WHITE BOX WITH BETTER PROPORTIONS
-        const linkBoxHeight = 80; // Increased height for multiple lines
+        // Link background
+        const linkBoxHeight = 80;
         const linkBoxY = linkY + 10;
         const linkBoxPadding = 50;
         
@@ -1645,14 +1639,14 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         ctx.shadowColor = 'transparent';
         ctx.shadowBlur = 0;
         
-        // QR section header - IMPROVED SPACING
+        // QR section header dengan format resmi
         const qrHeaderY = contentY + 60;
         const qrCenterX = rightColumnX + rightColumnWidth / 2;
         
-        // Main header dengan warna putih
-        const headerText = 'Scan untuk Presensi';
+        // Main header dengan format resmi
+        const headerText = 'PRESENSI DIGITAL';
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 28px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = 'bold 28px "Inter", "Segoe UI", system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(headerText, qrCenterX, qrHeaderY);
         
@@ -1668,23 +1662,23 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         ctx.fillStyle = underlineGradient;
         ctx.fillRect(qrCenterX - textWidth/2, underlineY, textWidth, 3);
         
-        // QR instructions - BETTER SPACING dengan warna putih
+        // QR instructions dengan format resmi
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = '16px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = '16px "Inter", "Segoe UI", system-ui, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Arahkan kamera smartphone Anda ke QR Code di bawah ini', qrCenterX, qrHeaderY + 40);
+        ctx.fillText('Silakan pindai kode QR di bawah ini menggunakan', qrCenterX, qrHeaderY + 40);
         
         ctx.fillStyle = '#ffd60a';
-        ctx.font = 'bold 14px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
-        ctx.fillText('untuk melakukan presensi digital secara otomatis', qrCenterX, qrHeaderY + 60);
+        ctx.font = 'bold 14px "Inter", "Segoe UI", system-ui, sans-serif';
+        ctx.fillText('aplikasi kamera atau pemindai QR pada perangkat Anda', qrCenterX, qrHeaderY + 60);
         
-        // QR Code container - IMPROVED SPACING (moved down more)
+        // QR Code container
         const qrSize = 280;
         const qrX = qrCenterX - qrSize / 2;
-        const qrY = qrHeaderY + 110; // More spacing from text
+        const qrY = qrHeaderY + 110;
         
         // QR outer frame dengan gradasi yang lebih halus (putih dengan accent kuning)
-        const frameSize = qrSize + 40; // Reduced frame size
+        const frameSize = qrSize + 40;
         const frameX = qrX - 20;
         const frameY = qrY - 20;
         
@@ -1749,17 +1743,17 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             ctx.stroke();
         });
         
-        // Instructions below QR - BETTER SPACING dengan warna putih
+        // Instructions below QR dengan format resmi
         const bottomInstructionsY = qrY + qrSize + 50;
         
         ctx.fillStyle = '#ffd60a';
-        ctx.font = 'bold 15px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = 'bold 15px "Inter", "Segoe UI", system-ui, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Gunakan aplikasi kamera atau QR scanner', qrCenterX, bottomInstructionsY);
+        ctx.fillText('Pastikan menggunakan perangkat dan jaringan yang stabil', qrCenterX, bottomInstructionsY);
         
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = '13px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
-        ctx.fillText('Kompatibel dengan semua smartphone modern', qrCenterX, bottomInstructionsY + 25);
+        ctx.font = '13px "Inter", "Segoe UI", system-ui, sans-serif';
+        ctx.fillText('Sistem kompatibel dengan semua smartphone modern', qrCenterX, bottomInstructionsY + 25);
         
         // Load and draw QR code
         loadAndDrawQR(qrUrl, qrX, qrY, qrSize);
@@ -1818,7 +1812,7 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
     }
     
     function drawFooter() {
-        // Footer dengan design yang lebih clean
+        // Footer dengan design yang lebih clean dan resmi
         const footerY = canvas.height - 80;
         
         // Footer background
@@ -1838,15 +1832,15 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         ctx.fillStyle = separatorGradient;
         ctx.fillRect(0, footerY - 22, canvas.width, 2);
         
-        // Footer text
+        // Footer text dengan format resmi
         ctx.fillStyle = '#0284c7';
-        ctx.font = '16px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = 'bold 16px "Inter", "Segoe UI", system-ui, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('• Hadirin - Sistem Presensi Digital • Powered by PLN •', canvas.width / 2, footerY + 15);
+        ctx.fillText('PT PLN (Persero) UPT Malang – Hadirin Digital Attendance System', canvas.width / 2, footerY + 15);
         
-        // Timestamp
+        // Timestamp dengan format resmi
         ctx.fillStyle = '#64748b';
-        ctx.font = '12px "Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
+        ctx.font = '12px "Inter", "Segoe UI", system-ui, sans-serif';
         const now = new Date();
         const timestamp = now.toLocaleDateString('id-ID', { 
             day: 'numeric', 
@@ -1865,7 +1859,7 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         canvas.toBlob(function(blob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `hadirin-event-card-${slug || 'clean'}-${Date.now()}.png`;
+            link.download = `hadirin-resmi-card-${slug || 'official'}-${Date.now()}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
