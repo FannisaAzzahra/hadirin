@@ -27,6 +27,7 @@ class PresenceDataTable extends DataTable
         Carbon::setLocale('id');
 
         return (new EloquentDataTable($query))
+            ->addIndexColumn()
             ->addColumn('tgl', fn($query) => Carbon::parse($query->tgl_kegiatan)->translatedFormat('d F Y'))
             ->addColumn('waktu_mulai', fn($query) => Carbon::parse($query->tgl_kegiatan)->translatedFormat('H:i') . ' WIB')
             ->addColumn('lokasi', fn($query) => $query->lokasi)
@@ -103,9 +104,10 @@ class PresenceDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('status')
+            Column::make('DT_RowIndex')
                 ->title('No.')
-                ->render('meta.row + meta.settings._iDisplayStart + 1;')
+                ->orderable(false)
+                ->searchable(false)
                 ->width(50),
 
             Column::make('nama_kegiatan')
@@ -127,6 +129,12 @@ class PresenceDataTable extends DataTable
             Column::make('link_lokasi')
                 ->title('Link Lokasi')
                 ->width(120),
+
+            Column::make('status')
+                ->title('Status')
+                ->width(100),
+
+
 
             Column::computed('action')
                 ->exportable(false)
