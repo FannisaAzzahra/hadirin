@@ -34,15 +34,23 @@ class AbsenController extends Controller
         return $dataTable->render('pages.absen.index', compact('presence', 'plnMembers', 'companies'));
     }
 
-    public function save(Request $request, string $id)
+        public function save(Request $request, string $id)
     {
+        $existingPresence = \App\Models\PresenceDetail::where('presence_id', $id)
+            ->where('email', $request->email)
+            ->first();
+
+        if ($existingPresence) {
+            return redirect()->back()->with('error', 'Anda sudah melakukan absensi dengan email ini.');
+        }
+
         $presence = Presence::findOrFail($id);
 
         // Basic validation rules
         $rules = [
             'nama'      => 'required|string',
             'nip'       => 'nullable|string',
-            'email'     => 'nullable|email',
+            'email'     => 'required|email',
             'jabatan'   => 'nullable|string',
             'unit'      => 'required|exists:companies,name', // Validate against companies table
             'no_hp'     => 'required|string',

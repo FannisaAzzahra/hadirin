@@ -711,6 +711,7 @@
             <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120" alt="Logo Kiri">
               <div class="text-center">
                   <h2 class="header-title d-block fw-bold">{{ $presence->judul_header_atas ?? 'ABSENSI ONLINE' }}</h2>
+
                   <h3 class="d-block">{{ $presence->judul_header_bawah ?? '' }}</h3>
               </div>
             <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120" alt="Logo Kanan">
@@ -781,6 +782,13 @@
       @endif
 
       <!-- Main Grid -->
+      @if (session('error'))
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          {{ session('error') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      @endif
+
       <div class="row">
         <!-- Kiri: Form Absensi -->
         <div class="col-lg-5 col-md-12 mb-4 mb-lg-0">
