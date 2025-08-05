@@ -95,45 +95,30 @@ class PresenceDetailsDataTable extends DataTable
                     var api = this.api();
                     var companies = ' . json_encode($companies) . ';
                     
-                    // Create filter section
+                    // Create simple filter section without card
                     var filterHtml = `
-                        <div class="card mb-3">
-                            <div class="card-header bg-light">
-                                <h6 class="card-title mb-0">
-                                    <i class="fas fa-filter me-2"></i>Filter Data
-                                </h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="filter-unit" class="form-label">Nama Perusahaan</label>
-                                        <select id="filter-unit" class="form-select">
-                                            <option value="">-- Semua Perusahaan --</option>`;
+                        <div class="row mb-4 mt-3">
+                            <div class="col-md-4 mb-2">
+                                <select id="filter-unit" class="form-select">
+                                    <option value="">-- Semua Perusahaan --</option>`;
                     
                     companies.forEach(function(company) {
                         filterHtml += `<option value="${company.name}">${company.name}</option>`;
                     });
                     
                     filterHtml += `</select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="filter-unit-dtl" class="form-label">Unit Detail</label>
-                                        <div id="unit-dtl-container">
-                                            <select id="filter-unit-dtl-select" class="form-select d-none">
-                                                <option value="">-- Semua Unit --</option>
-                                            </select>
-                                            <input type="text" id="filter-unit-dtl-input" class="form-control d-none" placeholder="Cari unit detail...">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 d-flex align-items-end">
-                                        <button type="button" id="reset-filters" class="btn btn-outline-secondary me-2">
-                                            <i class="fas fa-undo me-1"></i>Reset
-                                        </button>
-                                        <button type="button" id="apply-filters" class="btn btn-primary">
-                                            <i class="fas fa-search me-1"></i>Filter
-                                        </button>
-                                    </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div id="unit-dtl-container">
+                                    <select id="filter-unit-dtl-select" class="form-select d-none">
+                                        <option value="">-- Semua Unit --</option>
+                                    </select>
+                                    <input type="text" id="filter-unit-dtl-input" class="form-control d-none" placeholder="Cari unit detail...">
                                 </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <button type="button" id="reset-filters" class="btn btn-outline-secondary me-2">Reset</button>
+                                <button type="button" id="apply-filters" class="btn btn-primary">Filter</button>
                             </div>
                         </div>
                     `;
