@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth'], function () {
     
     // Presence management
     Route::get('presence/barcode/{slug}', [PresenceController::class, 'barcode'])->name('presence.barcode');
+    Route::get('presence/barcode-details/{slug}', [PresenceController::class, 'getBarcodeDetails'])->name('presence.barcode-details');
     Route::resource('presence', PresenceController::class);
     
     // Presence Detail routes - IMPORTANT: Order matters!

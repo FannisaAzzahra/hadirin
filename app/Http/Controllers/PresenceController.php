@@ -236,7 +236,7 @@ class PresenceController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Generate barcode with event details
      */
     public function barcode(string $slug)
     {
@@ -248,6 +248,31 @@ class PresenceController extends Controller
 
         // Return the QR code as an SVG image response
         return response($qrCode)->header('Content-Type', 'image/svg+xml');
+    }
+
+    /**
+     * Get presence details for barcode modal
+     */
+    public function getBarcodeDetails(string $slug)
+    {
+        $presence = Presence::where('slug', $slug)->firstOrFail();
+        $url = route('absen.index', $presence->slug);
+
+        // Set locale for Indonesian date formatting
+        \Carbon\Carbon::setLocale('id');
+        
+        $data = [
+            'presence' => $presence,
+            'qr_url' => route('presence.barcode', $presence->slug),
+            'attendance_url' => $url,
+            'formatted_date' => \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('d F Y'),
+            'formatted_time' => \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('H:i'),
+            'formatted_deadline' => $presence->batas_waktu 
+                ? \Carbon\Carbon::parse($presence->batas_waktu)->translatedFormat('d F Y H:i')
+                : null,
+        ];
+
+        return response()->json($data);
     }
 
     /**
