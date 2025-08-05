@@ -375,9 +375,31 @@
         border-top: 1px solid #e9ecef;
     }
 
+    /* Custom styles for centering and responsiveness */
+    .container-fluid.centered-container {
+        max-width: 1200px; /* Adjust this value as needed to control the width */
+        margin: 0 auto; /* This centers the container */
+    }
+
+    /* Ensure the responsiveness of the table within the constrained container */
+    @media (max-width: 992px) {
+        .container-fluid.centered-container {
+            max-width: 90%; /* Adjust for smaller screens */
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container-fluid.centered-container {
+            max-width: 95%; /* Even smaller screens */
+        }
+        .table-responsive {
+            overflow-x: auto; /* Ensure table is scrollable on very small screens */
+        }
+    }
+
 </style>
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-4 centered-container"> {{-- Added centered-container class here --}}
     <div class="row">
         <div class="col-12">
             {{-- Header Section --}}
@@ -594,13 +616,13 @@ $(document).ready(function() {
     $('#companiesTable').DataTable({
         "order": [[ 3, "asc" ]] // Sort by sort_order
     });
-    
+
     // Confirmation for toggle status
     $('form[action*="toggle-status"]').on('submit', function(e) {
         var isActive = $(this).closest('tr').find('.badge').hasClass('bg-success');
         var action = isActive ? 'menonaktifkan' : 'mengaktifkan';
         var companyName = $(this).closest('tr').find('td:nth-child(2) span.fw-semibold').text();
-        
+
         if (!confirm(`Yakin ingin ${action} perusahaan "${companyName}"?`)) {
             e.preventDefault();
         }

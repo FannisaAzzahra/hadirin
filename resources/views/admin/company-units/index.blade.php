@@ -203,9 +203,31 @@
     .table-responsive .fw-semibold {
         font-weight: 600 !important; /* Ensure fw-semibold explicitly applies when needed in table */
     }
+
+    /* Custom styles for centering and responsiveness */
+    .container-fluid.centered-container {
+        max-width: 1200px; /* Adjust this value as needed to control the width */
+        margin: 0 auto; /* This centers the container */
+    }
+
+    /* Ensure the responsiveness of the table within the constrained container */
+    @media (max-width: 992px) {
+        .container-fluid.centered-container {
+            max-width: 90%; /* Adjust for smaller screens */
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container-fluid.centered-container {
+            max-width: 95%; /* Even smaller screens */
+        }
+        .table-responsive {
+            overflow-x: auto; /* Ensure table is scrollable on very small screens */
+        }
+    }
 </style>
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-4 centered-container"> {{-- Ditambahkan kelas centered-container di sini --}}
     <div class="row">
         <div class="col-12">
             {{-- Header Section --}}
