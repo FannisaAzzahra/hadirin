@@ -680,11 +680,18 @@
 
             /* Mobile responsive untuk swiper */
             .swiper-slide {
-                max-height: 400px; /* Kurangi tinggi maximum di mobile */
+                height: auto; /* Biarkan tinggi menyesuaikan konten */
+            }
+
+           .swiper-sl ide img {
+                width: 100%;
+                height: auto;
+                object-fit: contain; /* Menjaga proporsi asli gambar */
+                max-height: 80vh; /* Mencegah gambar terlalu tinggi di layar HP */
             }
 
             .swiper-slide img[data-orientation="portrait"] {
-                height: 350px; /* Sesuaikan tinggi portrait di mobile */
+                height: auto; /* Hapus aturan tinggi spesifik */
             }
 
             .swiper-button-next,
