@@ -683,7 +683,7 @@
                             Pilih File
                         </label>
                     </div>
-                    <div class="form-helper">Format: JPG, PNG, GIF</div>
+                    <div class="form-helper">Format: JPG, PNG</div>
                     @if(isset($presence) && $presence->logo_kiri)
                         <div style="margin-top: 0.5rem;">
                             <img src="{{ asset('uploads/' . $presence->logo_kiri) }}" class="hadirin-img-preview">
@@ -701,7 +701,7 @@
                             Pilih File
                         </label>
                     </div>
-                    <div class="form-helper">Format: JPG, PNG, GIF</div>
+                    <div class="form-helper">Format: JPG, PNG</div>
                     @if(isset($presence) && $presence->logo_kanan)
                         <div style="margin-top: 0.5rem;">
                             <img src="{{ asset('uploads/' . $presence->logo_kanan) }}" class="hadirin-img-preview">
@@ -719,7 +719,7 @@
                             Pilih File
                         </label>
                     </div>
-                    <div class="form-helper">Format: JPG, PNG, GIF</div>
+                    <div class="form-helper">Format: JPG, PNG</div>
                     @if(isset($presence) && $presence->logo_ig)
                         <div style="margin-top: 0.5rem;">
                             <img src="{{ asset('uploads/' . $presence->logo_ig) }}" class="hadirin-img-preview">
