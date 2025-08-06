@@ -637,7 +637,7 @@
                 </div>
                 <div class="upload-title">Upload Slide Foto</div>
                 <div class="upload-description">
-                    Format: JPG, PNG, GIF. Disarankan menggunakan rasio yang sama pada setiap slide foto.<br>
+                    Format: JPG, PNG. Disarankan menggunakan rasio yang sama pada setiap slide foto.<br>
                     Klik atau drag & drop file di sini.
                 </div>
                 <button type="button" class="upload-button" id="upload-trigger-button">
@@ -652,7 +652,7 @@
                 name="slide_images[]"
                 id="slide_images"
                 multiple
-                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                accept="image/jpeg,image/jpg,image/png"
                 max="5"
                 style="display: none;">
 
