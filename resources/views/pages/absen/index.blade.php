@@ -41,9 +41,10 @@
         }
 
         .header-logos img {
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            box-shadow: none;
             transition: transform 0.3s ease;
+            background: transparent;
         }
 
         .header-logos img:hover {
@@ -642,6 +643,7 @@
             .header-logos {
                 flex-direction: column;
                 gap: 1rem;
+                align-items: center; /* Pusatkan item secara horizontal */
             }
 
             .header-title {
@@ -683,7 +685,7 @@
                 height: auto; /* Biarkan tinggi menyesuaikan konten */
             }
 
-           .swiper-sl ide img {
+            .swiper-slide img {
                 width: 100%;
                 height: auto;
                 object-fit: contain; /* Menjaga proporsi asli gambar */
