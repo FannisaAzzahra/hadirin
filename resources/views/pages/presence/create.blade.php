@@ -815,9 +815,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // File upload labels update
+    // Hanya update label untuk file input selain slide_images
     const fileInputs = document.querySelectorAll('input[type="file"]');
 
     fileInputs.forEach(input => {
+        // Abaikan slide_images karena sudah ditangani oleh slide-settings
+        if (input.id === 'slide_images') {
+            return;
+        }
+        
         input.addEventListener('change', function() {
             const label = this.nextElementSibling;
             const fileName = this.files[0]?.name;

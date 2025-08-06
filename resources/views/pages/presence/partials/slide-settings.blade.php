@@ -798,10 +798,11 @@
                     const modeContainer = document.querySelector('.slide-options-grid');
                     const isEditMode = modeContainer ? modeContainer.classList.contains('edit-mode') : false;
 
-                    if (isEditMode && fileInput && fileInput.files.length > 0 && uploadPreview) {
+                    // Tampilkan preview jika ada file yang dipilih
+                    if (fileInput && fileInput.files.length > 0 && uploadPreview) {
                         uploadPreview.style.display = 'block';
                     } else if (uploadPreview) {
-                        uploadPreview.style.display = 'none'; // Sembunyikan di mode create
+                        uploadPreview.style.display = 'none';
                     }
 
                 } else if (option === 'keep') {
@@ -841,8 +842,9 @@
                     uploadPreview.style.display = 'none'; // Sembunyikan bagian pratinjau
                 }
 
+                // Sembunyikan tombol hapus semua
                 if (clearFilesBtn) {
-                    clearFilesBtn.style.display = 'none'; // Sembunyikan tombol hapus semua
+                    clearFilesBtn.style.display = 'none';
                 }
 
                 if (uploadButton) {
@@ -945,14 +947,15 @@
 
                 // Perbarui UI
                 updateFileInfo(); // Selalu perbarui info file
-                updatePreview(); // Perbarui pratinjau berdasarkan mode
+                updatePreview(); // Perbarui pratinjau
 
                 if (uploadButton) {
                     uploadButton.innerHTML = `<i class="fas fa-check"></i> ${validFiles.length} file${validFiles.length > 1 ? 's' : ''} dipilih`;
                 }
 
+                // Tampilkan tombol hapus semua di semua mode
                 if (clearFilesBtn) {
-                    clearFilesBtn.style.display = 'inline-flex'; // Tampilkan tombol hapus semua
+                    clearFilesBtn.style.display = 'inline-flex';
                 }
 
                 console.log('Files processed:', validFiles.length);
@@ -971,14 +974,8 @@
                     return;
                 }
 
-                // Logika tampilan pratinjau berdasarkan mode (create/edit)
-                if (!isEditMode) {
-                    // Jika di mode CREATE, JANGAN tampilkan pratinjau
-                    if (uploadPreview) {
-                        uploadPreview.style.display = 'none';
-                    }
-                    return; // Hentikan eksekusi fungsi
-                }
+                // Tampilkan pratinjau untuk semua mode (create/edit)
+                // Hapus kondisi yang menyembunyikan preview di mode create
 
                 // Jika di mode EDIT, tampilkan pratinjau (TANPA tombol 'x')
                 selectedFiles.forEach((file) => {
@@ -1186,7 +1183,7 @@
             // Panggil inisialisasi upload file setelah DOM dimuat
             // Ini akan menangani tampilan awal jika ada file yang sudah ada (misal di mode edit)
             if (fileInput && uploadArea) {
-                // Simulasikan event change jika ada file yang sudah ada saat halaman dimuat (misal dari backend di mode edit)
+                // Simulasikan event change jika ada file yang sudah ada saat halaman dimuat
                 // Ini penting agar preview tampil jika ada existing files
                 if (fileInput.files && fileInput.files.length > 0) {
                     handleFiles(fileInput.files);
