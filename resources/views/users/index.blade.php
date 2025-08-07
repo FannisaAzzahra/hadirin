@@ -38,6 +38,11 @@
 
 @push('js')
     <style>
+        /* Page Background */
+        body {
+            background-color: #f0f8ff;
+        }
+        
         /* Card Styling */
         .card {
             border: none;

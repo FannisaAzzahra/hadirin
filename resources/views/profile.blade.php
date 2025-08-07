@@ -56,7 +56,7 @@
     /* Latar belakang halaman kembali ke putih, padding tetap ada */
     body {
         padding-top: 70px;
-        background-color: #ffffff; 
+        background-color: #f0f8ff; 
     }
     
     /* Styling card dengan latar belakang kuning muda */
