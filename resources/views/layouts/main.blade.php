@@ -9,7 +9,12 @@
     {{-- CSRF TOKEN --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- BOOTSTRAP 5.3.3 - SINGLE VERSION --}}
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo_saja.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo_saja.png') }}">
+    <meta name="theme-color" content="#0077b6"> {{-- Warna tab Chrome di mobile --}}
+
+    {{-- BOOTSTRAP 5.3.3 --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     {{-- DATATABLES BOOTSTRAP5 --}}
@@ -213,7 +218,6 @@
     <nav class="navbar navbar-pln shadow-sm navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                {{-- Pastikan path gambar benar, contoh: public/images/logo_saja.png --}}
                 <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" style="height: 36px;">
                 {{ config('app.name', 'Aplikasi') }} {{-- Menggunakan config() --}}
             </a>
@@ -280,8 +284,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link btn btn-outline-warning btn-sm" href="{{ route('logout') }}"
-                               onclick="event.preventDefault();
-                                             document.getElementById('logout-form').submit();">
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt me-1"></i> {{ __('Logout') }}
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
