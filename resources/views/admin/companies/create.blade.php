@@ -5,7 +5,7 @@
     /* Global Styles (Disesuaikan dengan Hadirin aesthetic) */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font konsisten dengan Hadirin */
-        background-color: #f0f2f5; /* Latar belakang abu-abu muda, tetap clean */
+        background-color: #f0f8ff; 
     }
 
     /* Card Styling */
