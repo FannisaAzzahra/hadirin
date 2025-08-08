@@ -41,7 +41,7 @@ class PresenceDataTable extends DataTable
                     return '<span class="badge bg-danger">Nonaktif</span>';
                 }
                 if ($query->batas_waktu && now()->gt($query->batas_waktu)) {
-                    return '<span class="badge bg-warning">Kadaluarsa</span>';
+                    return '<span class="badge bg-warning">Kadaluwarsa</span>';
                 }
                 return '<span class="badge bg-success">Aktif</span>';
             })
