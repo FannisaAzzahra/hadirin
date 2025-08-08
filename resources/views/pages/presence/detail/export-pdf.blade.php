@@ -368,9 +368,9 @@
             <thead>
                 <tr>
                     <th>NO</th>
-                    <th>Waktu Absensi</th>
+                    <th>WAKTU ABSENSI</th>
                     <th>NAMA / NIP</th>
-                    <th>UNIT / Jabatan</th>
+                    <th>UNIT / JABATAN</th>
                     <th>EMAIL / NO. HP</th>
                     <th>TANDA TANGAN</th>
                 </tr>
