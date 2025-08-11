@@ -1,4 +1,3 @@
-<!-- PLN-inspired Footer -->
 <footer class="footer-pln mt-5">
     <div class="container">
         <!-- Main Footer Content -->
@@ -6,8 +5,13 @@
             <!-- Company Info -->
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="footer-brand mb-3">
-                    <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" class="footer-logo me-2">
-                    <h5 class="footer-title">{{ config('app.name', 'Aplikasi') }}</h5>
+                    <div class="d-flex align-items-center">
+                        <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" class="footer-logo me-2" style="height: 40px;">
+                        <div class="d-flex flex-column">
+                            <h5 class="footer-title" style="font-size: 1.5rem;">{{ config('app.name', 'Aplikasi') }}</h5>
+                            <span class="text-white" style="font-size: 0.55rem; font-weight: 500; margin-top: -2px;">PT PLN (Persero) UPT MALANG</span>
+                        </div>
+                    </div>
                 </div>
                 <p class="footer-description">
                     Sistem presensi digital untuk mendukung pencatatan kehadiran, manajemen acara, dan pelayanan 
@@ -65,19 +69,26 @@
                 <h6 class="footer-heading">Kontak Kami</h6>
                 <div class="contact-info">
                     <div class="contact-item">
+                        <i class="fas fa-building contact-icon"></i>
+                        <div class="contact-details">
+                            <span class="contact-label">Perusahaan:</span>
+                            <span class="contact-value">PT PLN (Persero) UPT Malang</span>
+                        </div>
+                    </div>
+                    <div class="contact-item">
                         <i class="fas fa-map-marker-alt contact-icon"></i>
                         <div class="contact-details">
                             <span class="contact-label">Alamat:</span>
                             <span class="contact-value">Jl. Raya Karanglo No.90<br>Kabupaten Malang, Jawa Timur 65153</span>
                         </div>
                     </div>
-                    <div class="contact-item">
+                    {{-- <div class="contact-item">
                         <i class="fas fa-phone contact-icon"></i>
                         <div class="contact-details">
                             <span class="contact-label">Telepon:</span>
                             <span class="contact-value">(0341) 478030</span>
                         </div>
-                    </div>
+                    </div> --}}
                     {{-- <div class="contact-item">
                         <i class="fas fa-envelope contact-icon"></i>
                         <div class="contact-details">
