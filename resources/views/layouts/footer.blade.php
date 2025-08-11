@@ -14,11 +14,14 @@
                     terbaik pada setiap kegiatan secara efisien dan berkelanjutan.
                 </p>
                 <div class="social-links">
-                    <a href="#" class="social-link" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-link" title="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-link" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    {{-- <a href="#" class="social-link" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link" title="Twitter"><i class="fab fa-twitter"></i></a> --}}
+                    {{-- <a href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a> --}}
+                    {{-- <a href="#" class="social-link" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a> --}}
+                    <a href="https://www.instagram.com/eltrafo/" target="_blank" class="social-link" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
                 </div>
             </div>
 
@@ -52,7 +55,7 @@
                         <i class="fas fa-sitemap me-2"></i>Data Unit
                     </a></li>
                     <li><a href="{{ route('pln-members.index') }}" class="footer-link">
-                        <i class="fas fa-users me-2"></i>Anggota PLN Terdaftar
+                        <i class="fas fa-users me-2"></i>Daftar Anggota PLN
                     </a></li>
                 </ul>
             </div>
@@ -68,14 +71,14 @@
                             <span class="contact-value">Jl. Raya Karanglo No.90<br>Kabupaten Malang, Jawa Timur 65153</span>
                         </div>
                     </div>
-                    {{-- <div class="contact-item">
+                    <div class="contact-item">
                         <i class="fas fa-phone contact-icon"></i>
                         <div class="contact-details">
                             <span class="contact-label">Telepon:</span>
-                            <span class="contact-value">+62 21 7251234</span>
+                            <span class="contact-value">(0341) 478030</span>
                         </div>
-                    </div> --}}
-                    <div class="contact-item">
+                    </div>
+                    {{-- <div class="contact-item">
                         <i class="fas fa-envelope contact-icon"></i>
                         <div class="contact-details">
                             <span class="contact-label">Email:</span>
@@ -88,7 +91,7 @@
                             <span class="contact-label">Website:</span>
                             <span class="contact-value">www.pln.co.id</span>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
