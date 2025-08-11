@@ -194,3 +194,4 @@ Route::fallback(function () {
         ? redirect()->route('home')->with('error', 'Halaman yang Anda cari tidak ditemukan.')
         : redirect()->route('login')->with('error', 'Halaman yang Anda cari tidak ditemukan.');
 });
+
