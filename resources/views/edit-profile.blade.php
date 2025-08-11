@@ -131,11 +131,14 @@
                                         <i class="fas fa-lock"></i>
                                         <span>Password Saat Ini</span>
                                     </label>
-                                    <input type="password" 
-                                           class="form-control @error('current_password') is-invalid @enderror" 
-                                           id="current_password" 
-                                           name="current_password" 
-                                           required>
+                                    <div class="input-group @error('current_password') is-invalid-group @enderror">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="current_password" 
+                                               name="current_password" 
+                                               required>
+                                        <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('current_password', this)"></i>
+                                    </div>
                                     @error('current_password')
                                         <div class="invalid-feedback">
                                             <i class="fas fa-exclamation-circle"></i>
@@ -149,11 +152,14 @@
                                         <i class="fas fa-key"></i>
                                         <span>Password Baru</span>
                                     </label>
-                                    <input type="password" 
-                                           class="form-control @error('password') is-invalid @enderror" 
-                                           id="password" 
-                                           name="password" 
-                                           required>
+                                    <div class="input-group @error('password') is-invalid-group @enderror">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="password" 
+                                               name="password" 
+                                               required>
+                                        <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
+                                    </div>
                                     @error('password')
                                         <div class="invalid-feedback">
                                             <i class="fas fa-exclamation-circle"></i>
@@ -167,11 +173,14 @@
                                         <i class="fas fa-check-double"></i>
                                         <span>Konfirmasi Password Baru</span>
                                     </label>
-                                    <input type="password" 
-                                           class="form-control" 
-                                           id="password_confirmation" 
-                                           name="password_confirmation" 
-                                           required>
+                                    <div class="input-group">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="password_confirmation" 
+                                               name="password_confirmation" 
+                                               required>
+                                        <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('password_confirmation', this)"></i>
+                                    </div>
                                 </div>
 
                                 <div class="form-actions">
@@ -212,7 +221,7 @@ body {
 }
 
 .container-fluid {
-    max-width: 1200px; /* Back to original width */
+    max-width: 1200px;
     margin: 0 auto;
     padding: 1.5rem;
 }
@@ -386,6 +395,73 @@ body {
     color: #0077b6;
     font-size: 1rem;
 }
+
+/* ========================================================== */
+/* PERBAIKAN STYLING UNTUK BORDER RADIUS */
+/* ========================================================== */
+
+.input-group {
+    position: relative;
+    display: flex; /* Tambahkan ini agar input dan ikon berdampingan */
+    align-items: center;
+    border: 2px solid #e9ecef;
+    border-radius: 8px; /* Pastikan border radius diterapkan pada div pembungkus */
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.input-group:focus-within {
+    border-color: #ffd60a;
+    box-shadow: 0 0 0 0.25rem rgba(255, 214, 10, 0.25);
+    background-color: white;
+}
+
+.input-group.is-invalid-group {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5;
+}
+
+/* Atur input agar mengisi ruang dan memiliki border radius kiri */
+.input-group .form-control {
+    flex-grow: 1; /* Input mengambil sisa ruang */
+    border: none;
+    background-color: transparent;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border-top-left-radius: 8px; /* Pastikan hanya sisi kiri yang melengkung */
+    border-bottom-left-radius: 8px;
+    border-top-right-radius: 0; /* Hapus lengkungan di sisi kanan input */
+    border-bottom-right-radius: 0;
+    transition: all 0.3s ease;
+}
+
+/* Hilangkan box-shadow bawaan dari input saat fokus */
+.input-group .form-control:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Atur posisi dan styling ikon toggle */
+.toggle-password {
+    padding: 0.75rem 1rem; /* Beri padding agar ukurannya pas */
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+    z-index: 5;
+    /* Pastikan ikon tidak memengaruhi border radius container */
+    border-top-right-radius: 8px; 
+    border-bottom-right-radius: 8px;
+    background-color: transparent;
+}
+
+.toggle-password:hover {
+    color: #0077b6;
+}
+
+/* ========================================================== */
+/* AKHIR PERBAIKAN STYLING */
+/* ========================================================== */
+
 
 .form-control {
     border: 2px solid #e9ecef;
@@ -741,16 +817,30 @@ document.addEventListener('DOMContentLoaded', function() {
         function validatePasswordMatch() {
             if (passwordConfirm.value && password.value !== passwordConfirm.value) {
                 passwordConfirm.setCustomValidity('Password tidak cocok');
-                passwordConfirm.classList.add('is-invalid');
+                // Tambahkan kelas invalid pada input-group, bukan inputnya langsung
+                passwordConfirm.closest('.input-group').classList.add('is-invalid-group');
             } else {
                 passwordConfirm.setCustomValidity('');
-                passwordConfirm.classList.remove('is-invalid');
+                passwordConfirm.closest('.input-group').classList.remove('is-invalid-group');
             }
-        }
+        } 
         
         password.addEventListener('input', validatePasswordMatch);
         passwordConfirm.addEventListener('input', validatePasswordMatch);
     }
 });
+
+/**
+ * Function to toggle password visibility
+ * @param {string} inputId - The ID of the password input field.
+ * @param {object} icon - The icon element that was clicked.
+ */
+function togglePasswordVisibility(inputId, icon) {
+    const input = document.getElementById(inputId);
+    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+}
 </script>
 @endsection
