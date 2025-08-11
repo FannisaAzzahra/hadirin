@@ -217,9 +217,12 @@
     {{-- Professional PLN-inspired navbar --}}
     <nav class="navbar navbar-pln shadow-sm navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">
-                <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" style="height: 36px;">
-                {{ config('app.name', 'Aplikasi') }} {{-- Menggunakan config() --}}
+            <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
+                <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" style="height: 44px; margin-right: 0.1rem;">
+                <div class="d-flex flex-column justify-content-center">
+                    <span style="font-size: 1.8rem; font-weight: 700;">{{ config('app.name', 'Aplikasi') }}</span>
+                    <span style="font-size: 0.65rem; font-weight: 500; margin-top: -5px; color: #ffffff;">PT PLN (Persero) UPT MALANG</span>
+                </div>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
