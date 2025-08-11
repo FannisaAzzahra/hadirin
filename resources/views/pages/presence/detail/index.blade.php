@@ -1333,94 +1333,105 @@
                 generateHadirinEventCard(presenceData, qrUrl, slug);
             };
         }
-
-// Professional Event Card Generator with Midnight Blue Professional Design
+// QR Event Card Generator - Footer Sejajar dengan Header Alignment yang Diperbaiki
 function generateHadirinEventCard(presenceData, qrUrl, slug) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    // Set canvas size untuk landscape orientation
-    canvas.width = 1400;
-    canvas.height = 900;
+    // Canvas size dengan proporsi yang tepat
+    canvas.width = 600;
+    canvas.height = 720;
     
     // Enable high-quality rendering
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     
-    // Background dengan gradasi profesional (light gray professional)
-    const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    bgGradient.addColorStop(0, '#f8fafc');
-    bgGradient.addColorStop(0.3, '#f1f5f9');
-    bgGradient.addColorStop(0.7, '#e2e8f0');
-    bgGradient.addColorStop(1, '#f1f5f9');
-    ctx.fillStyle = bgGradient;
+    // Background putih bersih tanpa gradasi
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Header section dengan midnight blue gradient yang profesional
-    const headerHeight = 140;
+    // Header section biru - warna disesuaikan dengan gambar
+    const headerHeight = 90;
     const headerGradient = ctx.createLinearGradient(0, 0, canvas.width, headerHeight);
-    headerGradient.addColorStop(0, '#1e3a8a');  // Deep midnight blue
-    headerGradient.addColorStop(0.3, '#1e40af'); // Royal blue
-    headerGradient.addColorStop(0.7, '#2563eb'); // Bright blue
-    headerGradient.addColorStop(1, '#1d4ed8');   // Professional blue
-    
+    headerGradient.addColorStop(0, '#4f81ff');   // Light blue sesuai gambar
+    headerGradient.addColorStop(0.5, '#4169e1'); // Royal blue
+    headerGradient.addColorStop(1, '#1e3a8a');   // Dark blue
     ctx.fillStyle = headerGradient;
-    ctx.fillRect(0, 0, canvas.width, headerHeight);
+    roundRect(ctx, 0, 0, canvas.width, headerHeight, 0);
+    ctx.fill();
     
-    // Header shimmer effect dengan gold accent
-    const shimmerGradient = ctx.createLinearGradient(0, 0, canvas.width, headerHeight);
-    shimmerGradient.addColorStop(0, 'rgba(251, 191, 36, 0)');
-    shimmerGradient.addColorStop(0.3, 'rgba(251, 191, 36, 0.08)');
-    shimmerGradient.addColorStop(0.7, 'rgba(251, 191, 36, 0.04)');
-    shimmerGradient.addColorStop(1, 'rgba(251, 191, 36, 0)');
-    ctx.fillStyle = shimmerGradient;
-    ctx.fillRect(0, 0, canvas.width, headerHeight);
-    
-    // Gold accent line at bottom of header
-    const accentGradient = ctx.createLinearGradient(0, headerHeight - 4, canvas.width, headerHeight);
-    accentGradient.addColorStop(0, '#f59e0b');
-    accentGradient.addColorStop(0.5, '#fbbf24');
-    accentGradient.addColorStop(1, '#f59e0b');
-    ctx.fillStyle = accentGradient;
-    ctx.fillRect(0, headerHeight - 4, canvas.width, 4);
-    
-    // Load PLN Logo dan render header
+    // Load PLN Logo
     const logoImg = new Image();
     logoImg.crossOrigin = 'anonymous';
     
-    // Function to draw the header content
     function drawHeaderContent() {
-        const logoSize = 65;
-        const logoX = 40;
-        const logoY = 37;
+        const logoSize = 50; // Diperbesar sedikit dari 45 ke 50
+        const logoX = 30;
+        const logoY = (headerHeight - logoSize) / 2; // Center vertikal sempurna
         
-        // Draw PLN logo jika berhasil dimuat
+        // Draw PLN logo atau fallback
         if (logoImg.complete && logoImg.naturalWidth > 0) {
             ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
         } else {
-            // Fallback PLN logo placeholder with professional colors
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-            roundRect(ctx, logoX, logoY, logoSize, logoSize, 10);
+            // PLN logo placeholder dengan background kuning
+            ctx.fillStyle = '#fbbf24'; // Yellow 400
+            roundRect(ctx, logoX, logoY, logoSize, logoSize, 8);
             ctx.fill();
             
-            ctx.fillStyle = '#1e3a8a';
-            ctx.font = 'bold 20px "Inter", "Segoe UI", system-ui, sans-serif';
+            // Lightning bolt icon placeholder - BENAR-BENAR TENGAH
+            ctx.save(); // Save current context state
+            ctx.fillStyle = '#1e40af';
+            ctx.font = 'bold 28px "Arial", sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('PLN', logoX + logoSize/2, logoY + logoSize/2 + 6);
+            ctx.textBaseline = 'middle';
+            
+            // Hitung titik tengah logo dengan tepat
+            const logoCenterX = logoX + (logoSize / 2);
+            const logoCenterY = logoY + (logoSize / 2);
+            
+            ctx.fillText('⚡', logoCenterX, logoCenterY);
+            ctx.restore(); // Restore context state
         }
         
-        // Header text dengan format resmi dan profesional
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 34px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('Sistem Presensi Digital Kegiatan', logoX + logoSize + 25, logoY + 28);
+        // Header text dengan positioning yang BENAR-BENAR SEJAJAR dengan logo
+        const logoCenterY = logoY + (logoSize / 2); // Titik tengah logo secara vertikal
         
-        ctx.font = '18px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.fillText('PT PLN (Persero) UPT Malang', logoX + logoSize + 25, logoY + 56);
+        // Text positioning
+        const textStartX = logoX + logoSize + 25; // Jarak dari logo ke teks
+        
+        // Hitung tinggi total kedua baris teks untuk center alignment yang sempurna
+        const line1FontSize = 22;
+        const line2FontSize = 15;
+        const lineSpacing = 18; // Sedikit dikurangi untuk lebih rapat
+        
+        // Total height kedua baris teks (tinggi font + spacing)
+        const totalTextHeight = line1FontSize + lineSpacing + line2FontSize;
+        
+        // Posisi Y untuk baris pertama - turunkan sedikit ke bawah
+        const textVerticalOffset = 8; // Tambahkan offset ke bawah
+        const textStartY = logoCenterY - (totalTextHeight / 2) + (line1FontSize / 2) + textVerticalOffset;
+        
+        // Reset text properties
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+        
+        // Baris pertama - "Sistem Presensi Digital"
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${line1FontSize}px "Inter", sans-serif`;
+        ctx.fillText('Sistem Presensi Digital', textStartX, textStartY);
+        
+        // Baris kedua - "PT PLN (Persero) UPT Malang"
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.font = `${line2FontSize}px "Inter", sans-serif`;
+        ctx.fillText('PT PLN (Persero) UPT Malang', textStartX, textStartY + lineSpacing + (line2FontSize / 2));
+        
+        // Garis orange di bawah header - rata penuh dan lebih tebal
+        const lineY = headerHeight - 5;
+        ctx.fillStyle = '#f97316'; // Orange solid tanpa gradient
+        ctx.fillRect(0, lineY, canvas.width, 5);
     }
     
-    // Try to load PLN logo
+    // Load logo
     logoImg.onload = function() {
         drawHeaderContent();
         drawMainContent();
@@ -1431,30 +1442,53 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         drawMainContent();
     };
     
-    // Start loading logo
     logoImg.src = '/images/logo_saja.png';
     
     function drawMainContent() {
-        // Main content area dengan margin yang profesional
-        const contentY = headerHeight + 40;
-        const leftColumnWidth = 780;
-        const rightColumnX = leftColumnWidth + 60;
-        const rightColumnWidth = canvas.width - rightColumnX - 40;
+        const centerX = canvas.width / 2;
+        const eventHeaderY = 130;
+        const eventName = presenceData.nama_kegiatan;
         
-        // Left column - Event details card dengan shadow profesional
-        const cardPadding = 40;
-        const cardY = contentY;
-        const cardHeight = 600;
+        // Event name dengan shadow - BIRU GELAP untuk kontras di background putih
+        ctx.fillStyle = '#1e40af'; // Blue 700
+        ctx.font = 'bold 24px "Inter", sans-serif';
+        ctx.textAlign = 'center';
         
-        // Card shadow dengan warna midnight blue
-        ctx.shadowColor = 'rgba(30, 58, 138, 0.12)';
-        ctx.shadowBlur = 40;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetY = 1;
+        
+        const maxEventWidth = canvas.width - 80;
+        const eventLines = wrapText(ctx, eventName, maxEventWidth);
+        
+        eventLines.forEach((line, index) => {
+            ctx.fillText(line, centerX, eventHeaderY + (index * 28));
+        });
+        
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+        
+        const lastLineY = eventHeaderY + ((eventLines.length - 1) * 28);
+        
+        // QR Code section dengan shadow - posisi diturunkan sedikit
+        const qrSize = 220;
+        const qrX = centerX - qrSize / 2;
+        const qrY = lastLineY + 45; // Dinaikkan dari 35 ke 45
+        
+        // Shadow untuk QR frame
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+        ctx.shadowBlur = 8;
         ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 20;
+        ctx.shadowOffsetY = 4;
         
-        // Card background putih profesional
+        // QR frame putih
+        const frameSize = qrSize + 24;
+        const frameX = qrX - 12;
+        const frameY = qrY - 12;
+        
         ctx.fillStyle = '#ffffff';
-        roundRect(ctx, cardPadding, cardY, leftColumnWidth, cardHeight, 24);
+        roundRect(ctx, frameX, frameY, frameSize, frameSize, 12);
         ctx.fill();
         
         // Reset shadow
@@ -1463,305 +1497,162 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         
-        // Event name section
-        const eventHeaderY = cardY + 50;
-        const eventName = presenceData.nama_kegiatan;
-        
-        // Event name dengan midnight blue
-        ctx.fillStyle = '#1e3a8a';
-        ctx.font = 'bold 32px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.textAlign = 'left';
-        
-        const maxEventWidth = leftColumnWidth - 100;
-        const eventLines = wrapText(ctx, eventName, maxEventWidth);
-        
-        eventLines.forEach((line, index) => {
-            ctx.fillText(line, cardPadding + 50, eventHeaderY + (index * 40));
-        });
-        
-        // Subtitle dengan format profesional
-        ctx.fillStyle = '#64748b';
-        ctx.font = '18px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.fillText('Informasi Detail Kegiatan', cardPadding + 50, eventHeaderY + (eventLines.length * 40) + 25);
-        
-        // Details grid dengan styling profesional midnight blue theme
-        const detailsStartY = eventHeaderY + (eventLines.length * 40) + 60;
-        const details = [
-            { 
-                label: 'TANGGAL KEGIATAN', 
-                value: document.getElementById('eventDate') ? document.getElementById('eventDate').textContent : '14 Agustus 2025',
-                icon: '📅',
-                bgColor: '#ede9fe', // Light purple professional
-                borderColor: '#7c3aed'
-            },
-            { 
-                label: 'WAKTU MULAI', 
-                value: document.getElementById('eventTime') ? document.getElementById('eventTime').textContent : '07:07 WIB',
-                icon: '🕐',
-                bgColor: '#e0f2fe', // Light blue professional
-                borderColor: '#0369a1'
-            },
-            { 
-                label: 'LOKASI KEGIATAN', 
-                value: presenceData.lokasi || 'Zoom Meeting',
-                icon: '📍',
-                bgColor: '#f0fdf4', // Light green professional
-                borderColor: '#16a34a'
-            },
-            { 
-                label: 'BATAS WAKTU PRESENSI', 
-                value: document.getElementById('eventDeadline') ? document.getElementById('eventDeadline').textContent : 'Sesuai Ketentuan yang Berlaku',
-                icon: '⏰',
-                bgColor: '#fef3c7', // Light amber professional
-                borderColor: '#d97706'
-            }
-        ];
-        
-        // Draw details in 2x2 grid dengan styling formal profesional
-        const detailItemWidth = (leftColumnWidth - 120) / 2;
-        const detailItemHeight = 100;
-        
-        details.forEach((detail, index) => {
-            const col = index % 2;
-            const row = Math.floor(index / 2);
-            const itemX = cardPadding + 50 + (col * (detailItemWidth + 20));
-            const itemY = detailsStartY + (row * (detailItemHeight + 20));
-            
-            // Background dengan warna profesional
-            ctx.fillStyle = detail.bgColor;
-            roundRect(ctx, itemX, itemY, detailItemWidth, detailItemHeight, 12);
-            ctx.fill();
-            
-            // Border profesional
-            ctx.strokeStyle = detail.borderColor + '40';
-            ctx.lineWidth = 1;
-            roundRect(ctx, itemX, itemY, detailItemWidth, detailItemHeight, 12);
-            ctx.stroke();
-            
-            // Icon at top left
-            ctx.font = '20px "Segoe UI", system-ui, sans-serif';
-            ctx.fillText(detail.icon, itemX + 15, itemY + 30);
-            
-            // Label dengan format profesional
-            ctx.fillStyle = '#64748b';
-            ctx.font = 'bold 12px "Inter", "Segoe UI", system-ui, sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(detail.label, itemX + 45, itemY + 30);
-            
-            // Value dengan format profesional
-            ctx.fillStyle = '#1e293b';
-            ctx.font = 'bold 16px "Inter", "Segoe UI", system-ui, sans-serif';
-            
-            const valueText = detail.value;
-            const maxValueWidth = detailItemWidth - 50;
-            
-            if (ctx.measureText(valueText).width > maxValueWidth) {
-                const valueLines = wrapText(ctx, valueText, maxValueWidth);
-                valueLines.forEach((line, lineIndex) => {
-                    ctx.fillText(line, itemX + 15, itemY + 55 + (lineIndex * 20));
-                });
-            } else {
-                ctx.fillText(valueText, itemX + 15, itemY + 55);
-            }
-        });
-        
-        // Link presensi section dengan format profesional
-        const linkY = detailsStartY + (2 * (detailItemHeight + 20)) + 20;
-        
-        // Link section header dengan midnight blue
-        ctx.fillStyle = '#1e3a8a';
-        ctx.font = 'bold 16px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.fillText('🔗  TAUTAN PRESENSI DIGITAL', cardPadding + 50, linkY);
-        
-        // Link background profesional
-        const linkBoxHeight = 80;
-        const linkBoxY = linkY + 10;
-        const linkBoxPadding = 50;
-        
-        ctx.fillStyle = '#f8fafc';
-        roundRect(ctx, cardPadding + linkBoxPadding, linkBoxY, leftColumnWidth - (linkBoxPadding * 2), linkBoxHeight, 12);
-        ctx.fill();
-        
-        // Link border dengan midnight blue
-        ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 1;
-        roundRect(ctx, cardPadding + linkBoxPadding, linkBoxY, leftColumnWidth - (linkBoxPadding * 2), linkBoxHeight, 12);
-        ctx.stroke();
-        
-        // Link text dengan format profesional
-        ctx.fillStyle = '#475569';
-        ctx.font = '14px "JetBrains Mono", "Consolas", "Monaco", monospace';
-        ctx.textAlign = 'left';
-        
-        const linkUrl = document.getElementById('attendanceLink') ? document.getElementById('attendanceLink').value : 'http://127.0.0.1:8000/absen/...';
-        const maxLinkWidth = leftColumnWidth - (linkBoxPadding * 2) - 30;
-        
-        // Split link text into manageable chunks for wrapping
-        const linkLines = [];
-        const maxCharsPerLine = Math.floor(maxLinkWidth / 8.4);
-        
-        for (let i = 0; i < linkUrl.length; i += maxCharsPerLine) {
-            linkLines.push(linkUrl.substring(i, i + maxCharsPerLine));
-        }
-        
-        // Display maximum 4 lines dengan vertical centering
-        const maxLinesToShow = Math.min(linkLines.length, 4);
-        const lineHeight = 16;
-        const totalTextHeight = maxLinesToShow * lineHeight;
-        const startY = linkBoxY + (linkBoxHeight - totalTextHeight) / 2 + 12;
-        
-        for (let i = 0; i < maxLinesToShow; i++) {
-            let displayText = linkLines[i];
-            if (i === maxLinesToShow - 1 && linkLines.length > maxLinesToShow) {
-                displayText = displayText.substring(0, displayText.length - 3) + '...';
-            }
-            ctx.fillText(displayText, cardPadding + linkBoxPadding + 15, startY + (i * lineHeight));
-        }
-        
-        // Right column - QR Code section
-        drawQRSection(rightColumnX, contentY, rightColumnWidth, qrUrl);
-    }
-    
-    function drawQRSection(rightColumnX, contentY, rightColumnWidth, qrUrl) {
-        const qrSectionHeight = 600;
-        
-        // QR section background dengan midnight blue gradient yang profesional
-        const qrGradient = ctx.createLinearGradient(rightColumnX, contentY, rightColumnX + rightColumnWidth, contentY + qrSectionHeight);
-        qrGradient.addColorStop(0, '#1e3a8a');  // Deep midnight blue
-        qrGradient.addColorStop(0.3, '#1e40af'); // Royal blue
-        qrGradient.addColorStop(0.7, '#2563eb'); // Professional blue
-        qrGradient.addColorStop(1, '#1d4ed8');   // Bright blue
-        ctx.fillStyle = qrGradient;
-        roundRect(ctx, rightColumnX, contentY, rightColumnWidth, qrSectionHeight, 24);
-        ctx.fill();
-        
-        // QR section shadow dengan midnight blue
-        ctx.shadowColor = 'rgba(30, 58, 138, 0.15)';
-        ctx.shadowBlur = 30;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 15;
-        roundRect(ctx, rightColumnX, contentY, rightColumnWidth, qrSectionHeight, 24);
-        ctx.fill();
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        
-        // QR section header dengan format profesional
-        const qrHeaderY = contentY + 60;
-        const qrCenterX = rightColumnX + rightColumnWidth / 2;
-        
-        // Main header dengan format profesional
-        const headerText = 'PRESENSI QR';
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 28px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(headerText, qrCenterX, qrHeaderY);
-        
-        // Add gold underline untuk accent profesional
-        const textWidth = ctx.measureText(headerText).width;
-        const underlineY = qrHeaderY + 8;
-        const underlineGradient = ctx.createLinearGradient(qrCenterX - textWidth/2, underlineY, qrCenterX + textWidth/2, underlineY);
-        underlineGradient.addColorStop(0, 'rgba(251, 191, 36, 0)');
-        underlineGradient.addColorStop(0.2, 'rgba(251, 191, 36, 0.9)');
-        underlineGradient.addColorStop(0.8, 'rgba(251, 191, 36, 0.9)');
-        underlineGradient.addColorStop(1, 'rgba(251, 191, 36, 0)');
-        
-        ctx.fillStyle = underlineGradient;
-        ctx.fillRect(qrCenterX - textWidth/2, underlineY, textWidth, 3);
-        
-        // QR instructions dengan format profesional
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.font = '16px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Silakan pindai kode QR menggunakan aplikasi', qrCenterX, qrHeaderY + 40);
-        
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 14px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.fillText('kamera atau pemindai QR pada perangkat Anda', qrCenterX, qrHeaderY + 60);
-        
-        // QR Code container dengan desain profesional
-        const qrSize = 280;
-        const qrX = qrCenterX - qrSize / 2;
-        const qrY = qrHeaderY + 110;
-        
-        // QR frame dengan warna profesional
-        const frameSize = qrSize + 40;
-        const frameX = qrX - 20;
-        const frameY = qrY - 20;
-        
-        // Professional white frame
-        ctx.fillStyle = '#ffffff';
-        roundRect(ctx, frameX, frameY, frameSize, frameSize, 20);
-        ctx.fill();
-        
-        // Gold accent border untuk kesan premium
-        ctx.strokeStyle = '#fbbf24';
+        // QR border accent orange
+        ctx.strokeStyle = '#f97316'; // Orange 500
         ctx.lineWidth = 3;
-        roundRect(ctx, frameX, frameY, frameSize, frameSize, 20);
+        roundRect(ctx, frameX, frameY, frameSize, frameSize, 12);
         ctx.stroke();
-        
-        // Inner frame
-        ctx.fillStyle = '#ffffff';
-        roundRect(ctx, qrX - 10, qrY - 10, qrSize + 20, qrSize + 20, 15);
-        ctx.fill();
         
         // QR background
-        ctx.fillStyle = '#ffffff';
-        roundRect(ctx, qrX, qrY, qrSize, qrSize, 10);
+        ctx.fillStyle = '#f8fafc';
+        roundRect(ctx, qrX, qrY, qrSize, qrSize, 8);
         ctx.fill();
         
-        // Professional corner indicators dengan gold accent
-        const cornerSize = 30;
-        const cornerOffset = 10;
+        // Corner indicators
+        const cornerSize = 24;
         const corners = [
-            { x: frameX + cornerOffset, y: frameY + cornerOffset },
-            { x: frameX + frameSize - cornerSize - cornerOffset, y: frameY + cornerOffset },
-            { x: frameX + cornerOffset, y: frameY + frameSize - cornerSize - cornerOffset },
-            { x: frameX + frameSize - cornerSize - cornerOffset, y: frameY + frameSize - cornerSize - cornerOffset }
+            { x: frameX + 8, y: frameY + 8 },
+            { x: frameX + frameSize - cornerSize - 8, y: frameY + 8 },
+            { x: frameX + 8, y: frameY + frameSize - cornerSize - 8 },
+            { x: frameX + frameSize - cornerSize - 8, y: frameY + frameSize - cornerSize - 8 }
         ];
         
-        ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2.5;
         ctx.lineCap = 'round';
         
         corners.forEach((corner, index) => {
             ctx.beginPath();
             if (index === 0) { // top-left
-                ctx.moveTo(corner.x, corner.y + cornerSize);
-                ctx.lineTo(corner.x, corner.y + 8);
-                ctx.quadraticCurveTo(corner.x, corner.y, corner.x + 8, corner.y);
-                ctx.lineTo(corner.x + cornerSize, corner.y);
+                ctx.moveTo(corner.x, corner.y + 18);
+                ctx.lineTo(corner.x, corner.y + 4);
+                ctx.quadraticCurveTo(corner.x, corner.y, corner.x + 4, corner.y);
+                ctx.lineTo(corner.x + 18, corner.y);
             } else if (index === 1) { // top-right
-                ctx.moveTo(corner.x, corner.y);
-                ctx.lineTo(corner.x + cornerSize - 8, corner.y);
-                ctx.quadraticCurveTo(corner.x + cornerSize, corner.y, corner.x + cornerSize, corner.y + 8);
-                ctx.lineTo(corner.x + cornerSize, corner.y + cornerSize);
+                ctx.moveTo(corner.x + 6, corner.y);
+                ctx.lineTo(corner.x + cornerSize - 4, corner.y);
+                ctx.quadraticCurveTo(corner.x + cornerSize, corner.y, corner.x + cornerSize, corner.y + 4);
+                ctx.lineTo(corner.x + cornerSize, corner.y + 18);
             } else if (index === 2) { // bottom-left
-                ctx.moveTo(corner.x, corner.y);
-                ctx.lineTo(corner.x, corner.y + cornerSize - 8);
-                ctx.quadraticCurveTo(corner.x, corner.y + cornerSize, corner.x + 8, corner.y + cornerSize);
-                ctx.lineTo(corner.x + cornerSize, corner.y + cornerSize);
+                ctx.moveTo(corner.x, corner.y + 6);
+                ctx.lineTo(corner.x, corner.y + cornerSize - 4);
+                ctx.quadraticCurveTo(corner.x, corner.y + cornerSize, corner.x + 4, corner.y + cornerSize);
+                ctx.lineTo(corner.x + 18, corner.y + cornerSize);
             } else { // bottom-right
-                ctx.moveTo(corner.x, corner.y + cornerSize);
-                ctx.lineTo(corner.x + cornerSize - 8, corner.y + cornerSize);
-                ctx.quadraticCurveTo(corner.x + cornerSize, corner.y + cornerSize, corner.x + cornerSize, corner.y + cornerSize - 8);
-                ctx.lineTo(corner.x + cornerSize, corner.y);
+                ctx.moveTo(corner.x + 6, corner.y + cornerSize);
+                ctx.lineTo(corner.x + cornerSize - 4, corner.y + cornerSize);
+                ctx.quadraticCurveTo(corner.x + cornerSize, corner.y + cornerSize, corner.x + cornerSize, corner.y + cornerSize - 4);
+                ctx.lineTo(corner.x + cornerSize, corner.y + 6);
             }
             ctx.stroke();
         });
         
-        // Professional instructions below QR
-        const bottomInstructionsY = qrY + qrSize + 50;
+        // Instruksi QR - Font dan ketebalan yang sama untuk kedua baris dengan jarak yang seimbang
+        const instructionY = qrY + qrSize + 45; // Jarak dari QR ke instruksi
         
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 15px "Inter", "Segoe UI", system-ui, sans-serif';
+        ctx.fillStyle = '#1e40af'; // BIRU GELAP
+        ctx.font = '14px "Inter", sans-serif'; // Font sama untuk baris pertama
         ctx.textAlign = 'center';
-        ctx.fillText('Sistem digital dengan keamanan tingkat tinggi', qrCenterX, bottomInstructionsY);
+        ctx.fillText('Silakan pindai kode QR menggunakan aplikasi', centerX, instructionY);
         
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.font = '13px "Inter", "Segoe UI", system-ui, sans-serif';
-        ctx.fillText('Kompatibel dengan semua perangkat smartphone modern', qrCenterX, bottomInstructionsY + 25);
+        ctx.fillStyle = '#1e40af'; // BIRU GELAP
+        ctx.font = '14px "Inter", sans-serif'; // Font sama untuk baris kedua
+        ctx.fillText('kamera atau pemindai QR pada perangkat Anda', centerX, instructionY + 18);
         
-        // Load and draw QR code
+        // Detail kegiatan - jarak yang sama dari instruksi kamera ke detail
+        const detailsStartY = instructionY + 63; // Jarak yang sama seperti dari nama ke QR
+        
+        // Header detail - BIRU GELAP
+        ctx.fillStyle = '#1e40af'; // BIRU GELAP
+        ctx.font = 'bold 18px "Inter", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('DETAIL KEGIATAN', centerX, detailsStartY);
+        
+        // Container untuk detail - dibuat lebih kecil karena layout 2 baris
+        const detailContainerY = detailsStartY + 20;
+        const detailContainerHeight = 60; // Dikurangi dari 90 ke 60
+        const detailPadding = 30;
+        
+        // Background container putih bersih
+        ctx.fillStyle = '#ffffff';
+        roundRect(ctx, detailPadding, detailContainerY, canvas.width - (detailPadding * 2), detailContainerHeight, 10);
+        ctx.fill();
+        
+        // Border container biru
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        roundRect(ctx, detailPadding, detailContainerY, canvas.width - (detailPadding * 2), detailContainerHeight, 10);
+        ctx.stroke();
+        
+        // Detail items - layout 2 baris (Tanggal & Waktu di baris 1, Lokasi di baris 2)
+        const details = [
+            { 
+                label: 'Tanggal', 
+                value: document.getElementById('eventDate') ? document.getElementById('eventDate').textContent : '15 Agustus 2025',
+                icon: '📅',
+                row: 0,
+                col: 0
+            },
+            { 
+                label: 'Waktu', 
+                value: document.getElementById('eventTime') ? document.getElementById('eventTime').textContent : '08:00 WIB',
+                icon: '🕐',
+                row: 0,
+                col: 1
+            },
+            { 
+                label: 'Lokasi', 
+                value: presenceData.lokasi || 'Zoom Meeting',
+                icon: '📍',
+                row: 1,
+                col: 0
+            }
+        ];
+        
+        const rowHeight = 26;
+        const itemStartY = detailContainerY + 15;
+        const leftColumnX = detailPadding + 15;
+        const rightColumnX = canvas.width / 2 + 10;
+        
+        details.forEach((detail) => {
+            const currentY = itemStartY + (detail.row * rowHeight);
+            const startX = detail.col === 0 ? leftColumnX : rightColumnX;
+            
+            // Icon
+            ctx.fillStyle = '#1e40af';
+            ctx.font = '14px "Segoe UI", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(detail.icon, startX, currentY + 6);
+            
+            // Label
+            ctx.fillStyle = '#1e40af';
+            ctx.font = 'bold 14px "Inter", sans-serif';
+            ctx.fillText(detail.label, startX + 25, currentY + 6);
+            
+            // Colon
+            ctx.fillStyle = '#1e40af';
+            ctx.fillText(':', startX + 80, currentY + 6);
+            
+            // Value
+            ctx.fillStyle = '#1e40af';
+            ctx.font = '14px "Inter", sans-serif';
+            
+            const valueX = startX + 95;
+            const maxValueWidth = (detail.col === 0 ? rightColumnX - 20 : canvas.width - detailPadding) - valueX;
+            const valueText = detail.value;
+            
+            if (ctx.measureText(valueText).width > maxValueWidth) {
+                let truncatedText = valueText;
+                while (ctx.measureText(truncatedText + '...').width > maxValueWidth && truncatedText.length > 0) {
+                    truncatedText = truncatedText.slice(0, -1);
+                }
+                ctx.fillText(truncatedText + '...', valueX, currentY + 6);
+            } else {
+                ctx.fillText(valueText, valueX, currentY + 6);
+            }
+        });
+        
+        // Load QR code
         loadAndDrawQR(qrUrl, qrX, qrY, qrSize);
     }
     
@@ -1770,34 +1661,48 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         qrImage.crossOrigin = 'anonymous';
         
         qrImage.onload = function() {
-            // Draw QR code dengan padding
-            ctx.drawImage(qrImage, qrX + 10, qrY + 10, qrSize - 20, qrSize - 20);
+            ctx.drawImage(qrImage, qrX + 8, qrY + 8, qrSize - 16, qrSize - 16);
             drawFooter();
         };
         
         qrImage.onerror = function() {
             console.error('Failed to load QR code image');
             
-            // Professional QR placeholder
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(qrX + 10, qrY + 10, qrSize - 20, qrSize - 20);
+            // QR placeholder
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(qrX + 8, qrY + 8, qrSize - 16, qrSize - 16);
             
-            // Draw professional QR pattern
-            const patternSize = 18;
-            ctx.fillStyle = '#1e3a8a';
+            // QR pattern
+            const patternSize = 14;
+            ctx.fillStyle = '#000000';
             for (let i = 0; i < 14; i++) {
                 for (let j = 0; j < 14; j++) {
-                    if ((i + j) % 3 === 0) {
-                        roundRect(ctx, qrX + 10 + (i * patternSize), qrY + 10 + (j * patternSize), patternSize - 2, patternSize - 2, 2);
-                        ctx.fill();
+                    if ((i + j) % 2 === 0 || (i % 3 === 0 && j % 3 === 0)) {
+                        ctx.fillRect(qrX + 8 + (i * patternSize), qrY + 8 + (j * patternSize), patternSize - 1, patternSize - 1);
                     }
                 }
             }
             
+            // Corner squares
+            const cornerSquareSize = 42;
+            const corners = [
+                { x: qrX + 8, y: qrY + 8 },
+                { x: qrX + qrSize - 8 - cornerSquareSize, y: qrY + 8 },
+                { x: qrX + 8, y: qrY + qrSize - 8 - cornerSquareSize }
+            ];
+            
+            corners.forEach(corner => {
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(corner.x, corner.y, cornerSquareSize, cornerSquareSize);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(corner.x + 6, corner.y + 6, cornerSquareSize - 12, cornerSquareSize - 12);
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(corner.x + 12, corner.y + 12, cornerSquareSize - 24, cornerSquareSize - 24);
+            });
+            
             drawFooter();
         };
         
-        // Handle SVG QR codes
         if (qrUrl && qrUrl.includes('.svg')) {
             fetch(qrUrl)
                 .then(response => response.text())
@@ -1818,35 +1723,30 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
     }
     
     function drawFooter() {
-        // Footer dengan design profesional midnight blue
-        const footerY = canvas.height - 80;
+        // Footer dengan background biru gelap - warna disesuaikan dengan gambar
+        const footerHeight = 50; // Dikurangi karena hanya 1 baris
+        const footerY = canvas.height - footerHeight;
         
-        // Footer background dengan subtle gradient
-        const footerGradient = ctx.createLinearGradient(0, footerY - 20, 0, canvas.height);
-        footerGradient.addColorStop(0, 'rgba(30, 58, 138, 0.02)');
-        footerGradient.addColorStop(1, 'rgba(30, 58, 138, 0.08)');
-        ctx.fillStyle = footerGradient;
-        ctx.fillRect(0, footerY - 20, canvas.width, 100);
+        // Footer background biru gelap sesuai gambar
+        const footerBg = ctx.createLinearGradient(0, footerY - 10, canvas.width, canvas.height);
+        footerBg.addColorStop(0, '#1e3a8a'); // Blue 800
+        footerBg.addColorStop(1, '#4169e1'); // Royal blue sesuai gambar
+        ctx.fillStyle = footerBg;
+        ctx.fillRect(0, footerY - 10, canvas.width, footerHeight + 10);
         
-        // Professional separator line
-        const separatorGradient = ctx.createLinearGradient(0, footerY - 20, canvas.width, footerY - 20);
-        separatorGradient.addColorStop(0, 'rgba(30, 58, 138, 0)');
-        separatorGradient.addColorStop(0.2, 'rgba(30, 58, 138, 0.3)');
-        separatorGradient.addColorStop(0.8, 'rgba(30, 58, 138, 0.3)');
-        separatorGradient.addColorStop(1, 'rgba(30, 58, 138, 0)');
+        // Separator line orange - rata penuh dan lebih tebal
+        ctx.fillStyle = '#f97316'; // Orange solid
+        ctx.fillRect(0, footerY - 15, canvas.width, 4);
         
-        ctx.fillStyle = separatorGradient;
-        ctx.fillRect(0, footerY - 22, canvas.width, 2);
-        
-        // Footer text dengan midnight blue professional
-        ctx.fillStyle = '#1e3a8a';
-        ctx.font = 'bold 16px "Inter", "Segoe UI", system-ui, sans-serif';
+        // Footer text dalam satu baris - sejajar dan tidak ramai
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px "Inter", sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('PT PLN (Persero) UPT Malang – Hadirin Digital Attendance System', canvas.width / 2, footerY + 15);
+        ctx.fillText('PT PLN (Persero) UPT Malang - Hadirin Digital Attendance System', canvas.width / 2, footerY + 15);
         
-        // Professional timestamp
-        ctx.fillStyle = '#64748b';
-        ctx.font = '12px "Inter", "Segoe UI", system-ui, sans-serif';
+        // Timestamp di bawah - lebih kecil
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '10px "Inter", sans-serif';
         const now = new Date();
         const timestamp = now.toLocaleDateString('id-ID', { 
             day: 'numeric', 
@@ -1855,9 +1755,8 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             hour: '2-digit',
             minute: '2-digit'
         });
-        ctx.fillText(`Dibuat pada: ${timestamp}`, canvas.width / 2, footerY + 35);
+        ctx.fillText(`Dibuat pada: ${timestamp}`, canvas.width / 2, footerY + 32);
         
-        // Final download
         downloadCanvas();
     }
     
@@ -1865,7 +1764,7 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         canvas.toBlob(function(blob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `midnight-blue-executive-card-${slug || 'professional'}-${Date.now()}.png`;
+            link.download = `qr-event-card-clean-${slug || 'professional'}-${Date.now()}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1873,7 +1772,7 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         }, 'image/png', 1.0);
     }
     
-    // Start the process
+    // Start process
     setTimeout(() => {
         if (!logoImg.complete) {
             drawHeaderContent();
@@ -1882,7 +1781,7 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
     }, 2000);
 }
 
-// Helper function untuk rounded rectangle
+// Helper functions
 function roundRect(ctx, x, y, width, height, radius) {
     if (width < 2 * radius) radius = width / 2;
     if (height < 2 * radius) radius = height / 2;
@@ -1896,7 +1795,6 @@ function roundRect(ctx, x, y, width, height, radius) {
     ctx.closePath();
 }
 
-// Helper function untuk text wrapping
 function wrapText(ctx, text, maxWidth) {
     const words = text.split(' ');
     const lines = [];
@@ -1921,7 +1819,7 @@ function wrapText(ctx, text, maxWidth) {
     return lines;
 }
 
-// Add roundRect support for older browsers
+// Browser compatibility
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
         this.beginPath();
@@ -1931,7 +1829,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
         this.lineTo(x + width, y + height - radius);
         this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
         this.lineTo(x + radius, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        this.quadraticCurveTo(x, y + height, x, y + height - radius);
         this.lineTo(x, y + radius);
         this.quadraticCurveTo(x, y, x + radius, y);
         this.closePath();
