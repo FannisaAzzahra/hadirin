@@ -10,56 +10,187 @@ use App\Http\Controllers\CompanyUnitController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+// Root redirect
 Route::get('/', function () {
-    return redirect()->route('home');
+    return Auth::check() ? redirect()->route('home') : redirect()->route('login');
+})->name('root');
+
+// Authentication Routes
+Auth::routes([
+    'register' => true, // Set false if you want to disable registration
+    'reset' => true,    // Set false if you want to disable password reset
+    'verify' => false,  // Set true if you want email verification
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes (No Authentication Required)
+|--------------------------------------------------------------------------
+*/
+
+// Public attendance routes
+Route::prefix('absen')->name('absen.')->group(function () {
+    Route::get('/{slug}', [AbsenController::class, 'index'])->name('index');
+    Route::post('/save/{id}', [AbsenController::class, 'save'])->name('save');
 });
 
-//Admin
-Route::group(['middleware' => 'auth'], function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Public API routes
+Route::prefix('api/public')->name('api.public.')->group(function () {
+    Route::get('/units-by-company', [AbsenController::class, 'getUnitsByCompany'])->name('units-by-company');
+});
 
-    // API endpoints
-    Route::get('/api/notifications', [App\Http\Controllers\HomeController::class, 'notifications'])->name('api.notifications');
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes (Require Login)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+    
+    // Dashboard/Home
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Routes (Authenticated)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('api')->name('api.')->middleware(['auth'])->group(function () {
+        // Notifications API - Fixed to prevent redirect loops
+        Route::get('/notifications', [HomeController::class, 'notifications'])
+              ->name('notifications')
+              ->middleware('throttle:60,1'); // Rate limiting for API calls
+        
+        // Calendar data API
+        Route::get('/calendar-data', [HomeController::class, 'calendarData'])
+              ->name('calendar-data')
+              ->middleware('throttle:60,1');
+        
+        // Companies with units API
+        Route::get('/companies-with-units', [CompanyController::class, 'getCompaniesWithUnits'])
+              ->name('companies-with-units');
+        
+        // Units by company API
+        Route::get('/units-by-company', [CompanyUnitController::class, 'getUnitsByCompany'])
+              ->name('units-by-company');
+    });
+
+    // Alternative route for calendar data (backward compatibility)
     Route::get('/calendar-data', [HomeController::class, 'calendarData'])->name('calendar.data');
 
-    // Profile routes
+    /*
+    |--------------------------------------------------------------------------
+    | User Profile Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [App\Http\Controllers\UserController::class, 'profile'])->name('index');
+        Route::get('/edit', [App\Http\Controllers\UserController::class, 'editProfile'])->name('edit');
+        Route::put('/update', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('update');
+        Route::put('/password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('password.update');
+    });
+
+    // Backward compatibility for profile route
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
-    Route::get('/profile/edit', [App\Http\Controllers\UserController::class, 'editProfile'])->name('profile.edit');
-    Route::put('/profile', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('profile.update');
-    Route::put('/profile/password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('profile.password.update');
 
-    // User management
+    /*
+    |--------------------------------------------------------------------------
+    | User Management Routes
+    |--------------------------------------------------------------------------
+    */
     Route::resource('users', App\Http\Controllers\UserController::class)->except(['show']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Presence Management Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('presence')->name('presence.')->group(function () {
+        // Special routes that need to come before resource routes
+        Route::get('/barcode/{slug}', [PresenceController::class, 'barcode'])->name('barcode');
+        Route::get('/barcode-details/{slug}', [PresenceController::class, 'getBarcodeDetails'])->name('barcode-details');
+    });
     
-    // Presence management
-    Route::get('presence/barcode/{slug}', [PresenceController::class, 'barcode'])->name('presence.barcode');
-    Route::get('presence/barcode-details/{slug}', [PresenceController::class, 'getBarcodeDetails'])->name('presence.barcode-details');
+    // Resource route for presence
     Route::resource('presence', PresenceController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Presence Detail Routes
+    |--------------------------------------------------------------------------
+    | IMPORTANT: Specific routes must come before general resource routes
+    */
+    Route::prefix('presence-detail')->name('presence-detail.')->group(function () {
+        Route::get('/export-pdf/{id}', [PresenceDetailController::class, 'exportPdf'])->name('export-pdf');
+        Route::get('/export-excel/{id}', [PresenceDetailController::class, 'exportExcel'])->name('export-excel');
+        Route::delete('/{id}', [PresenceDetailController::class, 'destroy'])->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | PLN Members Management Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('pln-members')->name('pln-members.')->group(function () {
+        // Special routes
+        Route::get('/template', [PlnMemberController::class, 'downloadTemplate'])->name('template');
+        Route::post('/import-ajax', [PlnMemberController::class, 'importAjax'])->name('import-ajax');
+    });
     
-    // Presence Detail routes - IMPORTANT: Order matters!
-    Route::get('presence-detail/export-pdf/{id}', [PresenceDetailController::class, 'exportPdf'])->name('presence-detail.export-pdf');
-    Route::get('presence-detail/export-excel/{id}', [PresenceDetailController::class, 'exportExcel'])->name('presence-detail.export-excel');
-    Route::delete('presence-detail/{id}', [PresenceDetailController::class, 'destroy'])->name('presence-detail.destroy');
-
-    // PLN Members management
+    // Resource route for PLN members
     Route::resource('pln-members', PlnMemberController::class)->except(['show']);
-    Route::get('pln-members/template', [PlnMemberController::class, 'downloadTemplate'])->name('pln-members.template');
-    Route::post('pln-members/import-ajax', [PlnMemberController::class, 'importAjax'])->name('pln-members.import-ajax');
 
-    // Companies management
+    /*
+    |--------------------------------------------------------------------------
+    | Company Management Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('companies')->name('companies.')->group(function () {
+        // Special routes
+        Route::patch('/{company}/toggle-status', [CompanyController::class, 'toggleStatus'])->name('toggle-status');
+    });
+    
+    // Resource route for companies
     Route::resource('companies', CompanyController::class);
-    Route::patch('companies/{company}/toggle-status', [CompanyController::class, 'toggleStatus'])->name('companies.toggle-status');
-    Route::get('/api/companies-with-units', [CompanyController::class, 'getCompaniesWithUnits'])->name('api.companies-with-units');
 
-    // Company Units management
+    /*
+    |--------------------------------------------------------------------------
+    | Company Units Management Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('company-units')->name('company-units.')->group(function () {
+        // Special routes
+        Route::patch('/{companyUnit}/toggle-status', [CompanyUnitController::class, 'toggleStatus'])->name('toggle-status');
+    });
+    
+    // Resource route for company units
     Route::resource('company-units', CompanyUnitController::class);
-    Route::patch('company-units/{companyUnit}/toggle-status', [CompanyUnitController::class, 'toggleStatus'])->name('company-units.toggle-status');
-    Route::get('/api/units-by-company', [CompanyUnitController::class, 'getUnitsByCompany'])->name('api.units-by-company');
 });
 
-//Public routes
-Route::get('absen/{slug}', [AbsenController::class, 'index'])->name('absen.index');
-Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.save');
-Route::get('/api/units-by-company-public', [AbsenController::class, 'getUnitsByCompany'])->name('api.units-by-company-public');
+/*
+|--------------------------------------------------------------------------
+| Fallback Routes
+|--------------------------------------------------------------------------
+*/
 
-Auth::routes();
+// Handle 404 errors gracefully
+Route::fallback(function () {
+    if (request()->expectsJson()) {
+        return response()->json(['error' => 'Route not found'], 404);
+    }
+    
+    return Auth::check() 
+        ? redirect()->route('home')->with('error', 'Halaman yang Anda cari tidak ditemukan.')
+        : redirect()->route('login')->with('error', 'Halaman yang Anda cari tidak ditemukan.');
+});
