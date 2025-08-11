@@ -14,6 +14,11 @@
     {{-- FONT AWESOME --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo_saja.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo_saja.png') }}">
+    <meta name="theme-color" content="#0077b6"> {{-- Warna tab Chrome di mobile --}}
+    
     <style>
       body {
         background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
@@ -281,28 +286,103 @@
         display: block;
       }
 
-      .hadirin-input {
+      /* ========================================================== */
+      /* PERUBAHAN UTAMA UNTUK MENGGABUNGKAN INPUT DAN IKON */
+      /* ========================================================== */
+
+      /* Pindahkan styling border, radius, dan box-shadow ke .input-group */
+      .input-group {
+        position: relative;
         border: 2px solid #a8dadc;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+      }
+
+      .input-group:focus-within {
+        border-color: #00b4d8;
+        box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.15);
+        background: white;
+        transform: translateY(-1px);
+      }
+
+      .input-group:hover {
+        border-color: #00b4d8;
+        background: white;
+      }
+
+      /* Buat input menjadi borderless dan transparan */
+      .hadirin-input {
+        border: none;
         border-radius: 12px;
         padding: 0.8rem 1rem;
         font-size: 1rem;
         transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.9);
+        background: transparent;
         width: 100%;
+        padding-right: 3rem; /* Sediakan ruang untuk ikon */
       }
 
       .hadirin-input:focus {
-        border-color: #00b4d8;
-        box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.15);
-        background: white;
-        outline: none;
-        transform: translateY(-1px);
+        outline: none; /* Hilangkan outline default pada input */
+      }
+      
+      /* Pastikan input-group dan input tanpa toggle juga memiliki styling yang sama */
+      .form-group .hadirin-input:not(.has-toggle) {
+          border: 2px solid #a8dadc;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.9);
+          padding: 0.8rem 1rem;
+          transition: all 0.3s ease;
       }
 
-      .hadirin-input:hover {
-        border-color: #00b4d8;
-        background: white;
+      .form-group .hadirin-input:not(.has-toggle):hover {
+          border-color: #00b4d8;
+          background: white;
       }
+
+      .form-group .hadirin-input:not(.has-toggle):focus {
+          border-color: #00b4d8;
+          box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.15);
+          background: white;
+          outline: none;
+          transform: translateY(-1px);
+      }
+      
+      /* Styling untuk error pada input tanpa toggle */
+      .form-group .hadirin-input:not(.has-toggle).is-invalid {
+          border-color: #dc3545 !important;
+      }
+
+      /* Custom styling for password toggle */
+      .toggle-password {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s ease;
+        z-index: 5; /* Pastikan ikon berada di atas input */
+      }
+
+      .toggle-password:hover {
+        color: #00b4d8;
+      }
+      
+      /* Styling untuk error pada input-group */
+      .input-group.is-invalid {
+        border-color: #dc3545 !important;
+      }
+      /* Hapus border error pada input di dalam input-group */
+      .input-group .hadirin-input.is-invalid {
+        border-color: transparent !important;
+      }
+      
+      /* ========================================================== */
+      /* AKHIR PERUBAHAN UTAMA */
+      /* ========================================================== */
+      
 
       /* Checkbox Styling */
       .hadirin-checkbox {
@@ -405,10 +485,6 @@
         color: #dc3545; /* Pastikan warna merah untuk error */
       }
 
-      .is-invalid {
-        border-color: #dc3545 !important;
-      }
-
       /* Responsive Design */
       @media (max-width: 768px) {
         body {
@@ -501,6 +577,7 @@
 
                         <div class="form-group">
                             <label for="login-email" class="hadirin-label">Alamat Email</label> {{-- Label Email --}}
+                            {{-- Tambahkan kelas "has-toggle" jika Anda ingin membuat input tanpa ikon berbeda --}}
                             <input id="login-email" type="email" class="hadirin-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Masukkan alamat email Anda"> {{-- Placeholder Login Email --}}
                             @error('email')
                                 <div class="invalid-feedback">
@@ -511,7 +588,11 @@
 
                         <div class="form-group">
                             <label for="login-password" class="hadirin-label">Kata Sandi</label> {{-- Label Password --}}
-                            <input id="login-password" type="password" class="hadirin-input @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Masukkan kata sandi Anda"> {{-- Placeholder Login Password --}}
+                            {{-- Tambahkan is-invalid ke input-group jika ada error --}}
+                            <div class="input-group @error('password') is-invalid @enderror">
+                                <input id="login-password" type="password" class="hadirin-input has-toggle" name="password" required autocomplete="current-password" placeholder="Masukkan kata sandi Anda"> {{-- Placeholder Login Password --}}
+                                <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('login-password', this)"></i>
+                            </div>
                             @error('password')
                                 <div class="invalid-feedback">
                                     <strong>{{ $message }}</strong>
@@ -574,7 +655,11 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="register-password" class="hadirin-label">Kata Sandi</label> {{-- Label Kata Sandi Register --}}
-                                    <input id="register-password" type="password" class="hadirin-input @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="Buat kata sandi"> {{-- Placeholder Buat Kata Sandi --}}
+                                    {{-- Tambahkan is-invalid ke input-group jika ada error --}}
+                                    <div class="input-group @error('password') is-invalid @enderror">
+                                        <input id="register-password" type="password" class="hadirin-input has-toggle" name="password" required autocomplete="new-password" placeholder="Buat kata sandi"> {{-- Placeholder Buat Kata Sandi --}}
+                                        <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('register-password', this)"></i>
+                                    </div>
                                     @error('password')
                                         <div class="invalid-feedback">
                                             <strong>{{ $message }}</strong>
@@ -585,7 +670,10 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="register-password-confirm" class="hadirin-label">Konfirmasi Kata Sandi</label> {{-- Label Konfirmasi Kata Sandi --}}
-                                    <input id="register-password-confirm" type="password" class="hadirin-input" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi kata sandi Anda"> {{-- Placeholder Konfirmasi Kata Sandi --}}
+                                    <div class="input-group">
+                                        <input id="register-password-confirm" type="password" class="hadirin-input has-toggle" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi kata sandi Anda"> {{-- Placeholder Konfirmasi Kata Sandi --}}
+                                        <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('register-password-confirm', this)"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -654,6 +742,15 @@
             registerForm.classList.remove('slide-out-left');
             loginForm.classList.remove('slide-out-left');
         }, 200);
+    }
+    
+    // Fungsi untuk toggle password
+    function togglePasswordVisibility(inputId, icon) {
+        const input = document.getElementById(inputId);
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
     }
 
     // Initialize form state on page load

@@ -9,19 +9,16 @@ use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
-use Carbon\Carbon; // Pastikan ini ada
+use Carbon\Carbon;
 
 class PresenceDataTable extends DataTable
 {
-    // HAPUS CONSTRUCTOR INI:
-    // protected $startDate;
-    // protected $endDate;
-    // public function __construct($startDate = null, $endDate = null)
-    // {
-    //     $this->startDate = $startDate;
-    //     $this->endDate = $endDate;
-    // }
-
+    /**
+     * Build the DataTable class.
+     *
+     * @param QueryBuilder $query Results from query() method.
+     * @return \Yajra\DataTables\EloquentDataTable
+     */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         Carbon::setLocale('id');
@@ -63,16 +60,21 @@ class PresenceDataTable extends DataTable
     {
         $query = $model->newQuery();
 
-        // Properti $this->startDate dan $this->endDate akan otomatis terisi
-        // karena Anda meneruskannya via $dataTable->with() di controller.
+        // Filter tanggal kalau ada
         if ($this->startDate && $this->endDate) {
             $start = Carbon::parse($this->startDate)->startOfDay();
             $end = Carbon::parse($this->endDate)->endOfDay();
             $query->whereBetween('tgl_kegiatan', [$start, $end]);
         }
 
-        // Hapus dd() ini setelah mencoba dan memastikan berfungsi
-        // dd($query->toSql(), $query->getBindings());
+        // Urutkan status -> bulan terbaru -> tanggal kecil ke besar
+        $query->orderByRaw("
+            CASE
+                WHEN is_active = 1 AND (batas_waktu IS NULL OR batas_waktu > NOW()) THEN 1 -- Aktif
+                WHEN is_active = 1 AND batas_waktu <= NOW() THEN 2 -- Kadaluwarsa
+                ELSE 3 -- Nonaktif
+            END ASC
+        ")->orderByRaw("YEAR(tgl_kegiatan) DESC, MONTH(tgl_kegiatan) DESC, DAY(tgl_kegiatan) ASC");
 
         return $query;
     }
@@ -86,7 +88,7 @@ class PresenceDataTable extends DataTable
             ->setTableId('presence-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(1)
+            ->orderBy(0) // Order by first column (index) to maintain our custom sorting
             ->selectStyleSingle()
             ->buttons([
                 Button::make('excel'),
@@ -134,12 +136,10 @@ class PresenceDataTable extends DataTable
                 ->title('Status')
                 ->width(100),
 
-
-
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)
-                ->width(240) // cukup untuk 3 tombol kecil
+                ->width(240)
                 ->addClass('text-center'),
         ];
     }

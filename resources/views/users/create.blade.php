@@ -1,9 +1,9 @@
 @extends('layouts.main')
 
 @section('content')
-{{-- Link Font Awesome dihapus dari sini, seharusnya sudah ada di layouts.main --}}
+{{-- Link Font Awesome seharusnya sudah ada di layouts.main --}}
 <style>
-    /* Reset and Box Sizing */
+/* Reset and Box Sizing */
 * {
     margin: 0;
     padding: 0;
@@ -189,6 +189,12 @@
     display: block;
 }
 
+/* Container untuk input dan ikon */
+.input-with-icon-wrapper {
+    position: relative;
+    width: 100%;
+}
+
 .hadirin-input {
     border: 2px solid #a8dadc; /* Border lebih tebal dan warna Hadirin */
     border-radius: 12px; /* Radius lebih besar */
@@ -198,6 +204,7 @@
     background: rgba(255, 255, 255, 0.95); /* Background input semi-transparan */
     width: 100%;
     color: #3c4043; /* Warna teks gelap */
+    padding-right: 3rem; /* Tambahkan padding agar ikon tidak menutupi teks */
 }
 
 .hadirin-input:focus {
@@ -211,6 +218,24 @@
 .hadirin-input:hover {
     border-color: #00b4d8;
     background: white;
+}
+
+/* Tombol toggle password */
+.password-toggle-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #0077b6; /* Warna ikon biru gelap */
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.password-toggle-btn:hover {
+    color: #00b4d8; /* Warna ikon lebih terang saat hover */
 }
 
 /* Pesan Error */
@@ -420,12 +445,12 @@
                         <div class="form-group">
                             <label for="name" class="hadirin-label">Nama <span style="color: #dc3545;">*</span></label>
                             <input type="text"
-                                   class="hadirin-input @error('name') is-invalid @enderror"
-                                   id="name"
-                                   name="name"
-                                   value="{{ old('name') }}"
-                                   placeholder="Masukkan nama lengkap"
-                                   required>
+                                class="hadirin-input @error('name') is-invalid @enderror"
+                                id="name"
+                                name="name"
+                                value="{{ old('name') }}"
+                                placeholder="Masukkan nama lengkap"
+                                required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -436,12 +461,12 @@
                         <div class="form-group">
                             <label for="email" class="hadirin-label">Email <span style="color: #dc3545;">*</span></label>
                             <input type="email"
-                                   class="hadirin-input @error('email') is-invalid @enderror"
-                                   id="email"
-                                   name="email"
-                                   value="{{ old('email') }}"
-                                   placeholder="user@example.com"
-                                   required>
+                                class="hadirin-input @error('email') is-invalid @enderror"
+                                id="email"
+                                name="email"
+                                value="{{ old('email') }}"
+                                placeholder="user@example.com"
+                                required>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -451,24 +476,34 @@
                     <div class="form-row"> {{-- Password dan Konfirmasi Password --}}
                         <div class="form-group">
                             <label for="password" class="hadirin-label">Password <span style="color: #dc3545;">*</span></label>
-                            <input type="password"
-                                   class="hadirin-input @error('password') is-invalid @enderror"
-                                   id="password"
-                                   name="password"
-                                   placeholder="Minimal 8 karakter"
-                                   required>
+                            <div class="input-with-icon-wrapper">
+                                <input type="password"
+                                    class="hadirin-input @error('password') is-invalid @enderror"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Minimal 8 karakter"
+                                    required>
+                                <button type="button" class="password-toggle-btn" onclick="togglePassword('password')">
+                                    <i id="togglePasswordIcon" class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label for="password_confirmation" class="hadirin-label">Konfirmasi Password <span style="color: #dc3545;">*</span></label>
-                            <input type="password"
-                                   class="hadirin-input"
-                                   id="password_confirmation"
-                                   name="password_confirmation"
-                                   placeholder="Konfirmasi password baru"
-                                   required>
+                            <div class="input-with-icon-wrapper">
+                                <input type="password"
+                                    class="hadirin-input"
+                                    id="password_confirmation"
+                                    name="password_confirmation"
+                                    placeholder="Konfirmasi password baru"
+                                    required>
+                                <button type="button" class="password-toggle-btn" onclick="togglePassword('password_confirmation')">
+                                    <i id="togglePasswordConfirmationIcon" class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -487,4 +522,24 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassword(fieldId) {
+        const passwordInput = document.getElementById(fieldId);
+        const toggleIcon = document.getElementById('toggle' + fieldId.charAt(0).toUpperCase() + fieldId.slice(1) + 'Icon');
+        
+        // Cek tipe input
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Ganti ikon
+        if (type === 'password') {
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+</script>
 @endsection

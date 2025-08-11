@@ -189,21 +189,79 @@
     display: block;
 }
 
+/* ========================================================== */
+/* PERBAIKAN STYLING UNTUK BORDER RADIUS */
+/* ========================================================== */
+
+/* Container baru untuk input dan ikon toggle */
+.hadirin-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 2px solid #a8dadc;
+    border-radius: 12px; /* Border radius utama diterapkan di sini */
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.hadirin-input-group:focus-within {
+    border-color: #00b4d8;
+    box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.18);
+    background: white;
+}
+
+/* Penyesuaian input agar sesuai dengan container baru */
+.hadirin-input-group .hadirin-input {
+    border: none; /* Hilangkan border bawaan */
+    border-radius: 12px; /* Radius tetap untuk sisi kiri */
+    border-top-right-radius: 0; /* Hilangkan radius kanan */
+    border-bottom-right-radius: 0;
+    padding: 0.9rem 1.1rem;
+    font-size: 1rem;
+    flex-grow: 1; /* Input mengambil sisa ruang */
+    background: transparent; /* Background transparan */
+    color: #3c4043;
+    transition: all 0.3s ease;
+}
+
+/* Ikon toggle password */
+.hadirin-toggle-password {
+    padding: 0.9rem; /* Padding agar ukurannya sama dengan input */
+    cursor: pointer;
+    color: #999;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+    /* Pastikan ikon memiliki border radius kanan */
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    background: transparent;
+}
+
+.hadirin-toggle-password:hover {
+    color: #0077b6;
+}
+
+/* ========================================================== */
+/* AKHIR PERBAIKAN STYLING */
+/* ========================================================== */
+
+/* Gaya input biasa (untuk field yang tidak memiliki ikon toggle) */
 .hadirin-input {
-    border: 2px solid #a8dadc; /* Border lebih tebal dan warna Hadirin */
-    border-radius: 12px; /* Radius lebih besar */
-    padding: 0.9rem 1.1rem; /* Padding lebih besar */
+    border: 2px solid #a8dadc;
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.95); /* Background input semi-transparan */
+    background: rgba(255, 255, 255, 0.95);
     width: 100%;
-    color: #3c4043; /* Warna teks gelap */
+    color: #3c4043;
 }
 
 .hadirin-input:focus {
     outline: none;
-    border-color: #00b4d8; /* Warna biru Hadirin saat fokus */
-    box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.18); /* Bayangan fokus lebih solid */
+    border-color: #00b4d8;
+    box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.18);
     background: white;
     transform: translateY(-1px);
 }
@@ -452,22 +510,28 @@
                     <div class="form-row"> {{-- Password dan Konfirmasi Password --}}
                         <div class="form-group">
                             <label for="password" class="hadirin-label">Password (isi jika ingin mengubah)</label>
-                            <input type="password"
-                                   class="hadirin-input @error('password') is-invalid @enderror"
-                                   id="password"
-                                   name="password"
-                                   placeholder="Biarkan kosong jika tidak ingin mengubah">
+                            <div class="hadirin-input-group @error('password') is-invalid @enderror">
+                                <input type="password"
+                                       class="hadirin-input"
+                                       id="password"
+                                       name="password"
+                                       placeholder="Kosongkan jika tidak diubah">
+                                <i class="fas fa-eye-slash hadirin-toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
+                            </div>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label for="password_confirmation" class="hadirin-label">Konfirmasi Password</label>
-                            <input type="password"
-                                   class="hadirin-input"
-                                   id="password_confirmation"
-                                   name="password_confirmation"
-                                   placeholder="Konfirmasi password baru">
+                            <div class="hadirin-input-group">
+                                <input type="password"
+                                       class="hadirin-input"
+                                       id="password_confirmation"
+                                       name="password_confirmation"
+                                       placeholder="Konfirmasi password baru">
+                                <i class="fas fa-eye-slash hadirin-toggle-password" onclick="togglePasswordVisibility('password_confirmation', this)"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -486,4 +550,67 @@
         </div>
     </div>
 </div>
+
+<script>
+/**
+ * Function to toggle password visibility
+ * @param {string} inputId - The ID of the password input field.
+ * @param {object} icon - The icon element that was clicked.
+ */
+function togglePasswordVisibility(inputId, icon) {
+    const input = document.getElementById(inputId);
+    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+}
+
+// Tambahan: Script untuk validasi password agar warna border berubah
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const passwordConfirm = document.getElementById('password_confirmation');
+    const passwordGroup = password.closest('.hadirin-input-group');
+    const confirmGroup = passwordConfirm.closest('.hadirin-input-group');
+
+    function validatePasswordMatch() {
+        if (password.value !== passwordConfirm.value) {
+            passwordConfirm.setCustomValidity('Password tidak cocok');
+        } else {
+            passwordConfirm.setCustomValidity('');
+        }
+    }
+
+    if (password) {
+        password.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                passwordGroup.classList.remove('is-invalid');
+                passwordGroup.classList.add('is-valid');
+            } else {
+                passwordGroup.classList.remove('is-valid');
+            }
+            validatePasswordMatch();
+        });
+    }
+
+    if (passwordConfirm) {
+        passwordConfirm.addEventListener('input', function() {
+            validatePasswordMatch();
+            if (this.checkValidity()) {
+                confirmGroup.classList.remove('is-invalid');
+                confirmGroup.classList.add('is-valid');
+            } else {
+                confirmGroup.classList.remove('is-valid');
+            }
+        });
+    }
+
+    // Handle initial state if validation errors exist
+    @if ($errors->has('password'))
+        if (passwordGroup) {
+            passwordGroup.classList.add('is-invalid');
+        }
+    @endif
+});
+
+</script>
 @endsection

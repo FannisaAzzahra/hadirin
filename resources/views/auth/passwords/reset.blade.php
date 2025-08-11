@@ -14,6 +14,11 @@
     {{-- FONT AWESOME --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo_saja.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo_saja.png') }}">
+    <meta name="theme-color" content="#0077b6"> {{-- Warna tab Chrome di mobile --}}
+    
     <style>
       body {
         background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
@@ -182,18 +187,73 @@
         font-size: 0.95rem;
         display: block;
       }
+      
+      /* ========================================================== */
+      /* STYLING UNTUK MENGGABUNGKAN INPUT DAN IKON TOGGLE */
+      /* ========================================================== */
 
-      .hadirin-input {
+      /* Container untuk input dengan ikon */
+      .input-group {
+        position: relative;
         border: 2px solid #a8dadc;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+      }
+
+      .input-group:focus-within {
+        border-color: #00b4d8;
+        box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.15);
+        background: white;
+        transform: translateY(-1px);
+      }
+
+      .input-group:hover {
+        border-color: #00b4d8;
+        background: white;
+      }
+
+      /* Input field utama */
+      .hadirin-input {
+        border: none; /* Hilangkan border default */
         border-radius: 12px;
         padding: 0.8rem 1rem;
         font-size: 1rem;
         transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.9);
+        background: transparent;
         width: 100%;
+        padding-right: 3rem; /* Sediakan ruang untuk ikon */
       }
 
       .hadirin-input:focus {
+        outline: none; /* Hilangkan outline default pada input */
+      }
+
+      /* Ikon toggle password */
+      .toggle-password {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s ease;
+        z-index: 5;
+      }
+
+      .toggle-password:hover {
+        color: #00b4d8;
+      }
+
+      /* Styling untuk input email tanpa toggle */
+      .hadirin-input:not(.has-toggle) {
+        border: 2px solid #a8dadc;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.8rem 1rem;
+      }
+
+      .hadirin-input:not(.has-toggle):focus {
         border-color: #00b4d8;
         box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.15);
         background: white;
@@ -201,10 +261,23 @@
         transform: translateY(-1px);
       }
 
-      .hadirin-input:hover {
-        border-color: #00b4d8;
-        background: white;
+      .hadirin-input:not(.has-toggle):hover {
+          border-color: #00b4d8;
+          background: white;
       }
+      
+      /* Styling untuk error pada input-group */
+      .input-group.is-invalid {
+        border-color: #dc3545 !important;
+      }
+      /* Hapus border error pada input di dalam input-group */
+      .input-group .hadirin-input.is-invalid {
+        border-color: transparent !important;
+      }
+      /* ========================================================== */
+      /* AKHIR STYLING */
+      /* ========================================================== */
+
 
       /* Button Styling */
       .hadirin-btn-primary {
@@ -392,7 +465,10 @@
 
                     <div class="form-group">
                         <label for="password" class="hadirin-label">{{ __('Kata Sandi Baru') }}</label>
-                        <input id="password" type="password" class="hadirin-input @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="Buat kata sandi baru">
+                        <div class="input-group @error('password') is-invalid @enderror">
+                            <input id="password" type="password" class="hadirin-input has-toggle" name="password" required autocomplete="new-password" placeholder="Buat kata sandi baru">
+                            <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
+                        </div>
                         @error('password')
                             <div class="invalid-feedback">
                                 <strong>{{ $message }}</strong>
@@ -402,7 +478,10 @@
 
                     <div class="form-group">
                         <label for="password-confirm" class="hadirin-label">{{ __('Konfirmasi Kata Sandi') }}</label>
-                        <input id="password-confirm" type="password" class="hadirin-input" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi kata sandi baru Anda">
+                        <div class="input-group">
+                            <input id="password-confirm" type="password" class="hadirin-input has-toggle" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi kata sandi baru Anda">
+                            <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('password-confirm', this)"></i>
+                        </div>
                     </div>
 
                     <div class="form-group mt-4">
@@ -418,5 +497,15 @@
 
     {{-- JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <script>
+        function togglePasswordVisibility(inputId, icon) {
+            const input = document.getElementById(inputId);
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        }
+    </script>
   </body>
 </html>
