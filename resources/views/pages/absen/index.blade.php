@@ -724,13 +724,15 @@
       <div class="card header-card mb-4">
         <div class="card-body">
           <div class="header-logos">
-            <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120" alt="Logo Kiri">
+            {{-- <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120" alt="Logo Kiri"> --}}
+            <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : '' }}" height="120">
               <div class="text-center">
                   <h2 class="header-title d-block fw-bold">{{ $presence->judul_header_atas ?? 'ABSENSI ONLINE' }}</h2>
 
                   <h3 class="d-block">{{ $presence->judul_header_bawah ?? '' }}</h3>
               </div>
-            <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120" alt="Logo Kanan">
+            {{-- <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120" alt="Logo Kanan"> --}}
+            <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : '' }}" height="120">
           </div>
           <div class="detail-table">
             <table class="table table-borderless">
@@ -1369,3 +1371,5 @@
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
   </body>  
 </html>
+
+@include('layouts.footer2')
