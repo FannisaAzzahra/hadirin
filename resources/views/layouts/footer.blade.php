@@ -8,7 +8,7 @@
                     <div class="d-flex align-items-center">
                         <img src="{{ asset('images/logo_saja.png') }}" alt="Logo PLN" class="footer-logo me-2" style="height: 40px;">
                         <div class="d-flex flex-column">
-                            <h5 class="footer-title" style="font-size: 1.5rem;">{{ config('app.name', 'Aplikasi') }}</h5>
+                            <h5 class="footer-title" style="font-size: 1.5rem; text-align: left;">{{ config('app.name', 'Aplikasi') }}</h5>
                             <span class="text-white" style="font-size: 0.55rem; font-weight: 500; margin-top: -2px;">PT PLN (Persero) UPT MALANG</span>
                         </div>
                     </div>
@@ -39,9 +39,6 @@
                     <li><a href="{{ route('presence.index') }}" class="footer-link">
                         <i class="fas fa-calendar-check me-2"></i>Daftar Kegiatan
                     </a></li>
-                    <li><a href="{{ route('users.index') }}" class="footer-link">
-                        <i class="fas fa-user-cog me-2"></i>Data User
-                    </a></li>
                     <li><a href="{{ route('profile') }}" class="footer-link">
                         <i class="fas fa-user me-2"></i>Profile
                     </a></li>
@@ -60,6 +57,9 @@
                     </a></li>
                     <li><a href="{{ route('pln-members.index') }}" class="footer-link">
                         <i class="fas fa-users me-2"></i>Daftar Anggota PLN
+                    </a></li>
+                    <li><a href="{{ route('users.index') }}" class="footer-link">
+                        <i class="fas fa-user-cog me-2"></i>Data User
                     </a></li>
                 </ul>
             </div>
