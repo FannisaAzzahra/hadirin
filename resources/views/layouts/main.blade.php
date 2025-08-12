@@ -266,13 +266,13 @@
                                     <i class="fas fa-users me-2"></i> Daftar Anggota PLN
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('users.*') ? 'active' : '' }}"
+                                   href="{{ route('users.index') }}">
+                                    <i class="fas fa-user-cog me-1"></i> Data User
+                                </a>
+                            </li>
                         </ul>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
-                            <i class="fas fa-user-cog me-1"></i> Data User
-                        </a>
                     </li>
                 </ul>
 
