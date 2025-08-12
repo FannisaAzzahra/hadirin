@@ -1,18 +1,19 @@
-{{-- Display Settings Partial --}}
 <style>
     /* Display Settings Styles */
     .hadirin-display-settings-container {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin-bottom: 2rem;
+        padding: 0 1rem; /* Added padding for smaller screens */
     }
 
     .display-options-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* More flexible grid */
         gap: 1.5rem;
         margin-bottom: 2.5rem;
     }
 
+    /* Specific grid areas for edit and create modes are fine */
     .display-options-grid.create-mode {
         grid-template-areas: "previous manual";
     }
@@ -25,12 +26,21 @@
     .display-options-grid.edit-mode .display-option-card[data-option="keep"] { grid-area: keep; }
     .display-options-grid.edit-mode .display-option-card[data-option="previous"] { grid-area: previous; }
     .display-options-grid.edit-mode .display-option-card[data-option="manual"] { grid-area: manual; }
+    
+    /* Responsive adjustment for edit mode grid areas on smaller screens */
+    @media (max-width: 768px) {
+        .display-options-grid.edit-mode {
+            grid-template-areas: "keep" "previous" "manual";
+            grid-template-columns: 1fr;
+        }
+    }
+
 
     .display-option-card {
         background: white;
         border: 2px solid #a8dadc;
         border-radius: 12px;
-        padding: 1rem;
+        padding: 1.25rem; /* Increased padding for better touch targets */
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
@@ -57,17 +67,17 @@
     .display-option-content {
         display: flex;
         align-items: center;
-        gap: 0.8rem;
+        gap: 1rem; /* Adjusted gap */
     }
 
     .display-option-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
+        width: 44px; /* Increased size for better visibility */
+        height: 44px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem;
+        font-size: 1.2rem;
         flex-shrink: 0;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
@@ -92,14 +102,14 @@
     }
 
     .display-option-title {
-        font-size: 1rem;
+        font-size: 1.1rem; /* Slightly larger for readability */
         font-weight: 600;
         color: #0077b6;
         margin: 0 0 0.2rem 0;
     }
 
     .display-option-description {
-        font-size: 0.85rem;
+        font-size: 0.9rem; /* Slightly larger for readability */
         color: #5f6368;
         margin: 0;
         line-height: 1.4;
@@ -109,8 +119,8 @@
         position: absolute;
         top: 1rem;
         right: 1rem;
-        width: 20px;
-        height: 20px;
+        width: 22px; /* Increased size */
+        height: 22px;
         border: 2px solid #dadce0;
         border-radius: 50%;
         background: white;
@@ -127,8 +137,8 @@
 
     .display-option-card.selected .display-option-radio::after {
         content: '';
-        width: 8px;
-        height: 8px;
+        width: 10px; /* Increased size */
+        height: 10px;
         background: white;
         border-radius: 50%;
     }
@@ -158,7 +168,7 @@
     }
 
     .display-section-title {
-        font-size: 1.2rem;
+        font-size: 1.25rem; /* Consistent sizing */
         font-weight: 700;
         color: #0077b6;
         margin-bottom: 1rem;
@@ -195,7 +205,7 @@
 
     .form-row {
         display: grid;
-        gap: 1rem;
+        gap: 1.5rem; /* Consistent gap */
     }
 
     .form-row.single {
@@ -206,11 +216,41 @@
         grid-template-columns: repeat(3, 1fr);
     }
 
+    /* Responsiveness for form rows */
+    @media (max-width: 768px) {
+        .form-row.triple {
+            grid-template-columns: 1fr;
+        }
+    }
+
     .form-group {
         display: flex;
         flex-direction: column;
     }
 
+    .hadirin-label {
+        font-weight: 600;
+        color: #3c4043;
+        margin-bottom: 0.5rem;
+    }
+
+    .hadirin-input {
+        width: 100%;
+        padding: 0.9rem 1.1rem;
+        border: 2px solid #a8dadc;
+        border-radius: 12px;
+        background: white;
+        font-size: 1rem;
+        color: #3c4043;
+        transition: all 0.3s ease;
+    }
+
+    .hadirin-input:focus {
+        outline: none;
+        border-color: #00b4d8;
+        box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.18);
+    }
+    
     .file-upload {
         position: relative;
     }
@@ -237,6 +277,7 @@
         transition: all 0.3s ease;
         font-size: 1rem;
         font-weight: 500;
+        text-align: center; /* Ensures text is centered on one line */
     }
 
     .file-upload-label:hover {
@@ -299,6 +340,7 @@
         padding: 0.5rem 0.8rem;
         border-radius: 6px;
         border: 1px solid #e8eaed;
+        word-wrap: break-word; /* Prevents overflow with long text */
     }
 
     .preview-logos {
@@ -306,6 +348,12 @@
         grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
         margin-top: 1rem;
+    }
+    
+    @media (max-width: 480px) {
+        .preview-logos {
+            grid-template-columns: 1fr; /* Stack logos on very small screens */
+        }
     }
 
     .preview-logo-item {
@@ -325,8 +373,9 @@
     .preview-logo-label {
         font-size: 0.8rem;
         color: #70757a;
+        word-wrap: break-word;
     }
-
+    
     .hadirin-img-preview {
         width: 60px;
         height: 60px;
@@ -334,7 +383,16 @@
         border: 1px solid #e8eaed;
         border-radius: 8px;
         background: white;
+        margin-bottom: 0.5rem;
     }
+    
+    .hadirin-img-preview + small {
+        display: block;
+        color: #70757a;
+        font-size: 0.8rem;
+        margin-top: 0.2rem;
+    }
+
 
     /* Custom Modal */
     .custom-modal-overlay {
@@ -364,7 +422,7 @@
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         text-align: center;
-        max-width: 400px;
+        max-width: 450px; /* Slightly wider modal */
         width: 90%;
         transform: translateY(-20px);
         opacity: 0;
@@ -404,12 +462,10 @@
         background: linear-gradient(135deg, #0096c7 0%, #005577 100%);
         transform: translateY(-2px);
     }
-
+    
     /* Media queries for responsiveness */
     @media (max-width: 768px) {
-        .display-options-grid,
-        .display-options-grid.create-mode,
-        .display-options-grid.edit-mode {
+        .display-options-grid {
             grid-template-columns: 1fr;
             grid-template-areas: unset;
         }
@@ -425,35 +481,67 @@
         .hadirin-display-settings-container {
             padding: 0 15px;
         }
-
+        
         .display-option-card {
-            padding: 0.8rem;
-            min-height: 80px;
+            padding: 1rem;
+            min-height: 85px;
+        }
+
+        .display-option-content {
+            gap: 0.8rem;
         }
 
         .display-option-icon {
-            width: 34px;
-            height: 34px;
-            font-size: 0.9rem;
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+            border-radius: 10px;
         }
 
         .display-option-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
         .display-option-description {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
 
         .display-option-radio {
-            top: 0.6rem;
-            right: 0.6rem;
-            width: 16px;
-            height: 16px;
+            top: 0.8rem;
+            right: 0.8rem;
+            width: 20px;
+            height: 20px;
         }
+        
         .display-option-card.selected .display-option-radio::after {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
+        }
+        
+        .form-row.triple {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    /* Mobile landscape and tablet portrait */
+    @media (min-width: 481px) and (max-width: 768px) {
+        .display-options-grid.create-mode {
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: "previous manual";
+        }
+        
+        .display-options-grid.edit-mode {
+            grid-template-areas: "keep previous" "manual manual";
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .form-row.triple {
+            grid-template-columns: 1fr;
+        }
+        
+        .hadirin-img-preview {
+            width: 50px;
+            height: 50px;
         }
     }
 </style>
@@ -634,7 +722,7 @@
             <div class="preview-label">Preview pengaturan yang akan digunakan:</div>
             <div class="preview-content" id="display-previous-preview-content">
                 <!-- Content will be populated by JavaScript -->
-            </div>
+                </div>
         </div>
     </div>
 
@@ -687,7 +775,7 @@
                     @if(isset($presence) && $presence->logo_kiri)
                         <div style="margin-top: 0.5rem;">
                             <img src="{{ asset('uploads/' . $presence->logo_kiri) }}" class="hadirin-img-preview">
-                            <small style="display: block; color: #70757a; font-size: 0.8rem; margin-top: 0.2rem;">Logo saat ini</small>
+                            <small>Logo saat ini</small>
                         </div>
                     @endif
                 </div>
@@ -705,7 +793,7 @@
                     @if(isset($presence) && $presence->logo_kanan)
                         <div style="margin-top: 0.5rem;">
                             <img src="{{ asset('uploads/' . $presence->logo_kanan) }}" class="hadirin-img-preview">
-                            <small style="display: block; color: #70757a; font-size: 0.8rem; margin-top: 0.2rem;">Logo saat ini</small>
+                            <small>Logo saat ini</small>
                         </div>
                     @endif
                 </div>
@@ -723,7 +811,7 @@
                     @if(isset($presence) && $presence->logo_ig)
                         <div style="margin-top: 0.5rem;">
                             <img src="{{ asset('uploads/' . $presence->logo_ig) }}" class="hadirin-img-preview">
-                            <small style="display: block; color: #70757a; font-size: 0.8rem; margin-top: 0.2rem;">Logo saat ini</small>
+                            <small>Logo saat ini</small>
                         </div>
                     @endif
                 </div>
