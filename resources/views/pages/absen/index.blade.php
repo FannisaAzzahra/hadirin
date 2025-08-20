@@ -13,7 +13,6 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
-    <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
@@ -429,18 +428,18 @@
             box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1);
             background: #f8f9fa;
         }
-
+        
         /* Container untuk slide yang fleksibel */
         .swiper-slide {
             display: flex !important;
             justify-content: center;
             align-items: center;
             background: #f8f9fa;
-            min-height: 200px; /* Minimum height untuk slide kosong */
-            max-height: 600px; /* Maximum height untuk membatasi slide terlalu tinggi */
             position: relative;
+            height: auto; /* Hapus min/max-height agar tinggi menyesuaikan konten */
+            min-height: 200px;
         }
-
+        
         /* PERBAIKAN: Image styling tanpa box-shadow */
         .swiper-slide img {
             max-width: 100%;
@@ -451,19 +450,6 @@
             display: block;
             margin: 0 auto;
             border-radius: 10px;
-            /* DIHAPUS: box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
-        }
-
-        /* Untuk gambar landscape */
-        .swiper-slide img[data-orientation="landscape"] {
-            width: 100%;
-            height: auto;
-        }
-
-        /* Untuk gambar portrait */
-        .swiper-slide img[data-orientation="portrait"] {
-            height: 500px; /* Batas tinggi untuk portrait */
-            width: auto;
         }
 
         /* Swiper navigation buttons styling */
@@ -491,7 +477,14 @@
             font-weight: bold;
         }
 
-        /* Pagination styling */
+        /* PERBAIKAN UTAMA: Pagination styling */
+        .swiper-pagination {
+            position: relative; /* Ganti absolute menjadi relative */
+            top: auto; /* Hapus posisi absolut */
+            bottom: -20px; /* Jarak dari bawah container */
+            margin-top: 15px; /* Jarak dari gambar */
+        }
+        
         .swiper-pagination-bullet {
             width: 12px !important;
             height: 12px !important;
@@ -671,6 +664,42 @@
                 padding: 1rem;
             }
 
+            /* PERBAIKAN UTAMA: Tampilan detail-table di layar kecil */
+            .detail-table table {
+                display: block;
+                width: 100%;
+            }
+
+            .detail-table thead, .detail-table tbody, .detail-table tr {
+                display: block;
+            }
+
+            .detail-table tr {
+                margin-bottom: 1rem;
+            }
+
+            .detail-table td {
+                display: block;
+                width: 100% !important;
+                padding: 0 !important;
+                text-align: left !important;
+            }
+
+            .detail-table td:first-child {
+                font-weight: 700;
+                color: #0077b6;
+                padding-bottom: 0.25rem !important;
+            }
+            
+            .detail-table td:nth-child(2) {
+                display: none; /* Sembunyikan titik dua */
+            }
+
+            .detail-table td:last-child {
+                padding-bottom: 0.75rem !important;
+                color: #333;
+            }
+
             .select2-container {
                 width: 100% !important;
                 max-width: 100% !important;
@@ -841,7 +870,7 @@
                         <option value="">-- Pilih Unit --</option>
                     </select>
                     {{-- Input text for companies without predefined units --}}
-                    <input type="text" class="form-control d-none" id="unit_dtl_input" name="unit_dtl" placeholder="Masukkan unit detail">
+                    <input type="text" class="form-control d-none" id="unit_dtl_input" name="unit_dtl" placeholder="Masukkan unit detail" value="{{ old('unit_dtl') }}">
                     @error('unit_dtl')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -999,13 +1028,11 @@
           </div>
         </div>
       </div>
-      <!-- End row -->
-    </div>
+      </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlhNTkCfHzAVBReH9diLlvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
-    <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
@@ -1035,72 +1062,10 @@
               nextEl: ".swiper-button-next",
               prevEl: ".swiper-button-prev",
             },
-            // Pengaturan responsif untuk image
-            on: {
-              init: function () {
-                // Deteksi orientasi gambar setelah slide diinisialisasi
-                this.slides.forEach(function(slide) {
-                  const img = slide.querySelector('img');
-                  if (img) {
-                    // Tambahkan class loading
-                    slide.classList.add('loading');
-                    
-                    img.onload = function() {
-                      // Remove loading state
-                      slide.classList.remove('loading');
-                      this.classList.add('loaded');
-                      
-                      const aspectRatio = this.naturalWidth / this.naturalHeight;
-                      if (aspectRatio > 1.2) {
-                        // Landscape
-                        this.setAttribute('data-orientation', 'landscape');
-                        slide.style.height = 'auto';
-                        slide.style.minHeight = '300px';
-                        slide.style.maxHeight = '500px';
-                      } else {
-                        // Portrait atau square
-                        this.setAttribute('data-orientation', 'portrait');
-                        slide.style.height = '500px';
-                        slide.style.minHeight = '400px';
-                        slide.style.maxHeight = '600px';
-                      }
-                    };
-                    
-                    img.onerror = function() {
-                      // Remove loading state even if error
-                      slide.classList.remove('loading');
-                      console.log('Image failed to load:', this.src);
-                    };
-                    
-                    // Jika gambar sudah loaded
-                    if (img.complete && img.naturalHeight !== 0) {
-                      img.onload();
-                    }
-                  }
-                });
-              },
-              slideChangeTransitionStart: function () {
-                // Update tinggi container saat slide berubah
-                const activeSlide = this.slides[this.activeIndex];
-                const img = activeSlide.querySelector('img');
-                if (img && img.complete) {
-                  const aspectRatio = img.naturalWidth / img.naturalHeight;
-                  const swiperContainer = this.el;
-                  
-                  if (aspectRatio > 1.2) {
-                    // Landscape - set tinggi berdasarkan width container
-                    const containerWidth = swiperContainer.offsetWidth;
-                    const calculatedHeight = containerWidth / aspectRatio;
-                    swiperContainer.style.height = Math.min(calculatedHeight, 500) + 'px';
-                  } else {
-                    // Portrait - set tinggi maksimal
-                    swiperContainer.style.height = '500px';
-                  }
-                }
-              }
-            }
+            // PENTING: Hapus semua logika penyesuaian tinggi di JavaScript
+            // karena sekarang tinggi dikelola oleh CSS 'height: auto' dan 'object-fit: contain'
           });
-          
+
           // set signature pad width
           let sig = $("#signature-pad").parent().width();
           $('#signature-pad').attr('width', sig);
@@ -1227,7 +1192,9 @@
               if (company && company.active_units && company.active_units.length > 0) {
                   // Company has predefined units - show dropdown
                   company.active_units.forEach(unit => {
-                      selectElement.append(`<option value="${unit.name}">${unit.name}</option>`);
+                      // Check if old value matches to re-select the correct unit
+                      const isSelected = "{{ old('unit_dtl') }}" === unit.name ? 'selected' : '';
+                      selectElement.append(`<option value="${unit.name}" ${isSelected}>${unit.name}</option>`);
                   });
                   
                   selectElement.removeClass('d-none').prop('disabled', false).attr('required', true);
@@ -1300,21 +1267,7 @@
               
               // Update swiper slide heights saat resize
               if (swiper && swiper.slides) {
-                  swiper.slides.forEach(function(slide) {
-                      const img = slide.querySelector('img');
-                      if (img && img.complete) {
-                          const aspectRatio = img.naturalWidth / img.naturalHeight;
-                          if (aspectRatio > 1.2) {
-                              // Landscape
-                              slide.style.height = 'auto';
-                              slide.style.minHeight = '250px';
-                              slide.style.maxHeight = '400px';
-                          } else {
-                              // Portrait
-                              slide.style.height = window.innerWidth < 768 ? '350px' : '500px';
-                          }
-                      }
-                  });
+                  // TIDAK PERLU lagi mengubah tinggi slide secara manual
                   swiper.update();
               }
           });
