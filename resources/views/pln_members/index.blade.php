@@ -9,7 +9,6 @@
                     <h4 class="card-title">Daftar Anggota</h4>
                 </div>
                 <div class="col text-end">
-                    <!-- Tombol Tambah Data -->
                     <a href="{{ route('pln-members.create') }}" class="btn btn-primary me-2">
                         Tambah Data
                     </a>
@@ -20,7 +19,6 @@
                         Import Data
                     </button>
                 </div>
-
             </div>
         </div>
         <div class="card-body">
@@ -31,7 +29,6 @@
     </div>
 </div>
 
-<!-- Modal Import -->
 <div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -48,7 +45,6 @@
                     </ul>
                 </div>
                 
-                <!-- Tombol Download Template -->
                 <div class="mb-3">
                     <a href="{{ route('pln-members.template') }}" class="btn btn-success w-100">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
@@ -63,7 +59,6 @@
                     @csrf
                     <input type="file" name="file" id="fileExcel" accept=".xlsx,.xls" hidden>
                     <div id="drop-area" class="border rounded p-4 text-center" style="cursor: pointer; border: 2px dashed #6c757d !important;">
-                        <!-- Ikon upload -->
                         <svg class="text-muted bi bi-upload" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
                             <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
@@ -80,12 +75,58 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check-circle-fill me-2" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                    Import Berhasil
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success" id="success-message">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    Gagal Import Data
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Proses import selesai dengan beberapa kegagalan:</p>
+                <div class="alert alert-danger" id="error-list">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('js')
-
     <style>
-        /* Page Background */
+                /* Page Background */
         body {
             background-color: #f0f8ff;
         }
@@ -245,6 +286,34 @@
             background: rgba(0, 180, 216, 0.05);
         }
 
+        /* Gaya baru untuk modal error */
+        .modal-header.bg-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        }
+
+        .modal-header.bg-danger .btn-close-white {
+            filter: invert(1);
+        }
+
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px;
+            color: #b91c1c;
+            padding: 1rem;
+        }
+
+        #error-list ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        #error-list li {
+            word-break: break-all;
+            margin-bottom: 5px;
+        }
+
         table.dataTable th,
         table.dataTable td {
             white-space: normal !important;
@@ -256,6 +325,42 @@
         table.dataTable thead th {
             text-align: center;
             vertical-align: middle;
+        }
+
+        /* CSS yang sudah ada, tambahkan penyesuaian untuk modal sukses */
+        .modal-header.bg-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+
+        .modal-header.bg-success .btn-close-white {
+            filter: invert(1);
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            border-radius: 10px;
+            color: #155724;
+            padding: 1rem;
+        }
+
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px;
+            color: #b91c1c;
+            padding: 1rem;
+        }
+
+        #error-list ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        #error-list li {
+            word-break: break-all;
+            margin-bottom: 5px;
         }
     </style>
 
@@ -291,7 +396,9 @@
         $(document).on('click', '#btnImport', function () {
             let file = $('#fileExcel')[0].files[0];
             if (!file) {
-                alert('Pilih file terlebih dahulu!');
+                // Mengganti alert dengan modal
+                $('#error-list').html('<h6>Gagal!</h6><p>Pilih file terlebih dahulu.</p>');
+                $('#errorModal').modal('show');
                 return;
             }
 
@@ -309,17 +416,36 @@
                     $('#btnImport').prop('disabled', true).text('Mengimport...');
                 },
                 success: function (res) {
-                    let message = res.message;
-                    if (res.errors && res.errors.length > 0) {
-                        message += `\n\nDetail Error:\n` + res.errors.join('\n');
-                    }
-                    alert(message);
                     $('#importModal').modal('hide');
+
+                    // Menggunakan properti 'success' dari respons controller
+                    if (res.success) {
+                        // Tampilkan modal berhasil
+                        $('#success-message').html(`
+                            <h6>Import selesai!</h6>
+                            <p>${res.message}</p>
+                        `);
+                        $('#successModal').modal('show');
+                    } else {
+                        // Tampilkan modal gagal
+                        let errorMessage = `<h6>Import selesai.</h6><p>${res.message}</p><ul></ul>`;
+                        let errorList = '';
+                        $.each(res.errors, function(index, error) {
+                            errorList += '<li>' + error + '</li>';
+                        });
+                        $('#error-list').html(errorMessage);
+                        $('#error-list ul').html(errorList);
+                        $('#errorModal').modal('show');
+                    }
+
                     $('#btnImport').prop('disabled', false).text('Import Data');
                     $('#pln-members-table').DataTable().ajax.reload();
                 },
                 error: function (xhr) {
-                    alert('Gagal import: ' + (xhr.responseJSON?.message || 'Terjadi kesalahan'));
+                    $('#importModal').modal('hide');
+                    // Mengganti alert dengan modal
+                    $('#error-list').html('<h6>Gagal!</h6><p>' + (xhr.responseJSON?.message || 'Terjadi kesalahan pada server.') + '</p>');
+                    $('#errorModal').modal('show');
                     $('#btnImport').prop('disabled', false).text('Import Data');
                 }
             });
