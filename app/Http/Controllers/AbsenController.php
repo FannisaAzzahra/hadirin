@@ -51,7 +51,7 @@ class AbsenController extends Controller
             'nama'      => 'required|string',
             'nip'       => 'nullable|string',
             'email'     => 'required|email',
-            'jabatan'   => 'nullable|string',
+            'jabatan'   => 'required|string',
             'unit'      => 'required|exists:companies,name', // Validate against companies table
             'no_hp'     => 'required|string',
             'signature' => 'required',
