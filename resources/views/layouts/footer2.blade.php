@@ -42,7 +42,7 @@
             <div class="row align-items-center">
                 <div class="col-12 text-center">
                     <p class="copyright-text">
-                        © 2025 Hadirin. All rights reserved.
+                        © 2025 Hadirin. All rights reserved. Built by Niszah & Rullhida.
                     </p>
                 </div>
             </div>
