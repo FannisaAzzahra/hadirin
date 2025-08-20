@@ -1353,9 +1353,9 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
     // Header section biru - warna disesuaikan dengan gambar
     const headerHeight = 90;
     const headerGradient = ctx.createLinearGradient(0, 0, canvas.width, headerHeight);
-    headerGradient.addColorStop(0, '#4f81ff');   // Light blue sesuai gambar
-    headerGradient.addColorStop(0.5, '#4169e1'); // Royal blue
-    headerGradient.addColorStop(1, '#1e3a8a');   // Dark blue
+    headerGradient.addColorStop(0, '#1e3a8a');   // Light blue sesuai gambar
+    headerGradient.addColorStop(0.5, '#1e3a8a'); // Royal blue
+    headerGradient.addColorStop(1, '#4f81ff');   // Dark blue
     ctx.fillStyle = headerGradient;
     roundRect(ctx, 0, 0, canvas.width, headerHeight, 0);
     ctx.fill();
@@ -1764,7 +1764,7 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
         canvas.toBlob(function(blob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `qr-event-card-clean-${slug || 'professional'}-${Date.now()}.png`;
+            link.download = `qr-event-card-${slug || 'professional'}-${Date.now()}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
