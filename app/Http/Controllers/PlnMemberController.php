@@ -86,6 +86,12 @@ class PlnMemberController extends Controller
         $sheet->setCellValue('D1', 'Jabatan');
         $sheet->setCellValue('E1', 'No HP');
 
+        // ** Tambahkan ini untuk format kolom NIP dan No HP sebagai teks **
+        // Set format kolom B (NIP) ke teks
+        $sheet->getStyle('B')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+        // Set format kolom E (No HP) ke teks
+        $sheet->getStyle('E')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+
         $writer = new Xlsx($spreadsheet);
         $filename = 'template_pegawai_pln.xlsx';
 
@@ -121,27 +127,34 @@ class PlnMemberController extends Controller
             // Skip baris kosong
             if (empty(array_filter($row))) continue;
 
+            $nama = $row[0];
+            // Pastikan NIP dan No HP dibaca sebagai string
+            $nip = (string) $row[1]; 
+            $email = $row[2];
+            $jabatan = $row[3];
+            $no_hp = (string) $row[4];
+
             // Cek duplikat NIP
-            if (in_array($row[1], $nipList) || PlnMember::where('nip', $row[1])->exists()) {
-                $errors[] = "Baris " . ($i + 1) . " gagal: NIP duplikat";
+            if (in_array($nip, $nipList) || PlnMember::where('nip', $nip)->exists()) {
+                $errors[] = "Baris " . ($i + 1) . " gagal: NIP '{$nip}' duplikat.";
                 $gagal++;
                 continue;
             }
 
             // Cek duplikat Email
-            if (in_array($row[2], $emailList) || PlnMember::where('email', $row[2])->exists()) {
-                $errors[] = "Baris " . ($i + 1) . " gagal: Email duplikat";
+            if (in_array($email, $emailList) || PlnMember::where('email', $email)->exists()) {
+                $errors[] = "Baris " . ($i + 1) . " gagal: Email '{$email}' duplikat.";
                 $gagal++;
                 continue;
             }
 
             // Validasi struktur
             $validator = Validator::make([
-                'nama' => $row[0],
-                'nip' => $row[1],
-                'email' => $row[2],
-                'jabatan' => $row[3],
-                'no_hp' => $row[4],
+                'nama' => $nama,
+                'nip' => $nip,
+                'email' => $email,
+                'jabatan' => $jabatan,
+                'no_hp' => $no_hp,
             ], [
                 'nama' => 'required',
                 'nip' => 'required',
@@ -152,29 +165,37 @@ class PlnMemberController extends Controller
 
             if ($validator->fails()) {
                 $gagal++;
-                $errors[] = "Baris " . ($i + 1) . " gagal: " . implode(", ", $validator->errors()->all());
+                $errors[] = "Baris " . ($i + 1) . " gagal. NIP: '{$nip}'. Kesalahan: " . implode(", ", $validator->errors()->all());
                 continue;
             }
 
             // Insert ke database
             PlnMember::create([
-                'nama' => $row[0],
-                'nip' => $row[1],
-                'email' => $row[2],
-                'jabatan' => $row[3],
-                'no_hp' => $row[4],
+                'nama' => $nama,
+                'nip' => $nip,
+                'email' => $email,
+                'jabatan' => $jabatan,
+                'no_hp' => $no_hp,
             ]);
 
             // Tambahkan ke list yang sudah dicek
-            $nipList[] = $row[1];
-            $emailList[] = $row[2];
+            $nipList[] = $nip;
+            $emailList[] = $email;
             $berhasil++;
         }
 
-        return response()->json([
-            'message' => "Import selesai. Berhasil: $berhasil, Gagal: $gagal",
-            'errors' => $errors
-        ]);
+        // Perubahan di sini: Menggunakan logika if-else yang jelas
+        if ($gagal > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "Import selesai. Berhasil: $berhasil data, Gagal: $gagal data.",
+                'errors' => $errors
+            ]);
+        } else {
+            return response()->json([
+                'success' => true,
+                'message' => "Import selesai. Berhasil: $berhasil data, Gagal: $gagal data."
+            ]);
+        }
     }
-
 }
