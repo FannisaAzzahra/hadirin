@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-lg-2 col-md-2 text-end">
                     <div class="header-actions">
-                        <a href="/profile" class="back-btn">
+                        <a href="/hadirin/public/profile" class="back-btn">
                             <i class="fas fa-arrow-left"></i>
                             <span class="back-text">Kembali</span>
                         </a>
