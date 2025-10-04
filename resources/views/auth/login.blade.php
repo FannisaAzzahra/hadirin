@@ -559,14 +559,10 @@
                     <h2 class="mb-0" id="form-title">Hadirin</h2>
                 </div>
                 
-                <div class="hadirin-toggle-container">
-                    <button type="button" class="hadirin-toggle-btn active" id="login-tab" onclick="switchToLogin()">
-                        <i class="fas fa-sign-in-alt"></i>Masuk {{-- Teks tombol Login --}}
+                <div class="hadirin-toggle-container" style="padding: 0;">
+                    <button type="button" class="hadirin-toggle-btn active" id="login-tab" style="width: 100%; border-radius: 8px;">
+                        <i class="fas fa-sign-in-alt"></i>Masuk
                     </button>
-                    <button type="button" class="hadirin-toggle-btn" id="register-tab" onclick="switchToRegister()">
-                        <i class="fas fa-user-plus"></i>Daftar {{-- Teks tombol Register --}}
-                    </button>
-                    <div class="hadirin-toggle-slider" id="toggle-slider"></div>
                 </div>
             </div>
 
@@ -608,81 +604,14 @@
                         </div>
 
                         <div class="form-group mt-4">
-                            <button type="submit" class="hadirin-btn-primary">
+                            <button type="submit" class="hadirin-btn-primary" style="width: 100%;">
                                 <i class="fas fa-sign-in-alt"></i>
                                 Masuk {{-- Teks tombol Login --}}
                             </button>
                             
-                            @if (Route::has('password.request'))
-                                <a class="hadirin-forgot-link" href="{{ route('password.request') }}">
-                                    Lupa Kata Sandi? {{-- Teks link Lupa Kata Sandi --}}
-                                </a>
-                            @endif
-                        </div>
-                    </form>
-                </div>
-
-                <div id="register-form" class="auth-form">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register-name" class="hadirin-label">Nama Lengkap</label> {{-- Label Nama Lengkap --}}
-                                    <input id="register-name" type="text" class="hadirin-input @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" placeholder="Masukkan nama lengkap Anda"> {{-- Placeholder Nama Lengkap --}}
-                                    @error('name')
-                                        <div class="invalid-feedback">
-                                            <strong>{{ $message }}</strong>
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register-email" class="hadirin-label">Alamat Email</label> {{-- Label Email Register --}}
-                                    <input id="register-email" type="email" class="hadirin-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Masukkan alamat email Anda"> {{-- Placeholder Register Email --}}
-                                    @error('email')
-                                        <div class="invalid-feedback">
-                                            <strong>{{ $message }}</strong>
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register-password" class="hadirin-label">Kata Sandi</label> {{-- Label Kata Sandi Register --}}
-                                    {{-- Tambahkan is-invalid ke input-group jika ada error --}}
-                                    <div class="input-group @error('password') is-invalid @enderror">
-                                        <input id="register-password" type="password" class="hadirin-input has-toggle" name="password" required autocomplete="new-password" placeholder="Buat kata sandi"> {{-- Placeholder Buat Kata Sandi --}}
-                                        <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('register-password', this)"></i>
-                                    </div>
-                                    @error('password')
-                                        <div class="invalid-feedback">
-                                            <strong>{{ $message }}</strong>
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register-password-confirm" class="hadirin-label">Konfirmasi Kata Sandi</label> {{-- Label Konfirmasi Kata Sandi --}}
-                                    <div class="input-group">
-                                        <input id="register-password-confirm" type="password" class="hadirin-input has-toggle" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi kata sandi Anda"> {{-- Placeholder Konfirmasi Kata Sandi --}}
-                                        <i class="fa fa-eye-slash toggle-password" onclick="togglePasswordVisibility('register-password-confirm', this)"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mt-4">
-                            <button type="submit" class="hadirin-btn-primary">
-                                <i class="fas fa-user-plus"></i>
-                                Daftar {{-- Teks tombol Register --}}
-                            </button>
+                            <a class="hadirin-forgot-link" href="{{ route('password.request') }}">
+                            Lupa Kata Sandi?
+                        </a>
                         </div>
                     </form>
                 </div>
@@ -691,77 +620,15 @@
     </div>
 
     {{-- JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-
     <script>
-    function switchToLogin() {
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const toggleSlider = document.getElementById('toggle-slider');
-        
-        // Update tab states
-        loginTab.classList.add('active');
-        registerTab.classList.remove('active');
-        
-        // Move slider
-        toggleSlider.classList.remove('register');
-        
-        // Switch forms with animation
-        registerForm.classList.remove('active');
-        registerForm.classList.add('slide-out-left');
-        
-        setTimeout(() => {
-            loginForm.classList.add('active');
-            loginForm.classList.remove('slide-out-left');
-            registerForm.classList.remove('slide-out-left');
-        }, 200);
-    }
-
-    function switchToRegister() {
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const toggleSlider = document.getElementById('toggle-slider');
-        
-        // Update tab states
-        registerTab.classList.add('active');
-        loginTab.classList.remove('active');
-        
-        // Move slider
-        toggleSlider.classList.add('register');
-        
-        // Switch forms with animation
-        loginForm.classList.remove('active');
-        loginForm.classList.add('slide-out-left');
-        
-        setTimeout(() => {
-            registerForm.classList.add('active');
-            registerForm.classList.remove('slide-out-left');
-            loginForm.classList.remove('slide-out-left');
-        }, 200);
-    }
-    
-    // Fungsi untuk toggle password
-    function togglePasswordVisibility(inputId, icon) {
-        const input = document.getElementById(inputId);
-        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-        input.setAttribute('type', type);
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-    }
-
-    // Initialize form state on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        // Check for old input errors to determine which form to show
-        const hasRegisterErrors = {{ $errors->has('name') || ($errors->has('email') && old('name')) || ($errors->has('password') && old('name')) ? 'true' : 'false' }};
-        
-        if (hasRegisterErrors) {
-            switchToRegister();
+        // Fungsi untuk toggle password
+        function togglePasswordVisibility(inputId, icon) {
+            const input = document.getElementById(inputId);
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
         }
-    });
     </script>
   </body>
 </html>
