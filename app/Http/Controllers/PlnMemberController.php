@@ -73,6 +73,46 @@ class PlnMemberController extends Controller
         return redirect()->route('pln-members.index');
     }
 
+    public function exportExcel()
+    {
+        $plnMembers = PlnMember::all();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set Header
+        $sheet->setCellValue('A1', 'Nama');
+        $sheet->setCellValue('B1', 'NIP');
+        $sheet->setCellValue('C1', 'Email');
+        $sheet->setCellValue('D1', 'Jabatan');
+        $sheet->setCellValue('E1', 'No. HP');
+
+        // Set Data
+        $row = 2;
+        foreach ($plnMembers as $member) {
+            $sheet->setCellValue('A' . $row, $member->nama);
+            $sheet->setCellValue('B' . $row, $member->nip);
+            $sheet->setCellValue('C' . $row, $member->email);
+            $sheet->setCellValue('D' . $row, $member->jabatan);
+            $sheet->setCellValue('E' . $row, $member->no_hp);
+            $row++;
+        }
+
+        // Auto size columns
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'daftar-anggota-pln-' . date('d-m-Y') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+    }
+
     public function downloadTemplate()
     {
         $spreadsheet = new Spreadsheet();

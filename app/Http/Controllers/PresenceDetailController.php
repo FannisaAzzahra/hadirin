@@ -19,6 +19,19 @@ use Illuminate\Support\Facades\Log;
 
 class PresenceDetailController extends Controller
 {
+    public function exportWord(string $id)
+    {
+        try {
+            $presence = Presence::findOrFail($id);
+            $presenceDetails = PresenceDetail::where('presence_id', $id)->orderBy('created_at', 'desc')->get();
+
+            return view('pages.presence.detail.export-word', compact('presence', 'presenceDetails'));
+        } catch (\Exception $e) {
+            Log::error('Error exporting to Word: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengekspor ke Word');
+        }
+    }
+
     public function exportPdf(string $id)
     {
         try {

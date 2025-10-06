@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Hapus atau buat pengguna default
+        User::truncate(); // Opsional: hapus semua user sebelum seeding
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::create([
+            'name' => 'eltrafo',
+            'email' => 'dokumentasieltrafo@gmail.com',
+            'password' => Hash::make('P@ssw0rd'),
         ]);
 
         // Jalankan seeder PlnMemberSeeder

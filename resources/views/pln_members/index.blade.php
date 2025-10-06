@@ -18,6 +18,9 @@
                         </svg>
                         Import Data
                     </button>
+                    <a href="{{ route('pln-members.export-excel') }}" class="btn btn-success me-2">
+                        <i class="fas fa-file-export me-2"></i>Export Excel
+                    </a>
                 </div>
             </div>
         </div>

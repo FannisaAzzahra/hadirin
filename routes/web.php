@@ -28,9 +28,8 @@ Route::get('/', function () {
 
 // Authentication Routes
 Auth::routes([
-    'register' => true, // Set false if you want to disable registration
-    'reset' => true,    // Set false if you want to disable password reset
-    'verify' => false,  // Set true if you want email verification
+    'register' => false, // Menonaktifkan registrasi
+    'reset' => true,    // Memastikan reset password tetap aktif
 ]);
 
 /*
@@ -134,6 +133,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('presence-detail')->name('presence-detail.')->group(function () {
         Route::get('/export-pdf/{id}', [PresenceDetailController::class, 'exportPdf'])->name('export-pdf');
         Route::get('/export-excel/{id}', [PresenceDetailController::class, 'exportExcel'])->name('export-excel');
+        Route::get('/export-word/{id}', [PresenceDetailController::class, 'exportWord'])->name('export-word');
         Route::delete('/{id}', [PresenceDetailController::class, 'destroy'])->name('destroy');
     });
 
@@ -149,6 +149,7 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // Resource route for PLN members
+    Route::get('pln-members/export-excel', [PlnMemberController::class, 'exportExcel'])->name('pln-members.export-excel');
     Route::resource('pln-members', PlnMemberController::class)->except(['show']);
 
     /*

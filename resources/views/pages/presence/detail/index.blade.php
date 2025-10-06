@@ -30,6 +30,10 @@
                                 <i class="fas fa-file-excel me-1"></i>
                                 Export Excel
                             </a>
+                            <a href="{{ route('presence-detail.export-word', $presence->id) }}" class="hadirin-btn hadirin-btn-primary">
+                                <i class="fas fa-file-word me-1"></i>
+                                Export Word
+                            </a>
                             <a href="{{ route('presence.index') }}" class="hadirin-btn hadirin-btn-secondary">
                                 <i class="fas fa-arrow-left me-1"></i>
                                 Kembali

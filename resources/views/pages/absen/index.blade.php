@@ -640,14 +640,26 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            /* PERBAIKAN UTAMA: Mengatur header-logos agar tetap sejajar (row) */
             .header-logos {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: center; /* Pusatkan item secara horizontal */
+                flex-direction: row; /* Ubah menjadi row */
+                justify-content: space-between; /* Pastikan sejajar dan ada ruang di antaranya */
+                gap: 0; /* Hapus gap yang mungkin ada */
+                align-items: center; 
+            }
+            
+            /* Agar logo dan judul tetap terpisah */
+            .header-logos > div {
+                flex-grow: 1;
+                text-align: center;
+            }
+
+            .header-logos img {
+                height: 80px; /* Kecilkan sedikit ukuran logo untuk mobile jika perlu */
             }
 
             .header-title {
-                font-size: 1.5rem;
+                font-size: 1.2rem; /* Kecilkan judul */
                 text-align: center;
             }
 
