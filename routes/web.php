@@ -196,3 +196,5 @@ Route::fallback(function () {
         : redirect()->route('login')->with('error', 'Halaman yang Anda cari tidak ditemukan.');
 });
 
+
+
