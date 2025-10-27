@@ -692,3 +692,4 @@ class PresenceController extends Controller
         return response()->json(['error' => 'Invalid request'], 400);
     }
 }
+
