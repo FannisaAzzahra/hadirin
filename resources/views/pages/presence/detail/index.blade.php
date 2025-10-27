@@ -1290,23 +1290,47 @@
                     
                     // Load QR Code
                     const img = document.createElement('img');
-                    img.src = data.qr_url;
+                    // Try PNG first, fall back to SVG if needed
+                    const primaryQrUrl = data.qr_url_png || data.qr_url;
+                    const fallbackQrUrl = data.qr_url_svg || data.qr_url;
+                    let triedFallback = false;
+                    img.src = primaryQrUrl;
                     img.alt = 'QR Code Presensi';
                     img.onload = function() {
                         qrCodeContainer.innerHTML = '';
                         qrCodeContainer.appendChild(img);
                     };
                     img.onerror = function() {
-                        qrCodeContainer.innerHTML = `
-                            <div class="hadirin-qr-loading">
-                                <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                                <p class="mt-2">Gagal memuat QR Code</p>
-                            </div>
-                        `;
+                        if (!triedFallback) {
+                            triedFallback = true;
+                            // Try SVG fallback
+                            fetch(fallbackQrUrl)
+                                .then(r => r.ok ? r.text() : Promise.reject(new Error('SVG fetch failed')))
+                                .then(svgText => {
+                                    const blob = new Blob([svgText], { type: 'image/svg+xml' });
+                                    const url = URL.createObjectURL(blob);
+                                    img.src = url;
+                                })
+                                .catch(() => {
+                                    qrCodeContainer.innerHTML = `
+                                        <div class="hadirin-qr-loading">
+                                            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                                            <p class="mt-2">Gagal memuat QR Code</p>
+                                        </div>
+                                    `;
+                                });
+                        } else {
+                            qrCodeContainer.innerHTML = `
+                                <div class="hadirin-qr-loading">
+                                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">Gagal memuat QR Code</p>
+                                </div>
+                            `;
+                        }
                     };
                     
                     // Setup download buttons
-                    setupDownloadButtons(data.qr_url, slug, data.presence);
+                    setupDownloadButtons(primaryQrUrl, fallbackQrUrl, slug, data.presence);
                 })
                 .catch(error => {
                     console.error('Error fetching barcode details:', error);
@@ -1319,23 +1343,73 @@
                 });
         });
 
-        function setupDownloadButtons(qrUrl, slug, presenceData) {
+        function setupDownloadButtons(qrPngUrl, qrSvgUrl, slug, presenceData) {
             // QR Code download
             const downloadQRBtn = document.getElementById('downloadQRBtn');
             downloadQRBtn.onclick = function() {
-                const link = document.createElement('a');
-                link.href = qrUrl;
-                link.download = `qr-code-${slug}.svg`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Prefer downloading PNG directly; if not available, convert SVG to PNG on the fly
+                attemptPngDownload(qrPngUrl, qrSvgUrl, slug);
             };
             
             // Event card download
             const downloadEventCardBtn = document.getElementById('downloadEventCardBtn');
             downloadEventCardBtn.onclick = function() {
-                generateHadirinEventCard(presenceData, qrUrl, slug);
+                // Use whichever URL works; event card renderer will handle SVG/PNG
+                generateHadirinEventCard(presenceData, qrPngUrl || qrSvgUrl, slug);
             };
+        }
+
+        async function attemptPngDownload(pngUrl, svgUrl, slug) {
+            try {
+                if (pngUrl) {
+                    const res = await fetch(pngUrl);
+                    if (res.ok && res.headers.get('Content-Type')?.includes('image/png')) {
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `qr-code-${slug}.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(url);
+                        return;
+                    }
+                }
+            } catch (_) { /* fall through to SVG conversion */ }
+
+            // Fallback: fetch SVG, render to canvas, download as PNG
+            try {
+                const res = await fetch(svgUrl);
+                const svgText = await res.text();
+                const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+                const svgUrlObj = URL.createObjectURL(svgBlob);
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 300; canvas.height = 300;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `qr-code-${slug}.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(url);
+                        URL.revokeObjectURL(svgUrlObj);
+                    }, 'image/png');
+                };
+                img.onerror = function() {
+                    URL.revokeObjectURL(svgUrlObj);
+                    alert('Gagal mengunduh QR. Coba lagi.');
+                };
+                img.src = svgUrlObj;
+            } catch (e) {
+                alert('Gagal mengunduh QR.');
+            }
         }
 // QR Event Card Generator - Footer Sejajar dengan Header Alignment yang Diperbaiki
 function generateHadirinEventCard(presenceData, qrUrl, slug) {
@@ -1707,7 +1781,7 @@ function generateHadirinEventCard(presenceData, qrUrl, slug) {
             drawFooter();
         };
         
-        if (qrUrl && qrUrl.includes('.svg')) {
+        if (qrUrl && (qrUrl.includes('format=svg') || qrUrl.endsWith('.svg'))) {
             fetch(qrUrl)
                 .then(response => response.text())
                 .then(svgText => {

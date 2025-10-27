@@ -244,16 +244,31 @@ class PresenceController extends Controller
     /**
      * Generate barcode with event details
      */
-    public function barcode(string $slug)
+    public function barcode(Request $request, string $slug)
     {
         $presence = Presence::where('slug', $slug)->firstOrFail();
         $url = route('absen.index', $presence->slug);
 
-        // Generate QR code as SVG to avoid GD library dependency issues
-        $qrCode = QrCode::format('svg')->size(300)->generate($url);
+        $format = strtolower($request->query('format', 'png'));
 
-        // Return the QR code as an SVG image response
-        return response($qrCode)->header('Content-Type', 'image/svg+xml');
+        if ($format === 'svg') {
+            $svg = QrCode::format('svg')->size(300)->generate($url);
+            return response($svg)->header('Content-Type', 'image/svg+xml');
+        }
+
+        // Try PNG first; if the server doesn't have the required image backend,
+        // gracefully fall back to SVG so the frontend can still render/convert.
+        try {
+            $qrPng = QrCode::format('png')->size(300)->generate($url);
+            return response($qrPng)->header('Content-Type', 'image/png');
+        } catch (\Throwable $e) {
+            Log::warning('QR PNG generation failed, falling back to SVG', [
+                'presence_id' => $presence->id,
+                'error' => $e->getMessage(),
+            ]);
+            $svg = QrCode::format('svg')->size(300)->generate($url);
+            return response($svg)->header('Content-Type', 'image/svg+xml');
+        }
     }
 
     /**
@@ -269,7 +284,9 @@ class PresenceController extends Controller
         
         $data = [
             'presence' => $presence,
-            'qr_url' => route('presence.barcode', $presence->slug),
+            'qr_url' => route('presence.barcode', $presence->slug) . '?format=png',
+            'qr_url_png' => route('presence.barcode', $presence->slug) . '?format=png',
+            'qr_url_svg' => route('presence.barcode', $presence->slug) . '?format=svg',
             'attendance_url' => $url,
             'formatted_date' => \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('d F Y'),
             'formatted_time' => \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('H:i'),
