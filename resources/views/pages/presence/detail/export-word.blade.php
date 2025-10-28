@@ -1,9 +1,3 @@
-<?php
-header("Content-type: application/vnd.ms-word");
-header("Content-Disposition: attachment;Filename=Daftar-Hadir-".date("d-m-Y").".doc");
-header("Pragma: no-cache");
-header("Expires: 0");
-?>
 <!DOCTYPE html>
 <html lang="id">
 <head>

@@ -25,7 +25,14 @@ class PresenceDetailController extends Controller
             $presence = Presence::findOrFail($id);
             $presenceDetails = PresenceDetail::where('presence_id', $id)->orderBy('created_at', 'desc')->get();
 
-            return view('pages.presence.detail.export-word', compact('presence', 'presenceDetails'));
+            // Render the view to HTML and return with proper headers (avoid header() in Blade)
+            $html = view('pages.presence.detail.export-word', compact('presence', 'presenceDetails'))->render();
+            $filename = 'Daftar-Hadir-' . now()->format('d-m-Y') . '.doc';
+            return response($html, 200)
+                ->header('Content-Type', 'application/msword')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
         } catch (\Exception $e) {
             Log::error('Error exporting to Word: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal mengekspor ke Word');
@@ -39,7 +46,11 @@ class PresenceDetailController extends Controller
             $presenceDetails = PresenceDetail::where('presence_id', $id)->orderBy('created_at', 'desc')->get();
 
             // load view to pdf
-            $pdf = Pdf::setOptions(['isRemoteEnabled' => true])
+            $pdf = Pdf::setOptions([
+                    'isRemoteEnabled' => true,
+                    'isHtml5ParserEnabled' => true,
+                    'dpi' => 96,
+                ])
                 ->loadView('pages.presence.detail.export-pdf', compact('presence', 'presenceDetails'))
                 ->setPaper('a4', 'portrait');
 
