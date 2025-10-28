@@ -7,6 +7,7 @@ use App\Models\Presence;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -19,6 +20,37 @@ use Illuminate\Support\Facades\Log;
 
 class PresenceDetailController extends Controller
 {
+    /**
+     * Stream signature image for a presence detail.
+     * Public endpoint to make image loading work even if the storage symlink is unavailable on hosting.
+     */
+    public function showSignature($id)
+    {
+        $detail = PresenceDetail::findOrFail($id);
+
+        if (!$detail->signature) {
+            abort(404);
+        }
+
+        // Resolve absolute file path from storage or legacy public/uploads
+        $path = null;
+        if (Storage::disk('public')->exists($detail->signature)) {
+            $path = Storage::disk('public')->path($detail->signature);
+        } elseif (file_exists(public_path('uploads/' . $detail->signature))) {
+            $path = public_path('uploads/' . $detail->signature);
+        }
+
+        if (!$path || !file_exists($path)) {
+            abort(404);
+        }
+
+        $mime = File::mimeType($path) ?: 'image/png';
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Cache-Control' => 'public, max-age=604800', // 7 days
+        ]);
+    }
     public function exportWord(string $id)
     {
         try {

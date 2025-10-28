@@ -25,10 +25,9 @@ class PresenceDetailsDataTable extends DataTable
                 if (!$query->signature) {
                     return '-';
                 }
-                $url = Storage::disk('public')->exists($query->signature)
-                    ? Storage::url($query->signature)
-                    : asset('uploads/' . $query->signature);
-                return "<img width='100' src='" . $url . "'>";
+                // Serve through route to be resilient on shared hosting
+                $url = route('public.signature', $query->id);
+                return "<img width='100' src='" . $url . "' alt='Signature'>";
             })
             ->addColumn('action', function ($query) {
                 return "<a href='" . route('presence-detail.destroy', $query->id) . "' class='btn btn-delete btn-danger btn-sm'>Hapus</a>";

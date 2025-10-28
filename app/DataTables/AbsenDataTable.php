@@ -37,12 +37,9 @@ class AbsenDataTable extends DataTable
                 return $query->no_hp;
             })
             ->addColumn('signature', function ($query) {
-                $url = $query->signature
-                    ? (Storage::disk('public')->exists($query->signature)
-                        ? Storage::url($query->signature)
-                        : asset('uploads/' . $query->signature))
-                    : null;
-                return $url ? "<img width='100' src='" . $url . "'>" : '-';
+                // Always serve via route so it works even if /public/storage symlink is missing
+                $url = $query->signature ? route('public.signature', $query->id) : null;
+                return $url ? "<img width='100' src='" . $url . "' alt='Signature'>" : '-';
             })
             ->addColumn('action', function($query){
                 $btnDelete = "<a href='" . route('presence-detail.destroy', $query->id) . "' class='btn btn-delete btn-danger'>Hapus</a>";
