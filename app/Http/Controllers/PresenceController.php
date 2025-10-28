@@ -102,12 +102,12 @@ class PresenceController extends Controller
 
         foreach (['logo_kiri', 'logo_kanan'] as $field) {
             if ($request->hasFile($field)) {
-                $presence->$field = $request->file($field)->store("presence_logos", 'public_uploads');
+                $presence->$field = $request->file($field)->store("presence_logos", 'public');
             }
         }
 
         if ($request->hasFile('logo_ig')) {
-            $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public_uploads');
+            $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public');
         }
 
         $presence->link_ig = $validated['link_ig']
@@ -214,18 +214,31 @@ class PresenceController extends Controller
 
         foreach (['logo_kiri', 'logo_kanan'] as $field) {
             if ($request->hasFile($field)) {
-                if ($presence->$field && file_exists(public_path('uploads/' . $presence->$field))) {
-                    unlink(public_path('uploads/' . $presence->$field));
+                // delete old from new storage, then legacy fallback
+                try {
+                    if ($presence->$field && Storage::disk('public')->exists($presence->$field)) {
+                        Storage::disk('public')->delete($presence->$field);
+                    } else if ($presence->$field && file_exists(public_path('uploads/' . $presence->$field))) {
+                        @unlink(public_path('uploads/' . $presence->$field));
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Failed deleting old logo: ' . $e->getMessage());
                 }
-                $presence->$field = $request->file($field)->store("presence_logos", 'public_uploads');
+                $presence->$field = $request->file($field)->store("presence_logos", 'public');
             }
         }
 
         if ($request->hasFile('logo_ig')) {
-            if ($presence->logo_ig && file_exists(public_path('uploads/' . $presence->logo_ig))) {
-                unlink(public_path('uploads/' . $presence->logo_ig));
+            try {
+                if ($presence->logo_ig && Storage::disk('public')->exists($presence->logo_ig)) {
+                    Storage::disk('public')->delete($presence->logo_ig);
+                } else if ($presence->logo_ig && file_exists(public_path('uploads/' . $presence->logo_ig))) {
+                    @unlink(public_path('uploads/' . $presence->logo_ig));
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Failed deleting old IG logo: ' . $e->getMessage());
             }
-            $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public_uploads');
+            $presence->logo_ig = $request->file('logo_ig')->store("ig_logos", 'public');
         }
 
         $presence->link_ig = $validated['link_ig']
@@ -309,9 +322,17 @@ class PresenceController extends Controller
         $presenceDetails = PresenceDetail::where('presence_id', $id)->get();
         foreach ($presenceDetails as $detail) {
             if ($detail->signature) {
-                $filePath = public_path('uploads/' . $detail->signature);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
+                try {
+                    if (Storage::disk('public')->exists($detail->signature)) {
+                        Storage::disk('public')->delete($detail->signature);
+                    } else {
+                        $filePath = public_path('uploads/' . $detail->signature);
+                        if (file_exists($filePath)) {
+                            @unlink($filePath);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Failed deleting signature on destroy: ' . $e->getMessage());
                 }
             }
             $detail->delete();
@@ -321,9 +342,17 @@ class PresenceController extends Controller
         $slides = PresenceSlide::where('presence_id', $id)->get();
         foreach ($slides as $slide) {
             if ($slide->image_path) {
-                $filePath = public_path('uploads/' . $slide->image_path);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
+                try {
+                    if (Storage::disk('public')->exists($slide->image_path)) {
+                        Storage::disk('public')->delete($slide->image_path);
+                    } else {
+                        $filePath = public_path('uploads/' . $slide->image_path);
+                        if (file_exists($filePath)) {
+                            @unlink($filePath);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Failed deleting slide on destroy: ' . $e->getMessage());
                 }
             }
             $slide->delete();
@@ -331,8 +360,14 @@ class PresenceController extends Controller
 
         // Delete logos
         foreach (['logo_kiri', 'logo_kanan', 'logo_ig'] as $field) {
-            if ($presence->$field && file_exists(public_path('uploads/' . $presence->$field))) {
-                unlink(public_path('uploads/' . $presence->$field));
+            try {
+                if ($presence->$field && Storage::disk('public')->exists($presence->$field)) {
+                    Storage::disk('public')->delete($presence->$field);
+                } else if ($presence->$field && file_exists(public_path('uploads/' . $presence->$field))) {
+                    @unlink(public_path('uploads/' . $presence->$field));
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Failed deleting logo on destroy: ' . $e->getMessage());
             }
         }
 
@@ -415,41 +450,38 @@ class PresenceController extends Controller
         $sourceSlides = PresenceSlide::where('presence_id', $fromPresenceId)->get();
         $copiedCount = 0;
         
-        // Ensure slides directory exists
-        $slideDir = public_path('uploads/slides');
-        if (!file_exists($slideDir)) {
-            mkdir($slideDir, 0755, true);
-        }
+        // Ensure slides directory exists (handled by Storage automatically on put)
         
         foreach ($sourceSlides as $sourceSlide) {
             try {
-                $sourcePath = public_path('uploads/' . $sourceSlide->image_path);
-                
-                if (!file_exists($sourcePath)) {
-                    Log::warning('Source slide file not found:', ['path' => $sourcePath]);
-                    continue;
-                }
-                
+                // Resolve source (new storage first, then legacy)
                 $extension = pathinfo($sourceSlide->image_path, PATHINFO_EXTENSION);
                 $newFileName = 'slides/' . Str::random(40) . '.' . $extension;
-                $destinationPath = public_path('uploads/' . $newFileName);
-                
-                if (copy($sourcePath, $destinationPath)) {
+
+                if (Storage::disk('public')->exists($sourceSlide->image_path)) {
+                    Storage::disk('public')->copy($sourceSlide->image_path, $newFileName);
                     PresenceSlide::create([
                         'presence_id' => $toPresenceId,
                         'image_path' => $newFileName,
                     ]);
                     $copiedCount++;
-                    
-                    Log::info('Slide copied successfully:', [
-                        'source' => $sourceSlide->image_path,
-                        'destination' => $newFileName
-                    ]);
                 } else {
-                    Log::error('Failed to copy slide file:', [
-                        'source' => $sourcePath,
-                        'destination' => $destinationPath
-                    ]);
+                    $sourcePath = public_path('uploads/' . $sourceSlide->image_path);
+                    if (!file_exists($sourcePath)) {
+                        Log::warning('Source slide file not found:', ['path' => $sourcePath]);
+                        continue;
+                    }
+                    $content = @file_get_contents($sourcePath);
+                    if ($content !== false) {
+                        Storage::disk('public')->put($newFileName, $content);
+                        PresenceSlide::create([
+                            'presence_id' => $toPresenceId,
+                            'image_path' => $newFileName,
+                        ]);
+                        $copiedCount++;
+                    } else {
+                        Log::error('Failed to read legacy slide file:', ['path' => $sourcePath]);
+                    }
                 }
                 
             } catch (\Exception $e) {
@@ -473,12 +505,7 @@ class PresenceController extends Controller
         $uploadedCount = 0;
         $maxFiles = 5;
         
-        // Ensure slides directory exists
-        $slideDir = public_path('uploads/slides');
-        if (!file_exists($slideDir)) {
-            mkdir($slideDir, 0755, true);
-            Log::info('Created slides directory: ' . $slideDir);
-        }
+        // Ensure slides directory exists - storage will create on write
         
         foreach (array_slice($files, 0, $maxFiles) as $index => $file) {
             try {
@@ -501,8 +528,8 @@ class PresenceController extends Controller
                     continue;
                 }
                 
-                // Store file
-                $path = $file->store("slides", 'public_uploads');
+                // Store file to public disk
+                $path = $file->store("slides", 'public');
                 
                 if ($path) {
                     // Create slide record
@@ -543,15 +570,17 @@ class PresenceController extends Controller
         foreach ($presence->slides as $slide) {
             try {
                 if ($slide->image_path) {
-                    $filePath = public_path('uploads/' . $slide->image_path);
-                    if (file_exists($filePath)) {
-                        if (unlink($filePath)) {
-                            Log::info('Slide file deleted:', ['path' => $filePath]);
-                        } else {
-                            Log::warning('Failed to delete slide file:', ['path' => $filePath]);
-                        }
+                    if (Storage::disk('public')->exists($slide->image_path)) {
+                        Storage::disk('public')->delete($slide->image_path);
+                        Log::info('Slide file deleted from storage:', ['path' => $slide->image_path]);
                     } else {
-                        Log::warning('Slide file not found for deletion:', ['path' => $filePath]);
+                        $filePath = public_path('uploads/' . $slide->image_path);
+                        if (file_exists($filePath)) {
+                            @unlink($filePath);
+                            Log::info('Legacy slide file deleted:', ['path' => $filePath]);
+                        } else {
+                            Log::warning('Slide file not found for deletion:', ['path' => $filePath]);
+                        }
                     }
                 }
                 
@@ -629,20 +658,20 @@ class PresenceController extends Controller
         // Copy logo files
         foreach (['logo_kiri', 'logo_kanan', 'logo_ig'] as $logoField) {
             if ($sourcePresence->$logoField) {
-                $sourcePath = public_path('uploads/' . $sourcePresence->$logoField);
-                if (file_exists($sourcePath)) {
-                    $extension = pathinfo($sourcePresence->$logoField, PATHINFO_EXTENSION);
-                    $newFileName = $logoField . '/' . Str::random(40) . '.' . $extension;
-                    $destinationPath = public_path('uploads/' . $newFileName);
-                    
-                    // Ensure logo directory exists
-                    $logoDir = public_path('uploads/' . dirname($newFileName));
-                    if (!file_exists($logoDir)) {
-                        mkdir($logoDir, 0755, true);
-                    }
-                    
-                    if (copy($sourcePath, $destinationPath)) {
-                        $toPresence->$logoField = $newFileName;
+                $src = $sourcePresence->$logoField;
+                $extension = pathinfo($src, PATHINFO_EXTENSION);
+                $newFileName = $logoField . '/' . Str::random(40) . '.' . $extension;
+                if (Storage::disk('public')->exists($src)) {
+                    Storage::disk('public')->copy($src, $newFileName);
+                    $toPresence->$logoField = $newFileName;
+                } else {
+                    $legacyPath = public_path('uploads/' . $src);
+                    if (file_exists($legacyPath)) {
+                        $content = @file_get_contents($legacyPath);
+                        if ($content !== false) {
+                            Storage::disk('public')->put($newFileName, $content);
+                            $toPresence->$logoField = $newFileName;
+                        }
                     }
                 }
             }
@@ -678,9 +707,11 @@ class PresenceController extends Controller
                     return date('d-m-Y H:i:s', strtotime($data->created_at));
                 })
                 ->addColumn('signature', function ($data) {
-                    return $data->signature
-                        ? "<img width='100' src='" . asset('uploads/' . $data->signature) . "'>"
-                        : '-';
+                    if (!$data->signature) return '-';
+                    $url = Storage::disk('public')->exists($data->signature)
+                        ? Storage::url($data->signature)
+                        : asset('uploads/' . $data->signature);
+                    return "<img width='100' src='" . $url . "'>";
                 })
                 ->addColumn('action', function ($data) {
                     return "<a href='" . route('presence-detail.destroy', $data->id) . "' class='btn btn-delete btn-danger btn-sm'>Hapus</a>";

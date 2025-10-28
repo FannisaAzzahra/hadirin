@@ -55,12 +55,21 @@ class PresenceDetailController extends Controller
         try {
             $presenceDetail = PresenceDetail::findOrFail($id);
 
-            // Delete signature file if exists
+            // Delete signature file if exists (first try new storage disk, then legacy path)
             if ($presenceDetail->signature) {
-                $filePath = public_path('uploads/' . $presenceDetail->signature);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                    Log::info('Deleted signature file: ' . $filePath);
+                try {
+                    if (Storage::disk('public')->exists($presenceDetail->signature)) {
+                        Storage::disk('public')->delete($presenceDetail->signature);
+                        Log::info('Deleted signature file from storage/public: ' . $presenceDetail->signature);
+                    } else {
+                        $legacyPath = public_path('uploads/' . $presenceDetail->signature);
+                        if (file_exists($legacyPath)) {
+                            unlink($legacyPath);
+                            Log::info('Deleted legacy signature file: ' . $legacyPath);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Failed deleting signature file: ' . $e->getMessage());
                 }
             }
 
@@ -127,10 +136,19 @@ class PresenceDetailController extends Controller
                 $sheet->setCellValue("E{$row}", ($detail->email ?? '-') . ' / ' . $detail->no_hp);
 
                 // Add signature image if exists
-                if ($detail->signature && file_exists(public_path('uploads/' . $detail->signature))) {
+                $sigLocalPath = null;
+                if ($detail->signature) {
+                    if (Storage::disk('public')->exists($detail->signature)) {
+                        $sigLocalPath = Storage::disk('public')->path($detail->signature);
+                    } elseif (file_exists(public_path('uploads/' . $detail->signature))) { // legacy
+                        $sigLocalPath = public_path('uploads/' . $detail->signature);
+                    }
+                }
+
+                if ($sigLocalPath) {
                     try {
                         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                        $drawing->setPath(public_path('uploads/' . $detail->signature));
+                        $drawing->setPath($sigLocalPath);
                         $drawing->setHeight(40);
                         $drawing->setCoordinates("F{$row}");
                         $drawing->setWorksheet($sheet);

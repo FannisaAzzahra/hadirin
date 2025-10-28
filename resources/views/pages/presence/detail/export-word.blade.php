@@ -100,12 +100,19 @@ header("Expires: 0");
                     <td align="center" valign="middle">
                         @if ($detail->signature)
                             @php
-                                $path = public_path('uploads/' . $detail->signature);
-                                if (file_exists($path)) {
-                                    $type = pathinfo($path, PATHINFO_EXTENSION);
-                                    $data = file_get_contents($path);
-                                    $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
-                                } else {
+                                $img = null;
+                                try {
+                                    if (\Storage::disk('public')->exists($detail->signature)) {
+                                        $path = \Storage::disk('public')->path($detail->signature);
+                                    } else {
+                                        $path = public_path('uploads/' . $detail->signature); // legacy fallback
+                                    }
+                                    if (file_exists($path)) {
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($path);
+                                        $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                    }
+                                } catch (\Throwable $e) {
                                     $img = null;
                                 }
                             @endphp

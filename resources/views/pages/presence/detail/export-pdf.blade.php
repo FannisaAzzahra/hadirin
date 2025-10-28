@@ -398,12 +398,25 @@
                         <td class="text-center">
                             @if ($detail->signature)
                                 @php
-                                    $path = public_path('uploads/' . $detail->signature);
-                                    $type = pathinfo($path, PATHINFO_EXTENSION);
-                                    $data = file_get_contents($path);
-                                    $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                    $img = null;
+                                    try {
+                                        if (\Storage::disk('public')->exists($detail->signature)) {
+                                            $path = \Storage::disk('public')->path($detail->signature);
+                                        } else {
+                                            $path = public_path('uploads/' . $detail->signature); // legacy fallback
+                                        }
+                                        if (file_exists($path)) {
+                                            $type = pathinfo($path, PATHINFO_EXTENSION);
+                                            $data = file_get_contents($path);
+                                            $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                        }
+                                    } catch (\Throwable $e) {
+                                        $img = null;
+                                    }
                                 @endphp
-                                <img src="{{ $img }}" alt="Signature" style="max-height:40px; max-width:100%;">
+                                @if($img)
+                                    <img src="{{ $img }}" alt="Signature" style="max-height:40px; max-width:100%;">
+                                @endif
                             @endif
                         </td>
                     </tr>

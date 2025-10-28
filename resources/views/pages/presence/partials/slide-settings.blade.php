@@ -553,7 +553,7 @@
                             <div class="slide-preview-grid" id="slide-keep-preview-grid">
                                 @foreach($presence->slides as $slide)
                                     <div class="slide-preview-item">
-                                        <img src="{{ asset('uploads/' . $slide->image_path) }}" class="slide-preview-image" alt="Current slide preview">
+                                        <img src="{{ \Storage::disk('public')->exists($slide->image_path) ? Storage::url($slide->image_path) : asset('uploads/' . $slide->image_path) }}" class="slide-preview-image" alt="Current slide preview">
                                     </div>
                                 @endforeach
                             </div>
@@ -1093,7 +1093,7 @@
                                 previewItem.className = 'slide-preview-item';
 
                                 const img = document.createElement('img');
-                                img.src = `/uploads/${slide.image_path}`; // Pastikan path benar
+                                img.src = `/storage/${slide.image_path}`; // gunakan storage link
                                 img.className = 'slide-preview-image';
                                 img.alt = 'Slide preview';
 

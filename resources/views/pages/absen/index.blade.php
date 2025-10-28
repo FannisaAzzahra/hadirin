@@ -765,15 +765,15 @@
       <div class="card header-card mb-4">
         <div class="card-body">
           <div class="header-logos">
-            {{-- <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120" alt="Logo Kiri"> --}}
-            <img src="{{ $presence->logo_kiri ? asset('uploads/' . $presence->logo_kiri) : '' }}" height="120">
+            {{-- <img src="{{ $presence->logo_kiri ? Storage::url($presence->logo_kiri) : asset('default-logo-kiri.png') }}" height="120" alt="Logo Kiri"> --}}
+            <img src="{{ $presence->logo_kiri ? (\Storage::disk('public')->exists($presence->logo_kiri) ? Storage::url($presence->logo_kiri) : asset('uploads/' . $presence->logo_kiri)) : '' }}" height="120">
               <div class="text-center">
                   <h2 class="header-title d-block fw-bold">{{ $presence->judul_header_atas ?? 'ABSENSI ONLINE' }}</h2>
 
                   <h3 class="d-block">{{ $presence->judul_header_bawah ?? '' }}</h3>
               </div>
-            {{-- <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120" alt="Logo Kanan"> --}}
-            <img src="{{ $presence->logo_kanan ? asset('uploads/' . $presence->logo_kanan) : '' }}" height="120">
+            {{-- <img src="{{ $presence->logo_kanan ? Storage::url($presence->logo_kanan) : asset('default-logo-kanan.png') }}" height="120" alt="Logo Kanan"> --}}
+            <img src="{{ $presence->logo_kanan ? (\Storage::disk('public')->exists($presence->logo_kanan) ? Storage::url($presence->logo_kanan) : asset('uploads/' . $presence->logo_kanan)) : '' }}" height="120">
           </div>
           <div class="detail-table">
             <table class="table table-borderless">
@@ -1000,11 +1000,11 @@
                   <!-- Swiper -->
                   <div class="swiper mySwiper mb-3">
                     <div class="swiper-wrapper">
-                      @foreach ($presence->slides as $slide)
-                        <div class="swiper-slide">
-                          <img src="{{ asset('uploads/' . $slide->image_path) }}" class="d-block w-100" alt="Slide Image">
-                        </div>
-                      @endforeach
+                                            @foreach ($presence->slides as $slide)
+                                                <div class="swiper-slide">
+                                                    <img src="{{ \Storage::disk('public')->exists($slide->image_path) ? Storage::url($slide->image_path) : asset('uploads/' . $slide->image_path) }}" class="d-block w-100" alt="Slide Image">
+                                                </div>
+                                            @endforeach
                     </div>
                     <div class="swiper-button-next"></div>
                     <div class="swiper-button-prev"></div>
@@ -1015,7 +1015,7 @@
                 @if ($presence->logo_ig && $presence->link_ig)
                   <div class="text-center mt-3">
                     <a href="{{ $presence->link_ig }}" target="_blank" class="instagram-link">
-                      <img src="{{ asset('uploads/' . $presence->logo_ig) }}" height="50" alt="Instagram">
+                      <img src="{{ \Storage::disk('public')->exists($presence->logo_ig) ? Storage::url($presence->logo_ig) : asset('uploads/' . $presence->logo_ig) }}" height="50" alt="Instagram">
                       @php
                           $igUsername = str_replace('https://instagram.com/', '', $presence->link_ig);
                       @endphp

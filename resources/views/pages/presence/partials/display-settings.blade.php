@@ -640,19 +640,19 @@
                                 <div class="preview-logos">
                                     @if($presence->logo_kiri)
                                         <div class="preview-logo-item">
-                                            <img src="/uploads/{{ $presence->logo_kiri }}" class="preview-logo-image" alt="Logo Kiri">
+                                            <img src="{{ \Storage::disk('public')->exists($presence->logo_kiri) ? Storage::url($presence->logo_kiri) : asset('uploads/' . $presence->logo_kiri) }}" class="preview-logo-image" alt="Logo Kiri">
                                             <div class="preview-logo-label">Logo Kiri</div>
                                         </div>
                                     @endif
                                     @if($presence->logo_kanan)
                                         <div class="preview-logo-item">
-                                            <img src="/uploads/{{ $presence->logo_kanan }}" class="preview-logo-image" alt="Logo Kanan">
+                                            <img src="{{ \Storage::disk('public')->exists($presence->logo_kanan) ? Storage::url($presence->logo_kanan) : asset('uploads/' . $presence->logo_kanan) }}" class="preview-logo-image" alt="Logo Kanan">
                                             <div class="preview-logo-label">Logo Kanan</div>
                                         </div>
                                     @endif
                                     @if($presence->logo_ig)
                                         <div class="preview-logo-item">
-                                            <img src="/uploads/{{ $presence->logo_ig }}" class="preview-logo-image" alt="Logo Instagram">
+                                            <img src="{{ \Storage::disk('public')->exists($presence->logo_ig) ? Storage::url($presence->logo_ig) : asset('uploads/' . $presence->logo_ig) }}" class="preview-logo-image" alt="Logo Instagram">
                                             <div class="preview-logo-label">Logo Instagram</div>
                                         </div>
                                     @endif
@@ -774,7 +774,7 @@
                     <div class="form-helper">Format: JPG, PNG</div>
                     @if(isset($presence) && $presence->logo_kiri)
                         <div style="margin-top: 0.5rem;">
-                            <img src="{{ asset('uploads/' . $presence->logo_kiri) }}" class="hadirin-img-preview">
+                            <img src="{{ \Storage::disk('public')->exists($presence->logo_kiri) ? Storage::url($presence->logo_kiri) : asset('uploads/' . $presence->logo_kiri) }}" class="hadirin-img-preview">
                             <small>Logo saat ini</small>
                         </div>
                     @endif
@@ -792,7 +792,7 @@
                     <div class="form-helper">Format: JPG, PNG</div>
                     @if(isset($presence) && $presence->logo_kanan)
                         <div style="margin-top: 0.5rem;">
-                            <img src="{{ asset('uploads/' . $presence->logo_kanan) }}" class="hadirin-img-preview">
+                            <img src="{{ \Storage::disk('public')->exists($presence->logo_kanan) ? Storage::url($presence->logo_kanan) : asset('uploads/' . $presence->logo_kanan) }}" class="hadirin-img-preview">
                             <small>Logo saat ini</small>
                         </div>
                     @endif
@@ -810,7 +810,7 @@
                     <div class="form-helper">Format: JPG, PNG</div>
                     @if(isset($presence) && $presence->logo_ig)
                         <div style="margin-top: 0.5rem;">
-                            <img src="{{ asset('uploads/' . $presence->logo_ig) }}" class="hadirin-img-preview">
+                            <img src="{{ \Storage::disk('public')->exists($presence->logo_ig) ? Storage::url($presence->logo_ig) : asset('uploads/' . $presence->logo_ig) }}" class="hadirin-img-preview">
                             <small>Logo saat ini</small>
                         </div>
                     @endif
@@ -1048,7 +1048,7 @@
                             if (display.logo_kiri) {
                                 previewHTML += `
                                     <div class="preview-logo-item">
-                                        <img src="/uploads/${display.logo_kiri}" class="preview-logo-image" alt="Logo Kiri">
+                                        <img src="/storage/${display.logo_kiri}" class="preview-logo-image" alt="Logo Kiri">
                                         <div class="preview-logo-label">Logo Kiri</div>
                                     </div>
                                 `;
@@ -1057,7 +1057,7 @@
                             if (display.logo_kanan) {
                                 previewHTML += `
                                     <div class="preview-logo-item">
-                                        <img src="/uploads/${display.logo_kanan}" class="preview-logo-image" alt="Logo Kanan">
+                                        <img src="/storage/${display.logo_kanan}" class="preview-logo-image" alt="Logo Kanan">
                                         <div class="preview-logo-label">Logo Kanan</div>
                                     </div>
                                 `;
@@ -1066,7 +1066,7 @@
                             if (display.logo_ig) {
                                 previewHTML += `
                                     <div class="preview-logo-item">
-                                        <img src="/uploads/${display.logo_ig}" class="preview-logo-image" alt="Logo Instagram">
+                                        <img src="/storage/${display.logo_ig}" class="preview-logo-image" alt="Logo Instagram">
                                         <div class="preview-logo-label">Logo Instagram</div>
                                     </div>
                                 `;

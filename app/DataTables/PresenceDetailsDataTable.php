@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\PresenceDetail;
 use App\Models\Company;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -21,9 +22,13 @@ class PresenceDetailsDataTable extends DataTable
                 return date('d-m-Y H:i:s', strtotime($query->created_at));
             })
             ->addColumn('signature', function ($query) {
-                return $query->signature
-                    ? "<img width='100' src='" . asset('uploads/' . $query->signature) . "'>"
-                    : '-';
+                if (!$query->signature) {
+                    return '-';
+                }
+                $url = Storage::disk('public')->exists($query->signature)
+                    ? Storage::url($query->signature)
+                    : asset('uploads/' . $query->signature);
+                return "<img width='100' src='" . $url . "'>";
             })
             ->addColumn('action', function ($query) {
                 return "<a href='" . route('presence-detail.destroy', $query->id) . "' class='btn btn-delete btn-danger btn-sm'>Hapus</a>";

@@ -98,8 +98,8 @@ class AbsenController extends Controller
         $uniqChar = date('YmdHis').uniqid();
         $signature = "tanda-tangan/{$uniqChar}.png";
 
-        // Save signature to storage
-        Storage::disk('public_uploads')->put($signature, base64_decode($file_data));
+    // Save signature to storage (public disk)
+    Storage::disk('public')->put($signature, base64_decode($file_data));
 
         $presenceDetail->signature = $signature;
         $presenceDetail->save();
