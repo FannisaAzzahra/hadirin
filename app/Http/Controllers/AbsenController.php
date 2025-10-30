@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\CompanyUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use App\Models\PlnMember;
 
 class AbsenController extends Controller
@@ -122,5 +123,42 @@ class AbsenController extends Controller
         $units = $company->activeUnits;
         
         return response()->json($units);
+    }
+
+    /**
+     * Serve storage image publicly (works even if storage symlink is missing)
+     * This route will be used as fallback when storage:link is not available on hosting
+     */
+    public function serveStorageImage($path)
+    {
+        // Security check: prevent directory traversal
+        $path = str_replace(['../', '..\\'], '', $path);
+        
+        if (!Storage::disk('public')->exists($path)) {
+            abort(404);
+        }
+
+        $fullPath = Storage::disk('public')->path($path);
+        
+        // Safely detect MIME type with fallback
+        try {
+            $mimeType = File::mimeType($fullPath);
+        } catch (\Exception $e) {
+            // Fallback: detect from extension
+            $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+            $mimeType = match($extension) {
+                'jpg', 'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp',
+                'svg' => 'image/svg+xml',
+                default => 'application/octet-stream',
+            };
+        }
+
+        return response()->file($fullPath, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'public, max-age=604800', // 7 days cache
+        ]);
     }
 }

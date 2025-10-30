@@ -48,6 +48,11 @@ Route::prefix('absen')->name('absen.')->group(function () {
 Route::get('/signature/{id}', [PresenceDetailController::class, 'showSignature'])
     ->name('public.signature');
 
+// Public storage image route (works even if storage symlink is missing)
+Route::get('/storage-image/{path}', [AbsenController::class, 'serveStorageImage'])
+    ->where('path', '.*')
+    ->name('public.storage-image');
+
 // Public API routes
 Route::prefix('api/public')->name('api.public.')->group(function () {
     Route::get('/units-by-company', [AbsenController::class, 'getUnitsByCompany'])->name('units-by-company');

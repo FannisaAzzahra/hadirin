@@ -287,19 +287,30 @@
             <div class="header-wrapper">
                 <div class="header-row">
                     <div class="logo-left">
-                        {{-- <img src="{{ public_path('images/logo_pln.png') }}" alt="PLN Logo" style="height: 60px;"> --}}
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_pln.png'))) }}" style="height:70px;">
+                        @php
+                            $logoPln = \Storage::disk('public')->path('logos/logo_pln.png');
+                        @endphp
+                        @if(file_exists($logoPln))
+                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoPln)) }}" style="height:70px;" alt="PLN Logo">
+                        @else
+                            <div style="width:70px;height:70px;background:#1976d2;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">PLN</div>
+                        @endif
                     </div>
                     <div class="company-info">
                         <div class="company-name">PT PLN (PERSERO)</div>
                         <div class="company-unit">UNIT INDUK TRANSMISI JAWA BAGIAN TIMUR DAN BALI</div>
                     </div>
                     <div class="logos-right">
-                        {{-- <img src="{{ public_path('images/logo_smk3.jpeg') }}" alt="SMK3 Logo" style="height: 45px; margin-right: 5px;">
-                        <img src="{{ public_path('images/logo_iso.jpeg') }}" alt="ISO Logo" style="height: 60px;"> --}}
-
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_smk3.png'))) }}" alt="SMK3 Logo" style="height: 55px; margin-right: 5px;">
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo_iso.png'))) }}" alt="ISO Logo" style="height: 55px;">
+                        @php
+                            $logoSmk3 = \Storage::disk('public')->path('logos/logo_smk3.png');
+                            $logoIso = \Storage::disk('public')->path('logos/logo_iso.png');
+                        @endphp
+                        @if(file_exists($logoSmk3))
+                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoSmk3)) }}" alt="SMK3 Logo" style="height: 55px; margin-right: 5px;">
+                        @endif
+                        @if(file_exists($logoIso))
+                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoIso)) }}" alt="ISO Logo" style="height: 55px;">
+                        @endif
                     </div>
                 </div>
                 
@@ -396,25 +407,18 @@
                         </td>
                         <td class="text-center">{{ $detail->email ?? '-' }} / <br> {{ $detail->no_hp }}</td>
                         <td class="text-center">
-                            @if ($detail->signature)
+                            @if ($detail->signature && \Storage::disk('public')->exists($detail->signature))
                                 @php
-                                    $img = null;
                                     try {
-                                        if (\Storage::disk('public')->exists($detail->signature)) {
-                                            $path = \Storage::disk('public')->path($detail->signature);
-                                        } else {
-                                            $path = public_path('uploads/' . $detail->signature); // legacy fallback
-                                        }
-                                        if (file_exists($path)) {
-                                            $type = pathinfo($path, PATHINFO_EXTENSION);
-                                            $data = file_get_contents($path);
-                                            $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
-                                        }
+                                        $path = \Storage::disk('public')->path($detail->signature);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION) ?: 'png';
+                                        $data = @file_get_contents($path);
+                                        $img  = $data ? ('data:image/' . $type . ';base64,' . base64_encode($data)) : null;
                                     } catch (\Throwable $e) {
                                         $img = null;
                                     }
                                 @endphp
-                                @if($img)
+                                @if(!empty($img))
                                     <img src="{{ $img }}" alt="Signature" style="max-height:40px; max-width:100%;">
                                 @endif
                             @endif

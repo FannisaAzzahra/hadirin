@@ -29,7 +29,19 @@
     </style>
 </head>
 <body>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/header.png'))) }}" width="601" alt="Header">
+    @php
+        $headerPath = \Storage::disk('public')->path('logos/header.png');
+        $headerExists = file_exists($headerPath);
+    @endphp
+    
+    @if($headerExists)
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents($headerPath)) }}" width="601" alt="Header">
+    @else
+        <div style="text-align: center; padding: 20px; border: 1px solid #ddd; margin-bottom: 20px;">
+            <h2 style="margin: 0;">PT PLN (PERSERO)</h2>
+            <p style="margin: 5px 0;">UNIT INDUK TRANSMISI JAWA BAGIAN TIMUR DAN BALI</p>
+        </div>
+    @endif
 
     <div style="margin-top: 20px; margin-bottom: 20px;">
         <table border="0" cellspacing="0" cellpadding="2" style="font-size: 12px;">
@@ -92,25 +104,18 @@
                     </td>
                     <td class="breakable">{{ $detail->email ?? '-' }} / <br> {{ $detail->no_hp }}</td>
                     <td align="center" valign="middle">
-                        @if ($detail->signature)
+                        @if ($detail->signature && \Storage::disk('public')->exists($detail->signature))
                             @php
-                                $img = null;
                                 try {
-                                    if (\Storage::disk('public')->exists($detail->signature)) {
-                                        $path = \Storage::disk('public')->path($detail->signature);
-                                    } else {
-                                        $path = public_path('uploads/' . $detail->signature); // legacy fallback
-                                    }
-                                    if (file_exists($path)) {
-                                        $type = pathinfo($path, PATHINFO_EXTENSION);
-                                        $data = file_get_contents($path);
-                                        $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
-                                    }
+                                    $path = \Storage::disk('public')->path($detail->signature);
+                                    $type = pathinfo($path, PATHINFO_EXTENSION) ?: 'png';
+                                    $data = @file_get_contents($path);
+                                    $img  = $data ? ('data:image/' . $type . ';base64,' . base64_encode($data)) : null;
                                 } catch (\Throwable $e) {
                                     $img = null;
                                 }
                             @endphp
-                            @if($img)
+                            @if(!empty($img))
                                 <img src="{{ $img }}" alt="Signature" width="100" style="width: 100px; max-height:40px;">
                             @endif
                         @endif
