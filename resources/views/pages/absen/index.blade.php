@@ -40,21 +40,54 @@
         }
 
         .header-logos {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 150px 1fr 150px;
             align-items: center;
             margin-bottom: 2rem;
+            gap: 1.5rem;
         }
 
         .header-logos img {
+            max-height: 80px;
+            max-width: 150px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             border-radius: 0;
             box-shadow: none;
             transition: transform 0.3s ease;
             background: transparent;
+            justify-self: center;
         }
 
         .header-logos img:hover {
             transform: scale(1.05);
+        }
+        
+        /* Center content will always be centered */
+        .header-logos > div {
+            text-align: center;
+            padding: 1rem 0;
+        }
+        
+        /* Sub-judul dengan garis biru di bawah */
+        .header-logos > div h3 {
+            margin-top: 0.5rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        /* Garis biru terang di bawah sub-judul */
+        .header-logos > div h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #00b4d8 30%, #00b4d8 70%, transparent 100%);
+            border-radius: 2px;
         }
 
         .header-title {
@@ -64,6 +97,8 @@
             letter-spacing: 1px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             margin: 0;
+            position: relative;
+            padding: 1rem 0;
         }
 
         /* Detail Table Styling */
@@ -86,6 +121,8 @@
             border: none;
             font-size: 1rem;
             vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .detail-table td:first-child {
@@ -104,6 +141,9 @@
         .detail-table td:last-child {
             color: #333;
             width: 75%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
         }
 
         .detail-table .location-link {
@@ -640,30 +680,61 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            /* PERBAIKAN UTAMA: Mengatur header-logos agar tetap sejajar (row) */
             .header-logos {
-                flex-direction: row; /* Ubah menjadi row */
-                justify-content: space-between; /* Pastikan sejajar dan ada ruang di antaranya */
-                gap: 0; /* Hapus gap yang mungkin ada */
-                align-items: center; 
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
             }
             
-            /* Agar logo dan judul tetap terpisah */
+            /* Logo kiri di pojok kiri (kolom 1, baris 1) */
+            .header-logos img:first-child {
+                grid-column: 1;
+                grid-row: 1;
+                justify-self: start;
+            }
+            
+            /* Teks judul pindah ke baris 2, span 2 kolom (full width) */
             .header-logos > div {
-                flex-grow: 1;
+                grid-column: 1 / -1;
+                grid-row: 2;
                 text-align: center;
+                padding-top: 0.5rem;
+            }
+            
+            /* Logo kanan di pojok kanan (kolom 2, baris 1) */
+            .header-logos img:last-child {
+                grid-column: 2;
+                grid-row: 1;
+                justify-self: end;
             }
 
             .header-logos img {
-                height: 80px; /* Kecilkan sedikit ukuran logo untuk mobile jika perlu */
+                max-height: 60px;
+                max-width: 100px;
+            }
+            
+            /* PERBESAR judul header di mobile agar lebih fokus */
+            .header-title {
+                font-size: 1.5rem !important;
+                line-height: 1.3;
+                margin-bottom: 0.5rem;
+            }
+            
+            /* Sub-judul juga sedikit lebih besar */
+            .header-logos > div h3 {
+                font-size: 1.1rem;
+                line-height: 1.4;
             }
 
             .header-title {
-                font-size: 1.2rem; /* Kecilkan judul */
+                font-size: 1rem; /* Kecilkan judul */
                 text-align: center;
+                line-height: 1.3;
+                word-wrap: break-word;
             }
 
-            .card-body {
+            .header-card .card-body {
                 padding: 1rem;
             }
 
@@ -674,6 +745,7 @@
 
             .detail-table {
                 padding: 1rem;
+                font-size: 0.9rem; /* Sedikit lebih kecil di mobile */
             }
 
             /* PERBAIKAN UTAMA: Tampilan detail-table di layar kecil */
@@ -688,19 +760,24 @@
 
             .detail-table tr {
                 margin-bottom: 1rem;
+                border-bottom: 1px solid #f0f0f0;
+                padding-bottom: 0.5rem;
             }
 
             .detail-table td {
                 display: block;
                 width: 100% !important;
-                padding: 0 !important;
+                padding: 0.25rem 0 !important;
                 text-align: left !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
             }
 
             .detail-table td:first-child {
                 font-weight: 700;
                 color: #0077b6;
                 padding-bottom: 0.25rem !important;
+                font-size: 0.85rem;
             }
             
             .detail-table td:nth-child(2) {
@@ -710,6 +787,8 @@
             .detail-table td:last-child {
                 padding-bottom: 0.75rem !important;
                 color: #333;
+                font-size: 0.9rem;
+                line-height: 1.5;
             }
 
             .select2-container {
@@ -766,7 +845,7 @@
         <div class="card-body">
           <div class="header-logos">
             @if($presence->logo_kiri && \Storage::disk('public')->exists($presence->logo_kiri))
-                <img src="{{ route('public.storage-image', $presence->logo_kiri) }}" height="120" alt="Logo Kiri">
+                <img src="{{ route('public.storage-image', $presence->logo_kiri) }}" alt="Logo Kiri">
             @endif
               <div class="text-center">
                   <h2 class="header-title d-block fw-bold">{{ $presence->judul_header_atas ?? 'ABSENSI ONLINE' }}</h2>
@@ -774,7 +853,7 @@
                   <h3 class="d-block">{{ $presence->judul_header_bawah ?? '' }}</h3>
               </div>
             @if($presence->logo_kanan && \Storage::disk('public')->exists($presence->logo_kanan))
-                <img src="{{ route('public.storage-image', $presence->logo_kanan) }}" height="120" alt="Logo Kanan">
+                <img src="{{ route('public.storage-image', $presence->logo_kanan) }}" alt="Logo Kanan">
             @endif
           </div>
           <div class="detail-table">
@@ -807,7 +886,7 @@
                 <td>{{ $presence->lokasi }}</td>
               </tr>
               <tr>
-                <td>Link Lokasi</td>
+                <td>Link Zoom</td>
                 <td>:</td>
                 <td>
                   @if ($presence->link_lokasi)

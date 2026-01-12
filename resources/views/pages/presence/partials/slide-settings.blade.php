@@ -354,71 +354,97 @@
 
         /* Modal Styling */
         .slide-custom-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.6) !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 99999 !important;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
+            pointer-events: none;
+            overflow: auto !important;
         }
 
         .slide-custom-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+        }
+        
+        /* Lock body scroll when modal is active */
+        body.modal-open {
+            overflow: hidden !important;
+            position: fixed !important;
+            width: 100% !important;
         }
 
         .slide-custom-modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
+            background: white !important;
+            padding: 2rem !important;
+            border-radius: 15px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+            text-align: center !important;
+            max-width: 400px !important;
+            width: 90% !important;
             transform: translateY(-20px);
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
+            position: relative !important;
+            z-index: 100000 !important;
+            pointer-events: auto !important;
         }
 
         .slide-custom-modal-overlay.active .slide-custom-modal-content {
-            transform: translateY(0);
-            opacity: 1;
+            transform: translateY(0) !important;
+            opacity: 1 !important;
         }
 
         .slide-custom-modal-content h4 {
-            font-size: 1.5rem;
-            color: #0077b6;
-            margin-bottom: 1rem;
+            font-size: 1.5rem !important;
+            color: #0077b6 !important;
+            margin-bottom: 1rem !important;
+            pointer-events: none !important;
         }
 
         .slide-custom-modal-content p {
-            font-size: 1rem;
-            color: #3c4043;
-            margin-bottom: 1.5rem;
+            font-size: 1rem !important;
+            color: #3c4043 !important;
+            margin-bottom: 1.5rem !important;
+            pointer-events: none !important;
+            white-space: pre-wrap !important;
         }
 
         .slide-custom-modal-content button {
-            background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.8rem 1.5rem !important;
+            border-radius: 10px !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            z-index: 100001 !important;
+            pointer-events: auto !important;
+            display: inline-block !important;
+            user-select: none !important;
         }
 
         .slide-custom-modal-content button:hover {
-            background: linear-gradient(135deg, #0096c7 0%, #005577 100%);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #0096c7 0%, #005577 100%) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        .slide-custom-modal-content button:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
         }
 
         /* Media queries for responsiveness */
@@ -553,7 +579,7 @@
                             <div class="slide-preview-grid" id="slide-keep-preview-grid">
                                 @foreach($presence->slides as $slide)
                                     <div class="slide-preview-item">
-                                        <img src="{{ \Storage::disk('public')->exists($slide->image_path) ? Storage::url($slide->image_path) : asset('uploads/' . $slide->image_path) }}" class="slide-preview-image" alt="Current slide preview">
+                                        <img src="{{ route('public.storage-image', $slide->image_path) }}" class="slide-preview-image" alt="Current slide preview">
                                     </div>
                                 @endforeach
                             </div>
@@ -637,7 +663,8 @@
                 </div>
                 <div class="upload-title">Upload Slide Foto</div>
                 <div class="upload-description">
-                    Format: JPG, PNG. Disarankan menggunakan rasio yang sama pada setiap slide foto.<br>
+                    Format: JPG, PNG. Maksimal 2MB per file.<br>
+                    Disarankan menggunakan rasio yang sama pada setiap slide foto.<br>
                     Klik atau drag & drop file di sini.
                 </div>
                 <button type="button" class="upload-button" id="upload-trigger-button">
@@ -682,11 +709,46 @@
         <div class="slide-custom-modal-content">
             <h4 id="slideModalTitle">Peringatan!</h4>
             <p id="slideModalMessage"></p>
-            <button id="slideModalCloseButton">Oke</button>
+            <button type="button" id="slideModalCloseButton" onclick="hideSlideCustomAlert()">Oke</button>
         </div>
     </div>
 
     <script>
+        // Fungsi global untuk menyembunyikan alert kustom (dipanggil dari onclick)
+        function hideSlideCustomAlert() {
+            const modal = document.getElementById('slideCustomAlertModal');
+            if (modal) {
+                modal.classList.remove('active');
+                // Unlock body scroll
+                document.body.classList.remove('modal-open');
+                console.log('Modal closed via global function');
+            }
+        }
+        
+        // Fungsi global untuk menampilkan alert kustom
+        function showSlideCustomAlert(message, title = 'Peringatan!') {
+            const modal = document.getElementById('slideCustomAlertModal');
+            const modalTitle = document.getElementById('slideModalTitle');
+            const modalMessage = document.getElementById('slideModalMessage');
+            
+            if (modalTitle && modalMessage && modal) {
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modal.classList.add('active');
+                
+                // Lock body scroll agar modal tetap terlihat
+                document.body.classList.add('modal-open');
+                
+                // Smooth scroll ke atas agar modal terlihat jelas
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                
+                console.log('Modal shown:', message);
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             // --- Elemen DOM Umum ---
             const slideOptions = document.querySelectorAll('.slide-option-card');
@@ -700,31 +762,44 @@
             const modalMessage = document.getElementById('slideModalMessage');
             const modalCloseButton = document.getElementById('slideModalCloseButton');
 
-            // Fungsi untuk menampilkan alert kustom
+            // Fungsi untuk menampilkan alert kustom (versi lokal, akan memanggil global)
             function showCustomAlert(message, title = 'Peringatan!') {
-                if (modalTitle && modalMessage && customAlertModal) {
-                    modalTitle.textContent = title;
-                    modalMessage.textContent = message;
-                    customAlertModal.classList.add('active');
-                }
+                showSlideCustomAlert(message, title);
             }
 
-            // Fungsi untuk menyembunyikan alert kustom
+            // Fungsi untuk menyembunyikan alert kustom (versi lokal, akan memanggil global)
             function hideCustomAlert() {
-                if (customAlertModal) {
-                    customAlertModal.classList.remove('active');
-                }
+                hideSlideCustomAlert();
             }
 
-            // Event listener untuk tombol tutup modal
+            // Event listener untuk tombol tutup modal - Multiple handlers untuk memastikan bekerja
             if (modalCloseButton) {
-                modalCloseButton.addEventListener('click', hideCustomAlert);
+                // Handler 1: click
+                modalCloseButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Button clicked - handler 1');
+                    hideCustomAlert();
+                });
+                
+                // Handler 2: mousedown
+                modalCloseButton.addEventListener('mousedown', function(e) {
+                    console.log('Button mousedown');
+                });
+                
+                // Handler 3: touchstart for mobile
+                modalCloseButton.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    console.log('Button touchstart');
+                    hideCustomAlert();
+                });
             }
 
             // Event listener untuk klik di luar modal (overlay)
             if (customAlertModal) {
                 customAlertModal.addEventListener('click', function(event) {
                     if (event.target === customAlertModal) {
+                        console.log('Overlay clicked');
                         hideCustomAlert();
                     }
                 });
@@ -911,9 +986,6 @@
                     return;
                 }
 
-                // Kosongkan file sebelumnya saat ada file baru yang dipilih
-                selectedFiles = [];
-
                 // Validasi dan tambahkan file (maksimal 5)
                 const filesToProcess = Array.from(files).slice(0, 5);
                 const validFiles = [];
@@ -928,16 +1000,26 @@
                     }
                 });
 
-                // Tampilkan error jika ada
+                // Tampilkan error jika ada dan HENTIKAN proses jika ada error
                 if (errors.length > 0) {
                     showCustomAlert(errors.join('\n'));
+                    
+                    // JANGAN hapus file yang sudah ada sebelumnya
+                    // JANGAN update input file dengan file yang tidak valid
+                    // Kembalikan input file ke state semula (kosongkan)
+                    fileInput.value = '';
+                    
+                    console.log('File validation failed. Files not added.');
+                    return; // STOP di sini, jangan lanjutkan
                 }
 
+                // Hanya lanjut jika ada file valid
                 if (validFiles.length === 0) {
-                    clearAllFiles();
+                    fileInput.value = '';
                     return;
                 }
 
+                // Kosongkan file sebelumnya HANYA jika validasi berhasil
                 selectedFiles = validFiles;
 
                 // Perbarui input file menggunakan DataTransfer agar file yang valid saja yang terkirim
@@ -958,7 +1040,7 @@
                     clearFilesBtn.style.display = 'inline-flex';
                 }
 
-                console.log('Files processed:', validFiles.length);
+                console.log('Files processed successfully:', validFiles.length);
             }
 
             // Fungsi untuk memperbarui tampilan pratinjau gambar
@@ -1093,7 +1175,7 @@
                                 previewItem.className = 'slide-preview-item';
 
                                 const img = document.createElement('img');
-                                img.src = `/storage/${slide.image_path}`; // gunakan storage link
+                                img.src = `/storage-image/${slide.image_path}`; // gunakan route streaming
                                 img.className = 'slide-preview-image';
                                 img.alt = 'Slide preview';
 
@@ -1130,33 +1212,57 @@
             // --- Fungsi Validasi Global (untuk form submission) ---
             window.validateSlideSettings = function() {
                 const selectedOption = document.querySelector('input[name="slide_option"]:checked')?.value;
-                console.log('Validating slide option:', selectedOption);
+                console.log('=== VALIDATING SLIDE SETTINGS ===');
+                console.log('Selected option:', selectedOption);
 
                 if (selectedOption === 'previous') {
                     const previousSelect = document.getElementById('slide_previous_presence_id');
+                    console.log('Previous select value:', previousSelect?.value);
+                    
                     if (!previousSelect || !previousSelect.value) {
                         showCustomAlert('Silakan pilih kegiatan sebelumnya untuk menggunakan slide yang ada.');
+                        console.log('Validation FAILED: No previous presence selected');
                         return false;
                     }
+                    console.log('Validation PASSED: Previous presence selected');
+                    return true;
+                    
                 } else if (selectedOption === 'new') {
                     const fileInput = document.getElementById('slide_images');
+                    console.log('File input:', fileInput);
+                    console.log('Files count:', fileInput?.files?.length || 0);
 
                     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
                         showCustomAlert('Silakan pilih file gambar untuk slide baru.');
+                        console.log('Validation FAILED: No files selected');
                         return false;
                     }
 
                     // Validasi setiap file yang dipilih
                     const files = Array.from(fileInput.files);
+                    console.log('Validating files:', files.length);
+                    
                     for (let file of files) {
-                        const error = validateFile(file); // Gunakan fungsi validateFile yang sudah ada
+                        const error = validateFile(file);
                         if (error) {
                             showCustomAlert(error);
+                            console.log('Validation FAILED:', error);
                             return false;
                         }
                     }
-                    console.log('Valid files found:', files.length);
+                    console.log('Validation PASSED: All files are valid');
+                    return true;
+                    
+                } else if (selectedOption === 'keep') {
+                    console.log('Validation PASSED: Keep existing slides');
+                    return true;
+                    
+                } else if (selectedOption === 'none') {
+                    console.log('Validation PASSED: No slides selected');
+                    return true;
                 }
+                
+                console.log('Validation PASSED: Default case');
                 return true;
             };
 

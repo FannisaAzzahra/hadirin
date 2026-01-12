@@ -30,12 +30,27 @@
 </head>
 <body>
     @php
-        $headerPath = \Storage::disk('public')->path('logos/header.png');
-        $headerExists = file_exists($headerPath);
+        $headerImage = null;
+        // Try storage/app/public first
+        if (\Storage::disk('public')->exists('logos/header2.png')) {
+            try {
+                $headerImage = base64_encode(\Storage::disk('public')->get('logos/header2.png'));
+            } catch (\Exception $e) {
+                \Log::warning('Failed to read header from storage: ' . $e->getMessage());
+            }
+        }
+        // Fallback to public/images
+        if (!$headerImage && file_exists(public_path('images/header2.png'))) {
+            try {
+                $headerImage = base64_encode(file_get_contents(public_path('images/header2.png')));
+            } catch (\Exception $e) {
+                \Log::warning('Failed to read header from public: ' . $e->getMessage());
+            }
+        }
     @endphp
     
-    @if($headerExists)
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents($headerPath)) }}" width="601" alt="Header">
+    @if($headerImage)
+        <img src="data:image/png;base64,{{ $headerImage }}" width="601" alt="Header">
     @else
         <div style="text-align: center; padding: 20px; border: 1px solid #ddd; margin-bottom: 20px;">
             <h2 style="margin: 0;">PT PLN (PERSERO)</h2>
@@ -104,15 +119,24 @@
                     </td>
                     <td class="breakable">{{ $detail->email ?? '-' }} / <br> {{ $detail->no_hp }}</td>
                     <td align="center" valign="middle">
-                        @if ($detail->signature && \Storage::disk('public')->exists($detail->signature))
+                        @if ($detail->signature)
                             @php
+                                $img = null;
                                 try {
-                                    $path = \Storage::disk('public')->path($detail->signature);
-                                    $type = pathinfo($path, PATHINFO_EXTENSION) ?: 'png';
-                                    $data = @file_get_contents($path);
-                                    $img  = $data ? ('data:image/' . $type . ';base64,' . base64_encode($data)) : null;
+                                    // Try storage disk first
+                                    if (\Storage::disk('public')->exists($detail->signature)) {
+                                        $data = \Storage::disk('public')->get($detail->signature);
+                                        $type = pathinfo($detail->signature, PATHINFO_EXTENSION) ?: 'png';
+                                        $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                    } 
+                                    // Fallback to legacy public/uploads path
+                                    elseif (file_exists(public_path('uploads/' . $detail->signature))) {
+                                        $data = file_get_contents(public_path('uploads/' . $detail->signature));
+                                        $type = pathinfo($detail->signature, PATHINFO_EXTENSION) ?: 'png';
+                                        $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                    }
                                 } catch (\Throwable $e) {
-                                    $img = null;
+                                    \Log::warning('Failed to load signature for Word export: ' . $e->getMessage());
                                 }
                             @endphp
                             @if(!empty($img))

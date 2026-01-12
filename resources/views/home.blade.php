@@ -137,7 +137,7 @@
                 <p><strong>Waktu Mulai:</strong> <span id="modalEventTime"></span></p>
                 <p><strong>Batas Waktu:</strong> <span id="modalEventDeadline"></span></p>
                 <p><strong>Lokasi:</strong> <span id="modalEventLocation"></span></p>
-                <p><strong>Link Lokasi:</strong> <span id="modalEventLink"></span></p>
+                <p><strong>Link Zoom:</strong> <span id="modalEventLink"></span></p>
             </div>
             <div class="modal-footer pln-modal-footer">
                 <button type="button" class="btn btn-secondary pln-btn-secondary-modal" data-bs-dismiss="modal">Tutup</button>
@@ -289,8 +289,13 @@
                 .catch(error => console.error('Error fetching notifications:', error));
         }
 
+        // Fetch notifications on page load
         fetchNotifications();
-        setInterval(fetchNotifications, 5000);
+        
+        // Auto-refresh every 5 minutes (300000ms) instead of 1 minute
+        // This is safe for hundreds of concurrent users with server-side caching
+        // If you want manual refresh only, comment out the line below
+        setInterval(fetchNotifications, 300000);
     });
 </script>
 

@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 1cm;
+            margin: 1cm 1cm 2cm 1cm;
         }
         
         body {
@@ -16,7 +16,21 @@
             padding: 0;
             background: white;
             color: black;
-            min-height: 100vh;
+        }
+        
+        /* Footer dengan nomor halaman */
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            color: #333;
+        }
+        
+        .footer .pagenum:before {
+            content: counter(page);
         }
         
         .container {
@@ -158,6 +172,11 @@
             width: 45%;
         }
         
+        /* Page numbering */
+        .page-info {
+            font-size: 12px;
+        }
+        
         /* Informasi rapat */
         .meeting-info {
             padding: 20px;
@@ -230,26 +249,21 @@
         
         .attendance-table th:nth-child(2),
         .attendance-table td:nth-child(2) {
-            width: 10%; /* Tanggal */
+            width: 27%; /* NAMA */
         }
         
         .attendance-table th:nth-child(3),
         .attendance-table td:nth-child(3) {
-            width: 23%; /* NAMA */
+            width: 22%; /* UNIT */
         }
         
         .attendance-table th:nth-child(4),
         .attendance-table td:nth-child(4) {
-            width: 19%; /* UNIT */
+            width: 26%; /* EMAIL / NO. HP */
         }
         
         .attendance-table th:nth-child(5),
         .attendance-table td:nth-child(5) {
-            width: 23%; /* EMAIL / NO. HP */
-        }
-        
-        .attendance-table th:nth-child(6),
-        .attendance-table td:nth-child(6) {
             width: 20%; /* TANDA TANGAN */
         }
         
@@ -281,6 +295,10 @@
     </style>
 </head>
 <body>
+    <div class="footer">
+        <div class="pagenum"></div>
+    </div>
+    
     <div class="container">
         <div class="header-box">
         <!-- Header dengan logo -->
@@ -288,10 +306,26 @@
                 <div class="header-row">
                     <div class="logo-left">
                         @php
-                            $logoPln = \Storage::disk('public')->path('logos/logo_pln.png');
+                            $logoPln = null;
+                            // Try storage/app/public first
+                            if (\Storage::disk('public')->exists('logos/logo_pln.png')) {
+                                try {
+                                    $logoPln = base64_encode(\Storage::disk('public')->get('logos/logo_pln.png'));
+                                } catch (\Exception $e) {
+                                    \Log::warning('Failed to read PLN logo from storage: ' . $e->getMessage());
+                                }
+                            }
+                            // Fallback to public/images
+                            if (!$logoPln && file_exists(public_path('images/logo_pln.png'))) {
+                                try {
+                                    $logoPln = base64_encode(file_get_contents(public_path('images/logo_pln.png')));
+                                } catch (\Exception $e) {
+                                    \Log::warning('Failed to read PLN logo from public: ' . $e->getMessage());
+                                }
+                            }
                         @endphp
-                        @if(file_exists($logoPln))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoPln)) }}" style="height:70px;" alt="PLN Logo">
+                        @if($logoPln)
+                            <img src="data:image/png;base64,{{ $logoPln }}" style="height:70px;" alt="PLN Logo">
                         @else
                             <div style="width:70px;height:70px;background:#1976d2;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">PLN</div>
                         @endif
@@ -302,14 +336,36 @@
                     </div>
                     <div class="logos-right">
                         @php
-                            $logoSmk3 = \Storage::disk('public')->path('logos/logo_smk3.png');
-                            $logoIso = \Storage::disk('public')->path('logos/logo_iso.png');
+                            $logoSmk3 = null;
+                            $logoIso = null;
+                            
+                            // Try SMK3 from storage first
+                            if (\Storage::disk('public')->exists('logos/logo_smk3.png')) {
+                                try {
+                                    $logoSmk3 = base64_encode(\Storage::disk('public')->get('logos/logo_smk3.png'));
+                                } catch (\Exception $e) {}
+                            } elseif (file_exists(public_path('images/logo_smk3.png'))) {
+                                try {
+                                    $logoSmk3 = base64_encode(file_get_contents(public_path('images/logo_smk3.png')));
+                                } catch (\Exception $e) {}
+                            }
+                            
+                            // Try ISO from storage first
+                            if (\Storage::disk('public')->exists('logos/logo_iso.png')) {
+                                try {
+                                    $logoIso = base64_encode(\Storage::disk('public')->get('logos/logo_iso.png'));
+                                } catch (\Exception $e) {}
+                            } elseif (file_exists(public_path('images/logo_iso.png'))) {
+                                try {
+                                    $logoIso = base64_encode(file_get_contents(public_path('images/logo_iso.png')));
+                                } catch (\Exception $e) {}
+                            }
                         @endphp
-                        @if(file_exists($logoSmk3))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoSmk3)) }}" alt="SMK3 Logo" style="height: 55px; margin-right: 5px;">
+                        @if($logoSmk3)
+                            <img src="data:image/png;base64,{{ $logoSmk3 }}" alt="SMK3 Logo" style="height: 55px; margin-right: 5px;">
                         @endif
-                        @if(file_exists($logoIso))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoIso)) }}" alt="ISO Logo" style="height: 55px;">
+                        @if($logoIso)
+                            <img src="data:image/png;base64,{{ $logoIso }}" alt="ISO Logo" style="height: 55px;">
                         @endif
                     </div>
                 </div>
@@ -331,14 +387,31 @@
                             </tr>
                             <tr>
                                 <td>Berlaku Efektif</td>
-                                <td>01 JANUARI 2019</td>
+                                <td>01 MARET 2023</td>
                             </tr>
                             <tr>
                                 <td>Halaman</td>
-                                <td>1 dari 4</td>
+                                <td class="page-info">
+                                    @php
+                                        // Hitung total halaman berdasarkan jumlah data
+                                        // Asumsi: header + info rapat memakan ~1/3 halaman pertama
+                                        // Setiap halaman bisa muat ~20 baris data
+                                        $totalData = $presenceDetails->count();
+                                        $rowsPerPage = 20; // Rows per page setelah halaman pertama
+                                        $firstPageRows = 10; // Rows di halaman pertama (karena ada header)
+                                        
+                                        if ($totalData <= $firstPageRows) {
+                                            $totalPages = 1;
+                                        } else {
+                                            $remainingRows = $totalData - $firstPageRows;
+                                            $totalPages = 1 + ceil($remainingRows / $rowsPerPage);
+                                        }
+                                    @endphp
+                                    1 dari {{ $totalPages }}
+                                </td>
                             </tr>
                         </table>
-                    </div>
+                    </div> 
                 </div>
             </div>
         </div>
@@ -379,7 +452,6 @@
             <thead>
                 <tr>
                     <th>NO</th>
-                    <th>WAKTU ABSENSI</th>
                     <th>NAMA / NIP</th>
                     <th>UNIT / JABATAN</th>
                     <th>EMAIL / NO. HP</th>
@@ -391,13 +463,6 @@
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
                         <td class="text-center">
-                            @php
-                                \Carbon\Carbon::setLocale('id');
-                                $waktuAbsen = \Carbon\Carbon::parse($detail->created_at)->translatedFormat('d/m/Y H:i');
-                            @endphp
-                            {{ $waktuAbsen }}
-                        </td>
-                        <td class="text-center">
                             {{ $detail->nama }} / <br>
                             <span style="font-size:11px;"> {{ $detail->nip ?? '-' }}</span>
                         </td>
@@ -407,15 +472,24 @@
                         </td>
                         <td class="text-center">{{ $detail->email ?? '-' }} / <br> {{ $detail->no_hp }}</td>
                         <td class="text-center">
-                            @if ($detail->signature && \Storage::disk('public')->exists($detail->signature))
+                            @if ($detail->signature)
                                 @php
+                                    $img = null;
                                     try {
-                                        $path = \Storage::disk('public')->path($detail->signature);
-                                        $type = pathinfo($path, PATHINFO_EXTENSION) ?: 'png';
-                                        $data = @file_get_contents($path);
-                                        $img  = $data ? ('data:image/' . $type . ';base64,' . base64_encode($data)) : null;
+                                        // Try storage disk first
+                                        if (\Storage::disk('public')->exists($detail->signature)) {
+                                            $data = \Storage::disk('public')->get($detail->signature);
+                                            $type = pathinfo($detail->signature, PATHINFO_EXTENSION) ?: 'png';
+                                            $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                        } 
+                                        // Fallback to legacy public/uploads path
+                                        elseif (file_exists(public_path('uploads/' . $detail->signature))) {
+                                            $data = file_get_contents(public_path('uploads/' . $detail->signature));
+                                            $type = pathinfo($detail->signature, PATHINFO_EXTENSION) ?: 'png';
+                                            $img = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                        }
                                     } catch (\Throwable $e) {
-                                        $img = null;
+                                        \Log::warning('Failed to load signature: ' . $e->getMessage());
                                     }
                                 @endphp
                                 @if(!empty($img))
@@ -425,11 +499,24 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="no-data">Tidak ada data peserta</td></tr>
+                    <tr><td colspan="5" class="no-data">Tidak ada data peserta</td></tr>
                 @endforelse
             </tbody>
         </table>
 
     </div>
+    
+    {{-- Script dompdf untuk nomor halaman otomatis --}}
+    <script type="text/php">
+        if (isset($pdf)) {
+            $text = "{PAGE_NUM}";
+            $size = 11;
+            $font = $fontMetrics->getFont("Arial");
+            $width = $fontMetrics->get_text_width($text, $font, $size) / 2;
+            $x = ($pdf->get_width() - $width) / 2;
+            $y = $pdf->get_height() - 30;
+            $pdf->page_text($x, $y, $text, $font, $size, array(0.33, 0.33, 0.33));
+        }
+    </script>
 </body>
 </html>

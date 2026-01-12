@@ -365,6 +365,65 @@
             word-break: break-all;
             margin-bottom: 5px;
         }
+
+        /* Responsive Design untuk Mobile */
+        @media (max-width: 768px) {
+            .card-header .row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .card-header .col {
+                width: 100%;
+                text-align: left !important;
+            }
+
+            .card-header .col.text-end {
+                text-align: left !important;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .card-header .btn {
+                width: 100%;
+                margin: 0 !important;
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .btn-sm {
+                font-size: 0.75rem;
+                padding: 0.35rem 0.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-header .btn {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .card-header .btn i,
+            .card-header .btn svg {
+                font-size: 0.85rem;
+                width: 14px;
+                height: 14px;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}

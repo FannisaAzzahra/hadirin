@@ -124,7 +124,7 @@
         padding: 1.8rem 2rem;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: 1.2rem;
         position: relative;
         overflow: hidden;
@@ -466,11 +466,11 @@
         .hadirin-auth-header {
           padding: 1.5rem 1.5rem;
           flex-direction: row;
-          justify-content: center;
+          justify-content: flex-start;
         }
 
         .header-content {
-          text-align: center;
+          text-align: left;
         }
         
         .hadirin-auth-header h2 {

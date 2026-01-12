@@ -22,7 +22,7 @@ class PresenceDetailController extends Controller
 {
     /**
      * Stream signature image for a presence detail.
-     * Public endpoint to make image loading work even if the storage symlink is unavailable on hosting.
+     * Works on shared hosting (Hostinger) without symlink.
      */
     public function showSignature($id)
     {
@@ -32,24 +32,32 @@ class PresenceDetailController extends Controller
             abort(404);
         }
 
-        // Resolve absolute file path from storage or legacy public/uploads
-        $path = null;
-        if (Storage::disk('public')->exists($detail->signature)) {
-            $path = Storage::disk('public')->path($detail->signature);
-        } elseif (file_exists(public_path('uploads/' . $detail->signature))) {
-            $path = public_path('uploads/' . $detail->signature);
+        // Try to get file content from storage disk first (works without symlink)
+        $content = null;
+        $mime = 'image/png';
+        
+        try {
+            if (Storage::disk('public')->exists($detail->signature)) {
+                $content = Storage::disk('public')->get($detail->signature);
+                $extension = pathinfo($detail->signature, PATHINFO_EXTENSION);
+                $mime = $extension === 'jpg' || $extension === 'jpeg' ? 'image/jpeg' : 'image/png';
+            } elseif (file_exists(public_path('uploads/' . $detail->signature))) {
+                // Fallback to legacy public/uploads
+                $content = file_get_contents(public_path('uploads/' . $detail->signature));
+                $extension = pathinfo($detail->signature, PATHINFO_EXTENSION);
+                $mime = $extension === 'jpg' || $extension === 'jpeg' ? 'image/jpeg' : 'image/png';
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to load signature: ' . $e->getMessage());
         }
 
-        if (!$path || !file_exists($path)) {
+        if (!$content) {
             abort(404);
         }
 
-        $mime = File::mimeType($path) ?: 'image/png';
-
-        return response()->file($path, [
-            'Content-Type' => $mime,
-            'Cache-Control' => 'public, max-age=604800', // 7 days
-        ]);
+        return response($content, 200)
+            ->header('Content-Type', $mime)
+            ->header('Cache-Control', 'public, max-age=604800');
     }
     public function exportWord(string $id)
     {
@@ -178,26 +186,36 @@ class PresenceDetailController extends Controller
                 $sheet->setCellValue("D{$row}", $detail->unit . ' / ' . ($detail->jabatan ?? '-'));
                 $sheet->setCellValue("E{$row}", ($detail->email ?? '-') . ' / ' . $detail->no_hp);
 
-                // Add signature image if exists
-                $sigLocalPath = null;
+                // Add signature image if exists (Hostinger compatible - no symlink needed)
+                $sigContent = null;
                 if ($detail->signature) {
-                    if (Storage::disk('public')->exists($detail->signature)) {
-                        $sigLocalPath = Storage::disk('public')->path($detail->signature);
-                    } elseif (file_exists(public_path('uploads/' . $detail->signature))) { // legacy
-                        $sigLocalPath = public_path('uploads/' . $detail->signature);
+                    try {
+                        if (Storage::disk('public')->exists($detail->signature)) {
+                            $sigContent = Storage::disk('public')->get($detail->signature);
+                        } elseif (file_exists(public_path('uploads/' . $detail->signature))) {
+                            $sigContent = file_get_contents(public_path('uploads/' . $detail->signature));
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('Failed to read signature: ' . $e->getMessage());
                     }
                 }
 
-                if ($sigLocalPath) {
+                if ($sigContent) {
                     try {
+                        // Create temp file for PhpSpreadsheet Drawing (required)
+                        $tempPath = sys_get_temp_dir() . '/sig_' . $detail->id . '_' . time() . '.png';
+                        file_put_contents($tempPath, $sigContent);
+                        
                         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                        $drawing->setPath($sigLocalPath);
+                        $drawing->setPath($tempPath);
                         $drawing->setHeight(40);
                         $drawing->setCoordinates("F{$row}");
                         $drawing->setWorksheet($sheet);
+                        
+                        // Note: temp file will be auto-deleted by system later
                     } catch (\Exception $e) {
                         Log::warning('Failed to add signature to Excel: ' . $e->getMessage());
-                        $sheet->setCellValue("F{$row}", 'Signature Error');
+                        $sheet->setCellValue("F{$row}", 'Error');
                     }
                 } else {
                     $sheet->setCellValue("F{$row}", '-');

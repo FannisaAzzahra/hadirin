@@ -104,7 +104,7 @@
                                 <i class="fas fa-external-link-alt"></i>
                             </div>
                             <div class="hadirin-detail-content">
-                                <label>Link Lokasi</label>
+                                <label>Link Zoom</label>
                                 <span>
                                     @if ($presence->link_lokasi)
                                         <a href="{{ $presence->link_lokasi }}" target="_blank" class="hadirin-location-link">Klik di sini</a>

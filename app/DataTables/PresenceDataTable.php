@@ -129,7 +129,7 @@ class PresenceDataTable extends DataTable
                 ->width(180),
 
             Column::make('link_lokasi')
-                ->title('Link Lokasi')
+                ->title('Link Zoom')
                 ->width(120),
 
             Column::make('status')

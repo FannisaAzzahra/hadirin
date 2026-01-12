@@ -590,7 +590,7 @@
         </div>
 
         <div class="hadirin-app-body"> {{-- Ini adalah bagian body kartu yang berisi form --}}
-            <form action="{{ route('presence.update', $presence->id) }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('presence.update', $presence->id) }}" method="post" enctype="multipart/form-data" id="presenceForm" onsubmit="return validatePresenceForm(event)">
                 @csrf
                 @method('put')
 
@@ -692,7 +692,7 @@
                     <div class="form-row single">
                         <div class="form-group">
                             <label for="link_lokasi" class="hadirin-label">
-                                Link Lokasi <span class="optional">(jika ada)</span>
+                                Link Zoom <span class="optional">(jika ada)</span>
                             </label>
                             <input type="url"
                                    class="hadirin-input @error('link_lokasi') is-invalid @enderror"
@@ -841,6 +841,31 @@
 </div>
 
 <script>
+// Fungsi validasi form yang dipanggil saat submit
+function validatePresenceForm(event) {
+    console.log('=== FORM VALIDATION STARTED ===');
+    
+    // Validasi slide settings (jika ada fungsi validateSlideSettings)
+    if (typeof validateSlideSettings === 'function') {
+        console.log('validateSlideSettings function found, calling it...');
+        const slideValid = validateSlideSettings();
+        console.log('Slide validation result:', slideValid);
+        
+        if (!slideValid) {
+            event.preventDefault(); // Cegah form submit
+            console.log('❌ FORM SUBMISSION PREVENTED - Slide validation failed');
+            return false;
+        }
+        console.log('✅ Slide validation passed');
+    } else {
+        console.log('⚠️ validateSlideSettings function not found, skipping slide validation');
+    }
+    
+    // Jika semua validasi lolos, izinkan form submit
+    console.log('✅ ALL VALIDATIONS PASSED - Form will be submitted');
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // File upload labels update
     const fileInputs = document.querySelectorAll('input[type="file"]');
